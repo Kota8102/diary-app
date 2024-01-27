@@ -27,7 +27,8 @@
         "syler.sass-indented",
         "glenn2223.live-sass",
         "eamodio.gitlens",
-        "formulahendry.auto-rename-tag"
+        "formulahendry.auto-rename-tag",
+        "dbaeumer.vscode-eslint"
       ],
       "settings": {
         "editor.formatOnSave": true
