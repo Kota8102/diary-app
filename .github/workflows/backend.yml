@@ -21,11 +21,11 @@ jobs:
         id: set_environment
         run: |
           if [[ ${{ github.ref }} == "refs/heads/main" ]]; then
-            echo "::set-output name=environment::prod"
-          elif [[ ${{ github.ref }} == "refs/heads/develop" || ${{ github.ref }} =~ ^refs/heads/feature#[0-9]+$ ]]; then
-            echo "::set-output name=environment::dev"
+            echo "environment=prod" >> $GITHUB_OUTPUT
+          elif [[ ${{ github.ref }} == "refs/heads/develop" || ${{ github.ref }} =~ ^refs/heads/feature/#[0-9]*$ ]]; then
+            echo "environment=dev" >> $GITHUB_OUTPUT
           else
-            echo "::set-output name=environment::unknown"
+            echo "environment=unknown" >> $GITHUB_OUTPUT
           fi
 
       - name: Checkout
