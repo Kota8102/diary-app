@@ -1,0 +1,52 @@
+name: backend
+
+on:
+  push:
+    paths:
+      - "src/backend/**"
+    branches:
+      - "main"
+      - "develop"
+      - "feature*"
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Set environment
+        id: set_environment
+        run: |
+          if [[ ${{ github.ref }} == "refs/heads/main" ]]; then
+            echo "::set-output name=environment::prod"
+          elif [[ ${{ github.ref }} == "refs/heads/develop" || ${{ github.ref }} =~ ^refs/heads/feature#[0-9]+$ ]]; then
+            echo "::set-output name=environment::dev"
+          else
+            echo "::set-output name=environment::unknown"
+          fi
+
+      - name: Checkout
+        uses: actions/checkout@v1
+
+      - name: Setup Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: "20.x"
+
+      - name: Setup dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region: "${{ secrets.AWS_REGION }}"
+          role-to-assume: "arn:aws:iam::${{ secrets.AWS_ACCOUNT }}:role/${{ secrets.ACTIONS_ROLE }}"
+
+      - name: CDK Deploy
+        env:
+          ENVIRONMET: ${{ steps.set_environment.outputs.environment }}
+        run: npm run cdk:deploy --context environment=$ENVIRONMENT --require-approval never
