@@ -38,6 +38,7 @@ jobs:
 
       - name: Setup dependencies
         run: npm ci
+        working-directory: src/backend
 
       - name: Build
         run: npm run build
