@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - "src/backend/**"
+      - ".github/workflows/backend.yml"
     branches:
       - "main"
       - "develop"
