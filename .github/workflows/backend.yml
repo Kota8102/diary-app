@@ -28,6 +28,11 @@ jobs:
             echo "environment=unknown" >> $GITHUB_OUTPUT
           fi
 
+      - name: Display Environments
+        run: |
+          echo ${{ secrets.AWS_REGION }}
+          echo ${{ steps.set_environment.outputs.environment }}
+
       - name: Checkout
         uses: actions/checkout@v1
 
