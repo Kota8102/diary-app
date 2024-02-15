@@ -31,7 +31,7 @@ jobs:
       - name: Display Environments
         run: |
           echo ${{ secrets.AWS_REGION }}
-          echo ${{ sectets.AWS_ACCOUNT }}
+          echo ${{ secrets.AWS_ACCOUNT }}
           echo ${{ secrets.ACTIONS_ROLE}}
           echo ${{ steps.set_environment.outputs.environment }}
 
