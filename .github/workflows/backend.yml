@@ -25,7 +25,7 @@ jobs:
             echo "environment=unknown" >> $GITHUB_OUTPUT
           fi
     outputs:
-      environment: ${{ steps.set_environment.outputs.environment }}
+      environment: ${{ steps.set-environment.outputs.environment }}
 
   backend:
     needs: set-environment
@@ -40,7 +40,7 @@ jobs:
           echo ${{ secrets.AWS_REGION }}
           echo ${{ secrets.AWS_ACCOUNT }}
           echo ${{ secrets.ACTIONS_ROLE}}
-          echo ${{ needs.set_environment.outputs.environment }}
+          echo ${{ needs.set-environment.outputs.environment }}
 
       - name: Checkout
         uses: actions/checkout@v1
@@ -65,6 +65,6 @@ jobs:
 
       - name: CDK Deploy
         env:
-          ENVIRONMET: ${{ steps.set_environment.outputs.environment }}
+          ENVIRONMET: ${{ needs.set-environment.outputs.environment }}
         run: npm run cdk:deploy --context environment=$ENVIRONMENT --require-approval never
         working-directory: src/backend
