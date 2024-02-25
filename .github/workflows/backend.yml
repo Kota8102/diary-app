@@ -63,7 +63,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-region: "${{ secrets.AWS_REGION }}"
-          role-to-assume: "${{ secrets.AWS_ROLE_ARN }}"
+          role-to-assume: "arn:aws:iam::${{ secrets.AWS_ACCOUNT }}:role/${{ secrets.ACTIONS_ROLE }}"
 
       - name: CDK Deploy
         env:
