@@ -62,9 +62,12 @@ jobs:
         with:
           aws-region: "${{ secrets.AWS_REGION }}"
           role-to-assume: "arn:aws:iam::${{ secrets.AWS_ACCOUNT }}:role/${{ secrets.ACTIONS_ROLE }}"
+      
+      - name: Display AWS Environment Variables
+        run: env | grep AWS_
 
       - name: CDK Deploy
         env:
-          ENVIRONMET: ${{ needs.set-environment.outputs.environment }}
+          ENVIRONMENT: ${{ needs.set-environment.outputs.environment }}
         run: npm run cdk:deploy --context environment=$ENVIRONMENT --require-approval never
         working-directory: src/backend
