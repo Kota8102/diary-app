@@ -16,4 +16,4 @@ jobs:
           role-to-assume: 'arn:aws:iam::851725642854:role/diary-dev-test-morimoto-actions-role'
 
       # プライベートな S3 バケットを読み取ってみる
-      - run: aws s3 ls s3://diaryhostingbuckets
+      - run: aws s3 ls s3://diaryhostingbucket
