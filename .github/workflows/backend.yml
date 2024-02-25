@@ -57,8 +57,9 @@ jobs:
       - name: Build
         run: npm run build
         working-directory: src/backend
-
-      - uses: aws-actions/configure-aws-credentials@v1
+      
+      - name: Setup configure-aws-credentials
+        uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-region: "${{ secrets.AWS_REGION }}"
           role-to-assume: "arn:aws:iam::${{ secrets.AWS_ACCOUNT }}:role/${{ secrets.ACTIONS_ROLE }}"
