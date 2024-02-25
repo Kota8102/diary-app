@@ -40,6 +40,7 @@ jobs:
           echo ${{ secrets.AWS_REGION }}
           echo ${{ secrets.AWS_ACCOUNT }}
           echo ${{ secrets.ACTIONS_ROLE}}
+          echo ${{ secrets.AWS_ROLE_ARN }}
           echo ${{ needs.set_environment.outputs.environment }}
 
       - name: Checkout
@@ -62,7 +63,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: "${{ secrets.AWS_REGION }}"
-          role-to-assume: "arn:aws:iam::${{ secrets.AWS_ACCOUNT }}:role/diary-dev-actions-role"
+          role-to-assume: "${{ secrets.AWS_ROLE_ARN }}"
 
       - name: CDK Deploy
         env:
