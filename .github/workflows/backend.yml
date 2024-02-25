@@ -63,7 +63,6 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-region: "${{ secrets.AWS_REGION }}"
-          # role-to-assume: "arn:aws:iam::851725642854:role/diary-dev-test-morimoto-actions-role"
           role-to-assume: "${{ secrets.AWS_ROLE_ARN }}"
 
       - name: CDK Deploy
