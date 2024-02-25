@@ -58,13 +58,11 @@ jobs:
         run: npm run build
         working-directory: src/backend
 
-      - uses: aws-actions/configure-aws-credentials@v1
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: "${{ secrets.AWS_REGION }}"
-          role-to-assume: "arn:aws:iam::${{ secrets.AWS_ACCOUNT }}:role/${{ secrets.ACTIONS_ROLE }}"
-      
-      - name: Display AWS Environment Variables
-        run: env | grep AWS_
+          role-to-assume: "arn:aws:iam::${{ secrets.AWS_ACCOUNT }}:role/diary-dev-actions-role"
 
       - name: CDK Deploy
         env:
