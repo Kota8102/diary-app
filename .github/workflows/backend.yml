@@ -60,10 +60,10 @@ jobs:
         working-directory: src/backend
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-region: "${{ secrets.AWS_REGION }}"
-          role-to-assume: "${{ secrets.AWS_ROLE_ARN }}"
+          role-to-assume: "$arn:aws:iam::851725642854:role/diary-dev-test-morimoto-actions-role"
 
       - name: CDK Deploy
         env:
