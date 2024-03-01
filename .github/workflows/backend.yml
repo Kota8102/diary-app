@@ -64,10 +64,6 @@ jobs:
           aws-region: "${{ secrets.AWS_REGION }}"
           role-to-assume: "arn:aws:iam::${{ secrets.AWS_ACCOUNT }}:role/${{ secrets.ACTIONS_ROLE }}"
 
-      - name: CDK bootstrap
-        run: npm run cdk bootstrap
-        working-directory: src/backend
-
       - name: CDK Deploy
         env:
           ENVIRONMENT: ${{ needs.set-environment.outputs.environment }}
