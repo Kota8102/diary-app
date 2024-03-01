@@ -1,48 +1,48 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/typescript-node
 {
-	"name": "AWS CDK",
-	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-	"image": "mcr.microsoft.com/devcontainers/typescript-node:1-20-bullseye",
-	"features": {
-		"ghcr.io/devcontainers/features/aws-cli:1": {},
-		"ghcr.io/devcontainers-contrib/features/aws-cdk:2": {}
-	},
+  "name": "AWS CDK",
+  // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:1-20-bullseye",
+  "features": {
+    "ghcr.io/devcontainers/features/aws-cli:1": {},
+    "ghcr.io/devcontainers-contrib/features/aws-cdk:2": {}
+  },
 
-	"customizations": {
-		"vscode": {
-		  "extensions": [
-			"ms-python.python",
-			"DavidAnson.vscode-markdownlint",
-			"shd101wyy.markdown-preview-enhanced",
-			"esbenp.prettier-vscode",
-			"GitHub.copilot",
-			"GitHub.vscode-pull-request-github",
-			"GitHub.copilot-chat",
-			"github.vscode-github-actions",
-			"yzhang.markdown-all-in-one",
-			"shd101wyy.markdown-preview-enhanced",
-			"DavidAnson.vscode-markdownlint",
-			"ICS.japanese-proofreading",
-			"42Crunch.vscode-openapi",
-			"njpwerner.autodocstring",
-			"amazonwebservices.aws-toolkit-vscode"
-		  ]
-		}
-	  }	
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "DavidAnson.vscode-markdownlint",
+        "shd101wyy.markdown-preview-enhanced",
+        "esbenp.prettier-vscode",
+        "GitHub.copilot",
+        "GitHub.vscode-pull-request-github",
+        "GitHub.copilot-chat",
+        "github.vscode-github-actions",
+        "yzhang.markdown-all-in-one",
+        "shd101wyy.markdown-preview-enhanced",
+        "DavidAnson.vscode-markdownlint",
+        "ICS.japanese-proofreading",
+        "42Crunch.vscode-openapi",
+        "njpwerner.autodocstring",
+        "amazonwebservices.aws-toolkit-vscode"
+      ]
+    }
+  }
 
-	// Features to add to the dev container. More info: https://containers.dev/features.
-	// "features": {},
+  // Features to add to the dev container. More info: https://containers.dev/features.
+  // "features": {},
 
-	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	// "forwardPorts": [],
+  // Use 'forwardPorts' to make a list of ports inside the container available locally.
+  // "forwardPorts": [],
 
-	// Use 'postCreateCommand' to run commands after the container is created.
-	// "postCreateCommand": "yarn install",
+  // Use 'postCreateCommand' to run commands after the container is created.
+  // "postCreateCommand": "yarn install",
 
-	// Configure tool-specific properties.
-	// "customizations": {},
+  // Configure tool-specific properties.
+  // "customizations": {},
 
-	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-	// "remoteUser": "root"
+  // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+  // "remoteUser": "root"
 }
