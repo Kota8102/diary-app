@@ -57,7 +57,7 @@ jobs:
       - name: Build
         run: npm run build
         working-directory: src/backend
-      
+
       - name: Setup configure-aws-credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -67,5 +67,5 @@ jobs:
       - name: CDK Deploy
         env:
           ENVIRONMET: ${{ needs.set-environment.outputs.environment }}
-        run: npm run cdk:deploy --context environment=$ENVIRONMENT --require-approval never
+        run: npm run cdk deploy --context environment=$ENVIRONMENT --require-approval never
         working-directory: src/backend
