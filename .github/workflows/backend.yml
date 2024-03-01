@@ -66,6 +66,6 @@ jobs:
 
       - name: CDK Deploy
         env:
-          ENVIRONMET: ${{ needs.set-environment.outputs.environment }}
+          ENVIRONMET: ${{ needs.set_environment.outputs.environment }}
         run: npm run cdk deploy --context environment=$ENVIRONMENT --require-approval never
         working-directory: src/backend
