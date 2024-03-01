@@ -65,7 +65,7 @@ jobs:
           role-to-assume: "arn:aws:iam::${{ secrets.AWS_ACCOUNT }}:role/${{ secrets.ACTIONS_ROLE }}"
 
       - name: CDK bootstrap
-        run: cdk bootstrap
+        run: npm run cdk bootstrap
 
       - name: CDK Deploy
         env:
