@@ -40,7 +40,7 @@ jobs:
           echo ${{ secrets.AWS_REGION }}
           echo ${{ secrets.AWS_ACCOUNT }}
           echo ${{ secrets.ACTIONS_ROLE}}
-          echo ${{ needs.set_environment.outputs.environment }}
+          echo ${{ needs.set-environment.outputs.environment }}
 
       - name: Checkout
         uses: actions/checkout@v1
@@ -66,6 +66,6 @@ jobs:
 
       - name: CDK Deploy
         env:
-          ENVIRONMENT: ${{ needs.set_environment.outputs.environment }}
+          ENVIRONMENT: ${{ needs.set-environment.outputs.environment }}
         run: npm run cdk deploy --context environment=$ENVIRONMENT --require-approval never
         working-directory: src/backend
