@@ -1,6 +1,7 @@
 import * as cdk from "aws-cdk-lib";
 import { Construct } from "constructs";
 import * as s3 from "aws-cdk-lib/aws-s3";
+import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
 
 interface BackendStackProps extends cdk.StackProps {
   environment: string;
@@ -11,6 +12,18 @@ export class BackendStack extends cdk.Stack {
     super(scope, id, props);
 
     new s3.Bucket(this, `diary-${props.environment}-bucket`, {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+
+    new dynamodb.Table(this, `diary-${props.environment}-diary-db`, {
+      partitionKey: {
+        name: "user_id",
+        type: dynamodb.AttributeType.STRING,
+      },
+      sortKey: {
+        name: "date",
+        type: dynamodb.AttributeType.STRING,
+      },
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
   }
