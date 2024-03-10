@@ -50,6 +50,7 @@ jobs:
       - name: Build
         run: npm run build
         working-directory: src/backend
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -57,7 +58,6 @@ jobs:
           role-to-assume: "arn:aws:iam::${{ secrets.AWS_ACCOUNT }}:role/${{ secrets.ACTIONS_ROLE }}"
 
       - name: CDK Deploy
-        env:
-          ENVIRONMENT: ${{ needs.set-environment.outputs.environment }}
-        run: npm run cdk deploy BackendStack --require-approval never --context environment=$ENVIRONMENT
+        run: |
+          npm run cdk deploy BackendStack --require-approval never
         working-directory: src/backend
