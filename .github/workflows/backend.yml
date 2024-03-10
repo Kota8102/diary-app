@@ -62,5 +62,5 @@ jobs:
           ENVIRONMENT: ${{ needs.set-environment.outputs.environment }}
         run: |
           echo $ENVIRONMENT
-          npm run cdk deploy BackendStack --require-approval never --context ENVIRONMENT=$ENVIRONMENT
+          npm run cdk deploy BackendStack --require-approval never --context targetEnv=$ENVIRONMENT
         working-directory: src/backend
