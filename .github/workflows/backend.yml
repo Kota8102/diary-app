@@ -58,9 +58,6 @@ jobs:
           role-to-assume: "arn:aws:iam::${{ secrets.AWS_ACCOUNT }}:role/${{ secrets.ACTIONS_ROLE }}"
 
       - name: CDK Deploy
-        env:
-          ENVIRONMENT: ${{ needs.set-environment.outputs.environment }}
         run: |
-          echo $ENVIRONMENT
-          npm run cdk deploy BackendStack --context targetEnv=dev --require-approval never
+          npm run cdk deploy BackendStack --require-approval never
         working-directory: src/backend

@@ -8,13 +8,12 @@ interface BackendStackProps extends cdk.StackProps {}
 export class BackendStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: BackendStackProps) {
     super(scope, id, props);
-    const targetEnv = this.node.tryGetContext("targetEnv");
 
-    new s3.Bucket(this, `diary-${targetEnv}-bucket`, {
+    new s3.Bucket(this, `diary-bucket`, {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
-    new dynamodb.Table(this, `diary-${targetEnv}-diary-db`, {
+    new dynamodb.Table(this, `diary-contents-db`, {
       partitionKey: {
         name: "user_id",
         type: dynamodb.AttributeType.STRING,
