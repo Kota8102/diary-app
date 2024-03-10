@@ -15,8 +15,8 @@ export class BackendStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
-    const userpool = new cognito.UserPool(this,  `diary-${props.environment}-user-pool`, {
-      userPoolName:  `diary-${props.environment}-user-pool`,
+    const userpool = new cognito.UserPool(this,  `diary-user-pool`, {
+      userPoolName:  `diary-user-pool`,
       signInAliases: {
         email: true,
       },
@@ -51,22 +51,6 @@ export class BackendStack extends cdk.Stack {
           required: true,
         },
       },
-      // customAttributes: {
-      //   'tenantId': new cognito.StringAttribute({
-      //     mutable: false,
-      //     minLen: 10,
-      //     maxLen: 15,
-      //   }),
-      //   'createdAt': new cognito.DateTimeAttribute(),
-      //   'employeeId': new cognito.NumberAttribute({
-      //     mutable: false,
-      //     min: 1,
-      //     max: 100,
-      //   }),
-      //   'isAdmin': new cognito.BooleanAttribute({
-      //     mutable: false,
-      //   }),
-      // },
       passwordPolicy: {
         minLength: 8,
         requireLowercase: true,
