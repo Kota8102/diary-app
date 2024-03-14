@@ -85,6 +85,5 @@ export class BackendStack extends cdk.Stack {
       distribution: distribution,
       distributionPaths: ['/*'],
     });
-
   }
 }
