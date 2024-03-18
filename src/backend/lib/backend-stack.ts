@@ -26,7 +26,7 @@ export class BackendStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
-    const userpool = new cognito.UserPool(this,  `diary-user-pool`, {
+    const userPool = new cognito.UserPool(this,  `diary-user-pool`, {
       userPoolName:  `diary-user-pool`,
       signInAliases: {
         email: true,
@@ -71,6 +71,20 @@ export class BackendStack extends cdk.Stack {
       },
       accountRecovery: cognito.AccountRecovery.EMAIL_ONLY,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+
+    // User Pool Client
+    const userPoolClient = new cognito.UserPoolClient(this, "diary-userpool-client", {
+      userPool,
+      userPoolClientName:"diary-userpool-client",
+      authFlows: {
+        adminUserPassword: true,
+        custom: true,
+        userSrp: true,
+      },
+      supportedIdentityProviders: [
+        cognito.UserPoolClientIdentityProvider.COGNITO,
+      ],
     });
   }
 }
