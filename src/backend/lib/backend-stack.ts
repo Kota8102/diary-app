@@ -86,5 +86,10 @@ export class BackendStack extends cdk.Stack {
         cognito.UserPoolClientIdentityProvider.COGNITO,
       ],
     });
+
+    // User Pool Domein
+    userPool.addDomain('userPoolDomain', {
+      cognitoDomain: { domainPrefix: 'uniqdomain' },
+    });
   }
 }
