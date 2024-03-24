@@ -50,14 +50,19 @@ jobs:
       - name: Build
         run: npm run build
         working-directory: src/backend
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-region: "${{ secrets.AWS_REGION }}"
           role-to-assume: "arn:aws:iam::${{ secrets.AWS_ACCOUNT }}:role/${{ secrets.ACTIONS_ROLE }}"
 
+      - name: CDK Synth
+        if: startsWith(github.ref, 'refs/heads/feature/')
+        run: npm run cdk synth
+        working-directory: src/backend
+
       - name: CDK Deploy
-        env:
-          ENVIRONMENT: ${{ needs.set-environment.outputs.environment }}
-        run: npm run cdk deploy BackendStack --require-approval never --context environment=$ENVIRONMENT
+        if: github.ref == 'refs/heads/develop' ||  github.ref == 'refs/heads/main'
+        run: npm run cdk deploy BackendStack --require-approval never
         working-directory: src/backend
