@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import awsconfig from '@/aws-exports'
 import { Amplify } from 'aws-amplify';
 import { Authenticator } from '@aws-amplify/ui-react';
 import reactLogo from './assets/react.svg'
@@ -7,14 +6,35 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 
-Amplify.configure(
-  {
-  aws_project_region: import.meta.env.REACT_APP_AWS_PROJECT_REGION,
-  aws_cognito_region: import.meta.env.REACT_APP_AWS_COGNITO_REGION,
-  aws_user_pools_id: import.meta.env.REACT_APP_AWS_USER_POOLS_ID,
-  aws_user_pools_web_client_id:  import.meta.env.REACT_APP_AWS_USER_POOLS_CLIENT_ID,
+// Amplify.configure(
+//   {
+//   aws_project_region: import.meta.env.REACT_APP_AWS_PROJECT_REGION,
+//   aws_cognito_region: import.meta.env.REACT_APP_AWS_COGNITO_REGION,
+//   aws_user_pools_id: import.meta.env.REACT_APP_AWS_USER_POOLS_ID,
+//   aws_user_pools_web_client_id:  import.meta.env.REACT_APP_AWS_USER_POOLS_CLIENT_ID,
+//   }
+// );
+Amplify.configure({
+  Auth: {
+    Cognito: {
+      userPoolClientId: import.meta.env.REACT_APP_AWS_USER_POOLS_CLIENT_ID,
+      userPoolId: import.meta.env.REACT_APP_AWS_USER_POOLS_ID,
+      loginWith: { // Optional
+        oauth: {
+          domain: import.meta.env.REACT_APP_AWS_USER_POOL_DOMAIN,
+          scopes: ['openid email phone profile aws.cognito.signin.user.admin '],
+          redirectSignIn: ['http://localhost:3000/','https://example.com/'],
+          redirectSignOut: ['http://localhost:3000/','https://example.com/'],
+          responseType: 'code',
+        },
+        username: true,
+        email: false, // Optional
+        phone: false, // Optional
+      }
+    }
   }
-);
+});
+
 const App = () => {
   const [count, setCount] = useState(0)
 
