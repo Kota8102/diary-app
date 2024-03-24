@@ -4,17 +4,26 @@ import * as s3 from "aws-cdk-lib/aws-s3";
 import * as cognito from "aws-cdk-lib/aws-cognito";
 import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
 
-interface BackendStackProps extends cdk.StackProps {}
+interface BackendStackProps extends cdk.StackProps { }
 
 export class BackendStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: BackendStackProps) {
     super(scope, id, props);
 
-    new s3.Bucket(this, `diary-bucket`, {
+    const logBucket = new s3.Bucket(this, `LogBucket`, {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
+      enforceSSL: true,
+      serverAccessLogsPrefix: "log/",
     });
 
-    new dynamodb.Table(this, `diary-contents-db`, {
+    new s3.Bucket(this, `DiaryBucket`, {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      enforceSSL: true,
+      serverAccessLogsBucket: logBucket,
+      serverAccessLogsPrefix: "DiaryLog/",
+    });
+
+    new dynamodb.Table(this, `DiaryContentsTable`, {
       partitionKey: {
         name: "user_id",
         type: dynamodb.AttributeType.STRING,
@@ -24,10 +33,11 @@ export class BackendStack extends cdk.Stack {
         type: dynamodb.AttributeType.STRING,
       },
       removalPolicy: cdk.RemovalPolicy.DESTROY,
+      pointInTimeRecovery: true,
     });
 
-    const userPool = new cognito.UserPool(this,  `diary-user-pool`, {
-      userPoolName:  `diary-user-pool`,
+    const userPool = new cognito.UserPool(this, `DiaryUserPool`, {
+      userPoolName: `diary-user-pool`,
       signInAliases: {
         email: true,
       },
@@ -37,7 +47,7 @@ export class BackendStack extends cdk.Stack {
       },
       userVerification: {
         emailSubject: 'メールアドレスを認証してください。',
-        emailBody: 'ご登録ありがとうございます。 あなたの認証コードは {####} です。', // # This placeholder is a must if code is selected as preferred verification method
+        emailBody: 'ご登録ありがとうございます。 あなたの認証コードは {####} です。',
         emailStyle: cognito.VerificationEmailStyle.CODE,
       },
       standardAttributes: {
@@ -65,18 +75,22 @@ export class BackendStack extends cdk.Stack {
       passwordPolicy: {
         minLength: 8,
         requireLowercase: true,
-        requireUppercase: false,
+        requireUppercase: true,
         requireDigits: true,
-        requireSymbols: false,
+        requireSymbols: true,
       },
       accountRecovery: cognito.AccountRecovery.EMAIL_ONLY,
+      mfa: cognito.Mfa.REQUIRED,
+      mfaSecondFactor: {
+        sms: true,
+        otp: true,
+      },
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
-    // User Pool Client
-    const userPoolClient = new cognito.UserPoolClient(this, "diary-userpool-client", {
+    const userPoolClient = new cognito.UserPoolClient(this, "DiaryUserPoolClient", {
       userPool,
-      userPoolClientName:"diary-userpool-client",
+      userPoolClientName: "diary-userpool-client",
       authFlows: {
         adminUserPassword: true,
         custom: true,
@@ -86,7 +100,7 @@ export class BackendStack extends cdk.Stack {
         cognito.UserPoolClientIdentityProvider.COGNITO,
       ],
     });
-    
+
     // Cognito Identity Pool
     const identityPool = new cognito.CfnIdentityPool(this, "IdentityPool", {
       allowUnauthenticatedIdentities: false, // Don't allow unathenticated users
@@ -96,6 +110,10 @@ export class BackendStack extends cdk.Stack {
           providerName: userPool.userPoolProviderName,
         },
       ],
+     });
+
+    userPool.addDomain('UserPoolDomain', {
+      cognitoDomain: { domainPrefix: 'dairy-851725642854' },
     });
   }
 }
