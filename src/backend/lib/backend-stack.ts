@@ -101,6 +101,17 @@ export class BackendStack extends cdk.Stack {
       ],
     });
 
+    // Cognito Identity Pool
+    const identityPool = new cognito.CfnIdentityPool(this, "IdentityPool", {
+      allowUnauthenticatedIdentities: false, // Don't allow unathenticated users
+      cognitoIdentityProviders: [
+        {
+          clientId: userPoolClient.userPoolClientId,
+          providerName: userPool.userPoolProviderName,
+        },
+      ],
+     });
+
     userPool.addDomain('UserPoolDomain', {
       cognitoDomain: { domainPrefix: 'dairy-851725642854' },
     });
