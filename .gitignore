@@ -23,3 +23,5 @@ src/frontend/*.ntvs*
 src/frontend/*.njsproj
 src/frontend/*.sln
 src/frontend/*.sw?
+
+.DS_Store
