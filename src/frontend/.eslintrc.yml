@@ -79,7 +79,7 @@ rules:
         - pattern: '{react,react-dom/**,react-router-dom}'
           group: builtin
           position: before
-        - pattern: '{@atoms/**,@molecules/**,@organisms/**,@pages/**,@utils/**,@locales/**}'
+        - pattern: '{@atoms/**,@molecules/**,@organisms/**,@pages/**,@utils/**,@locales/**,@context/**}'
           group: parent
           position: before
       pathGroupsExcludedImportTypes:
@@ -87,3 +87,7 @@ rules:
       alphabetize:
         order: asc
       'newlines-between': always
+
+settings:
+  import/resolver:
+    typescript: []
