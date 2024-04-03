@@ -7,7 +7,6 @@ on:
       - ".github/workflows/backend.yml"
     branches:
       - "main"
-      - "develop"
       - "feature/*"
 
 jobs:
@@ -19,7 +18,7 @@ jobs:
         run: |
           if [[ ${{ github.ref }} == "refs/heads/main" ]]; then
             echo "environment=prod" >> $GITHUB_OUTPUT
-          elif [[ ${{ github.ref }} == "refs/heads/develop" || ${{ github.ref }} =~ ^refs/heads/feature/#[0-9]*$ ]]; then
+          elif [[ ${{ github.ref }} =~ ^refs/heads/feature/#[0-9]*$ ]]; then
             echo "environment=dev" >> $GITHUB_OUTPUT
           else
             echo "environment=unknown" >> $GITHUB_OUTPUT
@@ -63,6 +62,6 @@ jobs:
         working-directory: src/backend
 
       - name: CDK Deploy
-        if: github.ref == 'refs/heads/develop' ||  github.ref == 'refs/heads/main'
+        if: startsWith(github.ref, 'refs/heads/feature/') ||  github.ref == 'refs/heads/main'
         run: npm run cdk deploy BackendStack --require-approval never
         working-directory: src/backend
