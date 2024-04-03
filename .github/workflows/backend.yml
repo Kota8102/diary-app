@@ -1,0 +1,67 @@
+name: backend
+
+on:
+  push:
+    paths:
+      - "src/backend/**"
+      - ".github/workflows/backend.yml"
+    branches:
+      - "main"
+      - "feature/*"
+
+jobs:
+  set-environment:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set environment
+        id: set_environment
+        run: |
+          if [[ ${{ github.ref }} == "refs/heads/main" ]]; then
+            echo "environment=prod" >> $GITHUB_OUTPUT
+          elif [[ ${{ github.ref }} =~ ^refs/heads/feature/#[0-9]*$ ]]; then
+            echo "environment=dev" >> $GITHUB_OUTPUT
+          else
+            echo "environment=unknown" >> $GITHUB_OUTPUT
+          fi
+    outputs:
+      environment: ${{ steps.set_environment.outputs.environment }}
+
+  backend:
+    needs: set-environment
+    runs-on: ubuntu-latest
+    environment: ${{ needs.set-environment.outputs.environment }}
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+
+      - name: Setup Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: "20.x"
+
+      - name: Setup dependencies
+        run: npm ci
+        working-directory: src/backend
+
+      - name: Build
+        run: npm run build
+        working-directory: src/backend
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region: "${{ secrets.AWS_REGION }}"
+          role-to-assume: "arn:aws:iam::${{ secrets.AWS_ACCOUNT }}:role/${{ secrets.ACTIONS_ROLE }}"
+
+      - name: CDK Synth
+        if: startsWith(github.ref, 'refs/heads/feature/')
+        run: npm run cdk synth
+        working-directory: src/backend
+
+      - name: CDK Deploy
+        if: startsWith(github.ref, 'refs/heads/feature/') ||  github.ref == 'refs/heads/main'
+        run: npm run cdk deploy BackendStack
+        working-directory: src/backend
