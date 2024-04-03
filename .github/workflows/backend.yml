@@ -62,6 +62,6 @@ jobs:
         working-directory: src/backend
 
       - name: CDK Deploy
-        if: github.ref == 'refs/heads/main'
+        if: startsWith(github.ref, 'refs/heads/feature/') ||  github.ref == 'refs/heads/main'
         run: npm run cdk deploy BackendStack --require-approval never
         working-directory: src/backend
