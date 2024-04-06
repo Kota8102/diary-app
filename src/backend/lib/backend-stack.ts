@@ -116,10 +116,6 @@ export class BackendStack extends cdk.Stack {
       cognitoDomain: { domainPrefix: 'dairy-851725642854' },
     });
 
-    new s3.Bucket(this, `diary-${props.environment}-bucket`, {
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
-    });
-
     //  Hosting S3 & CloudFront 
     const websiteBucket = new s3.Bucket(this, 'diary-hosting-bucket', {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
