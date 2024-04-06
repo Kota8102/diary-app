@@ -10,18 +10,18 @@ export class BackendStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: BackendStackProps) {
     super(scope, id, props);
 
-    const logBucket = new s3.Bucket(this, `LogBucket`, {
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
-      enforceSSL: true,
-      serverAccessLogsPrefix: "log/",
-    });
+    // const logBucket = new s3.Bucket(this, `LogBucket`, {
+    //   removalPolicy: cdk.RemovalPolicy.DESTROY,
+    //   enforceSSL: true,
+    //   serverAccessLogsPrefix: "log/",
+    // });
 
-    new s3.Bucket(this, `DiaryBucket`, {
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
-      enforceSSL: true,
-      serverAccessLogsBucket: logBucket,
-      serverAccessLogsPrefix: "DiaryLog/",
-    });
+    // new s3.Bucket(this, `DiaryBucket`, {
+    //   removalPolicy: cdk.RemovalPolicy.DESTROY,
+    //   enforceSSL: true,
+    //   serverAccessLogsBucket: logBucket,
+    //   serverAccessLogsPrefix: "DiaryLog/",
+    // });
 
     new dynamodb.Table(this, `DiaryContentsTable`, {
       partitionKey: {
