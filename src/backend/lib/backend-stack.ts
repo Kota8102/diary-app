@@ -152,12 +152,6 @@ export class BackendStack extends cdk.Stack {
           responseHttpStatus: 403,
           responsePagePath: '/error.html',
         },
-        {
-          ttl: cdk.Duration.seconds(300),
-          httpStatus: 404,
-          responseHttpStatus: 404,
-          responsePagePath: '/error.html',
-        },
       ],
       defaultBehavior: {
         allowedMethods: cdk.aws_cloudfront.AllowedMethods.ALLOW_GET_HEAD,
