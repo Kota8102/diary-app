@@ -113,7 +113,7 @@ export class BackendStack extends cdk.Stack {
      });
 
     userPool.addDomain('UserPoolDomain', {
-      cognitoDomain: { domainPrefix: 'dairy-851725642854a' },
+      cognitoDomain: { domainPrefix: 'dairy-851725642854' },
     });
   }
 }
