@@ -129,23 +129,6 @@ export class BackendStack extends cdk.Stack {
       ],
     });   
 
-    new cdk.aws_s3_deployment.BucketDeployment(this, 'WebsiteDeploy', {
-      sources: [
-        cdk.aws_s3_deployment.Source.data(
-          '/index.html',
-          '<html><body><h1>Hello World</h1></body></html>'
-        ),
-        cdk.aws_s3_deployment.Source.data(
-          '/error.html',
-          '<html><body><h1>Error!!!!!!!!!!!!!</h1></body></html>'
-        ),
-      ],
-      destinationBucket: websiteBucket,
-      distribution: distribution,
-      distributionPaths: ['/*'],
-    });
-
-
     const cfnOriginAccessControl = new cdk.aws_cloudfront.CfnOriginAccessControl(
       this,
       "OriginAccessControl",
@@ -187,6 +170,22 @@ export class BackendStack extends cdk.Stack {
     cfnDistribution.addPropertyOverride('DistributionConfig.Origins.0.DomainName', websiteBucket.bucketRegionalDomainName)
     cfnDistribution.addOverride('Properties.DistributionConfig.Origins.0.S3OriginConfig.OriginAccessIdentity', "")
     cfnDistribution.addPropertyDeletionOverride('DistributionConfig.Origins.0.CustomOriginConfig')
+
+    new cdk.aws_s3_deployment.BucketDeployment(this, 'WebsiteDeploy', {
+      sources: [
+        cdk.aws_s3_deployment.Source.data(
+          '/index.html',
+          '<html><body><h1>Hello World</h1></body></html>'
+        ),
+        cdk.aws_s3_deployment.Source.data(
+          '/error.html',
+          '<html><body><h1>Error!!!!!!!!!!!!!</h1></body></html>'
+        ),
+      ],
+      destinationBucket: websiteBucket,
+      distribution: distribution,
+      distributionPaths: ['/*'],
+    });
 
   }
 }
