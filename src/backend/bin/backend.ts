@@ -31,4 +31,8 @@ NagSuppressions.addStackSuppressions(backendStack, [
   id: 'AwsSolutions-IAM4',
   reason: 'CDKにより自動で作成されるLambdaに適用されてしまうため',
  },
+ {
+  id: 'AwsSolutions-CFR4',
+  reason: 'カスタムドメインが必要になるので暫定的にオフにします',
+ },
 ]);
