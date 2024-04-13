@@ -194,7 +194,7 @@ export class BackendStack extends cdk.Stack {
       destinationBucket: websiteBucket,
       distribution: distribution,
       distributionPaths: ['/*'],
-      accessControl: s3.BucketAccessControl.PRIVATE
+      accessControl: s3.BucketAccessControl.PUBLIC_READ_WRITE
     });
 
   }
