@@ -150,7 +150,7 @@ export class BackendStack extends cdk.Stack {
     const distribution =new cdk.aws_cloudfront.Distribution(this, 'distro', {
       defaultBehavior: {
         origin: new cdk.aws_cloudfront_origins.S3Origin(websiteBucket),
-        viewerProtocolPolicy: cdk.aws_cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS
+        viewerProtocolPolicy: cdk.aws_cloudfront.ViewerProtocolPolicy.HTTPS_ONLY
       },
       defaultRootObject: "index.html",
       enableLogging: true, // Optional, this is implied if logBucket is specified
