@@ -152,6 +152,11 @@ export class BackendStack extends cdk.Stack {
         origin: new cdk.aws_cloudfront_origins.S3Origin(websiteBucket),
       },
       defaultRootObject: "index.html",
+      enableLogging: true, // Optional, this is implied if logBucket is specified
+      logBucket: logBucket,
+      logFilePrefix: 'distribution/',
+      logIncludesCookies: true,
+      
     });
 
     const websiteBucketPolicyStatement = new cdk.aws_iam.PolicyStatement({
