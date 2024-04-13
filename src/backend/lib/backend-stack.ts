@@ -10,11 +10,11 @@ export class BackendStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: BackendStackProps) {
     super(scope, id, props);
 
-    // const logBucket = new s3.Bucket(this, `LogBucket`, {
-    //   removalPolicy: cdk.RemovalPolicy.DESTROY,
-    //   enforceSSL: true,
-    //   serverAccessLogsPrefix: "log/",
-    // });
+    const logBucket = new s3.Bucket(this, `LogBucket`, {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      enforceSSL: true,
+      serverAccessLogsPrefix: "log/",
+    });
 
     // new s3.Bucket(this, `DiaryBucket`, {
     //   removalPolicy: cdk.RemovalPolicy.DESTROY,
@@ -119,6 +119,9 @@ export class BackendStack extends cdk.Stack {
     //  Hosting S3 & CloudFront 
     const websiteBucket = new s3.Bucket(this, 'diary-hosting-bucket', {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
+      enforceSSL: true,
+      serverAccessLogsBucket: logBucket,
+      serverAccessLogsPrefix: "DiaryHostingBucketLog/",
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
       cors: [
         {
