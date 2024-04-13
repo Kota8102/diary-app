@@ -156,7 +156,7 @@ export class BackendStack extends cdk.Stack {
       logBucket: logBucket,
       logFilePrefix: 'distribution/',
       logIncludesCookies: true,
-      
+      geoRestriction: cdk.aws_cloudfront.GeoRestriction.allowlist('US', 'JP'),
     });
 
     const websiteBucketPolicyStatement = new cdk.aws_iam.PolicyStatement({
