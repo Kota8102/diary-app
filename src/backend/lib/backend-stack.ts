@@ -14,6 +14,7 @@ export class BackendStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       enforceSSL: true,
       serverAccessLogsPrefix: "log/",
+      accessControl: s3.BucketAccessControl.LOG_DELIVERY_WRITE,
     });
 
     // new s3.Bucket(this, `DiaryBucket`, {
