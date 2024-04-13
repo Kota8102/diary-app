@@ -18,5 +18,9 @@ NagSuppressions.addStackSuppressions(backendStack, [
   {
     id: 'AwsSolutions-IAM5',
     reason: '暫定的にオフにしているが、本番環境では適切なIAMポリシーを設定すること。',
-  }
+  },
+  {
+  id: 'AwsSolutions-CFR2',
+  reason: '暫定的にオフにしているが、本番環境では必要に応じてWAFの導入も行う。',
+ },
 ]);
