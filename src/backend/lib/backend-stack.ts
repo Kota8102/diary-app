@@ -124,6 +124,7 @@ export class BackendStack extends cdk.Stack {
       serverAccessLogsBucket: logBucket,
       serverAccessLogsPrefix: "DiaryHostingBucketLog/",
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+      accessControl: s3.BucketAccessControl.PRIVATE,
       cors: [
         {
           allowedMethods: [s3.HttpMethods.GET, s3.HttpMethods.HEAD],
