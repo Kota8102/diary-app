@@ -23,4 +23,12 @@ NagSuppressions.addStackSuppressions(backendStack, [
   id: 'AwsSolutions-CFR2',
   reason: '暫定的にオフにしているが、本番環境では必要に応じてWAFの導入も行う。',
  },
+ {
+  id: 'AwsSolutions-L1',
+  reason: 'CDKにより自動で作成されるLambdaに適用されてしまうため',
+ },
+ {
+  id: 'AwsSolutions-IAM4',
+  reason: 'CDKにより自動で作成されるLambdaに適用されてしまうため',
+ },
 ]);
