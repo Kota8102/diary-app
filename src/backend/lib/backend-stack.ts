@@ -14,7 +14,6 @@ export class BackendStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       enforceSSL: true,
       serverAccessLogsPrefix: "log/",
-      accessControl: s3.BucketAccessControl.LOG_DELIVERY_WRITE,
     });
 
     // new s3.Bucket(this, `DiaryBucket`, {
@@ -124,7 +123,6 @@ export class BackendStack extends cdk.Stack {
       serverAccessLogsBucket: logBucket,
       serverAccessLogsPrefix: "DiaryHostingBucketLog/",
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
-      accessControl: s3.BucketAccessControl.PRIVATE,
       cors: [
         {
           allowedMethods: [s3.HttpMethods.GET, s3.HttpMethods.HEAD],
@@ -196,6 +194,7 @@ export class BackendStack extends cdk.Stack {
       destinationBucket: websiteBucket,
       distribution: distribution,
       distributionPaths: ['/*'],
+      accessControl: s3.BucketAccessControl.PRIVATE
     });
 
   }
