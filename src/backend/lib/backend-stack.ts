@@ -14,8 +14,6 @@ export class BackendStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       enforceSSL: true,
       serverAccessLogsPrefix: "log/",
-      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
-      accessControl: s3.BucketAccessControl.BUCKET_OWNER_FULL_CONTROL
     });
 
     new dynamodb.Table(this, `DiaryContentsTable`, {
@@ -148,10 +146,10 @@ export class BackendStack extends cdk.Stack {
         viewerProtocolPolicy: cdk.aws_cloudfront.ViewerProtocolPolicy.HTTPS_ONLY
       },
       defaultRootObject: "index.html",
-      enableLogging: true, // Optional, this is implied if logBucket is specified
-      logBucket: logBucket,
-      logFilePrefix: 'distribution/',
-      logIncludesCookies: true,
+      // enableLogging: true, // Optional, this is implied if logBucket is specified
+      // logBucket: logBucket,
+      // logFilePrefix: 'distribution/',
+      // logIncludesCookies: true,
       geoRestriction: cdk.aws_cloudfront.GeoRestriction.allowlist('US', 'JP'),
     });
 
