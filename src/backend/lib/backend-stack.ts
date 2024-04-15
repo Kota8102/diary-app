@@ -14,15 +14,8 @@ export class BackendStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       enforceSSL: true,
       serverAccessLogsPrefix: "log/",
-      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ACLS,
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
     });
-
-    // new s3.Bucket(this, `DiaryBucket`, {
-    //   removalPolicy: cdk.RemovalPolicy.DESTROY,
-    //   enforceSSL: true,
-    //   serverAccessLogsBucket: logBucket,
-    //   serverAccessLogsPrefix: "DiaryLog/",
-    // });
 
     new dynamodb.Table(this, `DiaryContentsTable`, {
       partitionKey: {
