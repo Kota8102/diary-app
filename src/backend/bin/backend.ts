@@ -34,5 +34,10 @@ NagSuppressions.addStackSuppressions(backendStack, [
  {
   id: 'AwsSolutions-CFR4',
   reason: 'カスタムドメインが必要になるので暫定的にオフにします',
- },
+ }, 
+ {
+  id: 'AwsSolutions-CFR3',
+  reason: 'CloudFrontのロギングをオフにします。S3のパブリックアクセスをオフにしなければオンに出来無さそうでした',
+ }, 
+
 ]);
