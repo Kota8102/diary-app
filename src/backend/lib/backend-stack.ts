@@ -14,6 +14,7 @@ export class BackendStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       enforceSSL: true,
       serverAccessLogsPrefix: "log/",
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ACLS,
     });
 
     // new s3.Bucket(this, `DiaryBucket`, {
@@ -123,7 +124,6 @@ export class BackendStack extends cdk.Stack {
       serverAccessLogsBucket: logBucket,
       serverAccessLogsPrefix: "DiaryHostingBucketLog/",
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
-      accessControl: s3.BucketAccessControl.PUBLIC_READ_WRITE,
       cors: [
         {
           allowedMethods: [s3.HttpMethods.GET, s3.HttpMethods.HEAD],
