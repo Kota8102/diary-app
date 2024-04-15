@@ -15,6 +15,7 @@ export class BackendStack extends cdk.Stack {
       enforceSSL: true,
       serverAccessLogsPrefix: "log/",
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+      accessControl: s3.BucketAccessControl.BUCKET_OWNER_FULL_CONTROL
     });
 
     new dynamodb.Table(this, `DiaryContentsTable`, {
