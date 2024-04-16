@@ -38,6 +38,5 @@ NagSuppressions.addStackSuppressions(backendStack, [
  {
   id: 'AwsSolutions-CFR3',
   reason: 'CloudFrontのロギングをオフにします。S3のパブリックアクセスをオフにしなければオンに出来無さそうでした',
- }, 
-
+ }
 ]);
