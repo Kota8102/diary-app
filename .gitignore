@@ -25,3 +25,4 @@ src/frontend/*.sln
 src/frontend/*.sw?
 
 .DS_Store
+node_modules
