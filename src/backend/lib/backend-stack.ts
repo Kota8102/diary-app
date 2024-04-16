@@ -116,6 +116,7 @@ export class BackendStack extends cdk.Stack {
       serverAccessLogsBucket: logBucket,
       serverAccessLogsPrefix: "DiaryHostingBucketLog/",
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+      websiteIndexDocument: 'index.html',
       cors: [
         {
           allowedMethods: [s3.HttpMethods.GET, s3.HttpMethods.HEAD],
@@ -186,8 +187,7 @@ export class BackendStack extends cdk.Stack {
       ],
       destinationBucket: websiteBucket,
       distribution: distribution,
-      distributionPaths: ['/*'],
-      accessControl: s3.BucketAccessControl.PUBLIC_READ_WRITE
+      distributionPaths: ['/*']
     });
 
   }
