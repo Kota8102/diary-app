@@ -45,7 +45,7 @@ NagSuppressions.addStackSuppressions(backendStack, [
   reason: 'CloudFrontのロギングをオフにします。S3のパブリックアクセスをオフにしなければオンに出来無さそうでした',
  },
  {
-  id: ' AwsSolutions-S5',
+  id: 'AwsSolutions-S5',
   reason: 'OAIの強制をオフにします。OACを使うので',
  },
 ]);
