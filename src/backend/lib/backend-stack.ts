@@ -116,7 +116,7 @@ export class BackendStack extends cdk.Stack {
       serverAccessLogsBucket: logBucket,
       serverAccessLogsPrefix: "DiaryHostingBucketLog/",
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
-       websiteIndexDocument: 'index.html',
+      websiteIndexDocument: 'index.html',
       cors: [
         {
           allowedMethods: [s3.HttpMethods.GET, s3.HttpMethods.HEAD],
@@ -174,22 +174,21 @@ export class BackendStack extends cdk.Stack {
     cfnDistribution.addOverride('Properties.DistributionConfig.Origins.0.S3OriginConfig.OriginAccessIdentity', "")
     cfnDistribution.addPropertyDeletionOverride('DistributionConfig.Origins.0.CustomOriginConfig')
 
-    new cdk.aws_s3_deployment.BucketDeployment(this, 'WebsiteDeploy', {
-      sources: [
-        cdk.aws_s3_deployment.Source.data(
-          '/index.html',
-          '<html><body><h1>Hello World</h1></body></html>'
-        ),
-        cdk.aws_s3_deployment.Source.data(
-          '/error.html',
-          '<html><body><h1>Error!!!!!!!!!!!!!</h1></body></html>'
-        ),
-      ],
-      destinationBucket: websiteBucket,
-      distribution: distribution,
-      distributionPaths: ['/*'],
-      accessControl: s3.BucketAccessControl.PUBLIC_READ_WRITE
-    });
-
+    // new cdk.aws_s3_deployment.BucketDeployment(this, 'WebsiteDeploy', {
+    //   sources: [
+    //     cdk.aws_s3_deployment.Source.data(
+    //       '/index.html',
+    //       '<html><body><h1>Hello World</h1></body></html>'
+    //     ),
+    //     // cdk.aws_s3_deployment.Source.data(
+    //     //   '/error.html',
+    //     //   '<html><body><h1>Error!!!!!!!!!!!!!</h1></body></html>'
+    //     // ),
+    //   ],
+    //   destinationBucket: websiteBucket,
+    //   distribution: distribution,
+    //   distributionPaths: ['/*'],
+    //   accessControl: s3.BucketAccessControl.PUBLIC_READ_WRITE
+    // });
   }
 }
