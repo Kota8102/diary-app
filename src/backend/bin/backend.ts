@@ -36,7 +36,15 @@ NagSuppressions.addStackSuppressions(backendStack, [
   reason: 'カスタムドメインが必要になるので暫定的にオフにします',
  }, 
  {
+  id: 'AwsSolutions-CFR5',
+  reason: 'カスタムドメインが必要になるので暫定的にオフにします',
+ }, 
+ {
   id: 'AwsSolutions-CFR3',
   reason: 'CloudFrontのロギングをオフにします。S3のパブリックアクセスをオフにしなければオンに出来無さそうでした',
+ },
+ {
+  id: ' AwsSolutions-S5',
+  reason: 'OAIの強制をオフにします。OACを使うので',
  }
 ]);
