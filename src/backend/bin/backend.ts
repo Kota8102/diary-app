@@ -18,5 +18,34 @@ NagSuppressions.addStackSuppressions(backendStack, [
   {
     id: 'AwsSolutions-IAM5',
     reason: '暫定的にオフにしているが、本番環境では適切なIAMポリシーを設定すること。',
-  }
+  },
+
+ {
+  id: 'AwsSolutions-L1',
+  reason: 'CDKにより自動で作成されるLambdaに適用されてしまうため',
+ },
+ {
+  id: 'AwsSolutions-IAM4',
+  reason: 'CDKにより自動で作成されるLambdaに適用されてしまうため',
+ },
+ {
+  id: 'AwsSolutions-CFR2',
+  reason: '暫定的にオフにしているが、本番環境では必要に応じてWAFの導入も行う。',
+ },
+ {
+  id: 'AwsSolutions-CFR4',
+  reason: 'カスタムドメインが必要になるので暫定的にオフにします',
+ }, 
+ {
+  id: 'AwsSolutions-CFR5',
+  reason: 'カスタムドメインが必要になるので暫定的にオフにします',
+ }, 
+ {
+  id: 'AwsSolutions-CFR3',
+  reason: 'CloudFrontのロギングをオフにします。S3のパブリックアクセスをオフにしなければオンに出来無さそうでした',
+ },
+ {
+  id: 'AwsSolutions-S5',
+  reason: 'OAIの強制をオフにします。OACを使うので',
+ },
 ]);
