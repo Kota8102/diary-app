@@ -190,5 +190,15 @@ export class BackendStack extends cdk.Stack {
     //   distributionPaths: ['/*'],
     //   accessControl: s3.BucketAccessControl.PUBLIC_READ_WRITE
     // });
+
+    new cdk.aws_s3_deployment.BucketDeployment(this, 'WebsiteDeploy', {
+      sources: [
+        cdk.aws_s3_deployment.Source.data(
+          '/index.html',
+          '<html><body><h1>Hello World</h1></body></html>'
+        ),
+      ],
+      destinationBucket: websiteBucket,
+    });
   }
 }
