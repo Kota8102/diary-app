@@ -50,6 +50,13 @@ jobs:
         run: npm run build
         working-directory: src/backend
 
+      - name: display secrets
+        run: |
+          echo env: ${{ needs.set-environment.outputs.environment }}
+          echo aws region: ${{ secrets.AWS_REGION }}
+          echo aws account: ${{ secrets.AWS_ACCOUNT }}
+          echo actions role: ${{ secrets.ACTIONS_ROLE}}
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
