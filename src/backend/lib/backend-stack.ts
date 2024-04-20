@@ -190,5 +190,24 @@ export class BackendStack extends cdk.Stack {
     //   distributionPaths: ['/*'],
     //   accessControl: s3.BucketAccessControl.PUBLIC_READ_WRITE
     // });
+
+    // 日記用DynamoDBの作成
+    new dynamodb.Table(this, 'DiaryTable', { // 'Sample-table'はStack内で一意
+      tableName: "diary-table", // テーブル名の定義
+      partitionKey: { //パーティションキーの定義
+        name: 'userid',
+        type: dynamodb.AttributeType.STRING, // typeはあとNumberとbinary
+      },
+      sortKey: { // ソートキーの定義
+        name: 'date',
+        type: dynamodb.AttributeType.STRING,
+      },
+      billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,  // オンデマンド請求
+      pointInTimeRecovery: true, // PITRを有効化
+      timeToLiveAttribute: 'expired', // TTLの設定
+      removalPolicy: cdk.RemovalPolicy.DESTROY, // cdk destroyでDB削除可
+    });
+
+
   }
 }
