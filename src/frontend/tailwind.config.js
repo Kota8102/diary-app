@@ -11,6 +11,21 @@ export default {
       secondaryBackground: '#c8c1b9',
       primaryButton: '#f5f5f5',
     },
+    height: {
+      'screen': [
+        '100vh','100dvh'
+      ]
+    },
+    minHeight: {
+      'screen': [
+        '100vh','100dvh'
+      ]
+    },
+    maxHeight: {
+      'screen': [
+        '100vh','100dvh'
+      ]
+    }
   },
   plugins: [],
 }
