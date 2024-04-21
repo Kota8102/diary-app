@@ -207,7 +207,5 @@ export class BackendStack extends cdk.Stack {
       timeToLiveAttribute: 'expired', // TTLの設定
       removalPolicy: cdk.RemovalPolicy.DESTROY, // cdk destroyでDB削除可
     });
-
-
   }
 }
