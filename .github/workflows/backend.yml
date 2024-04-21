@@ -43,7 +43,7 @@ jobs:
           node-version: "20.x"
 
       - name: Setup dependencies
-        run: npm ci --workspace "src/backend"
+        run: npm ci -w src/backend
         working-directory: src/backend
 
       - name: Build
