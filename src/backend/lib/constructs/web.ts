@@ -39,19 +39,18 @@ export class WebHostingStack extends cdk.Stack {
       defaultRootObject: 'index.html',
     });
 
-    // Bucket policy to allow CloudFront access
-    const policyStatement = new iam.PolicyStatement({
-      actions: ['s3:GetObject'],
-      effect: iam.Effect.ALLOW,
-      principals: [new iam.ServicePrincipal('cloudfront.amazonaws.com')],
-      resources: [`${websiteBucket.bucketArn}/*`],
-      conditions: {
-        StringEquals: {
-          "AWS:SourceArn": distribution.distributionArn,
+    const websiteBucketPolicyStatement = new cdk.aws_iam.PolicyStatement({
+        actions: ["s3:GetObject"],
+        effect: cdk.aws_iam.Effect.ALLOW,
+        principals: [new cdk.aws_iam.ServicePrincipal("cloudfront.amazonaws.com")],
+        resources: [`${websiteBucket.bucketArn}/*`],
+        conditions: {
+          StringEquals: {
+            "AWS:SourceArn": `arn:aws:cloudfront::${this.account}:distribution/${distribution.distributionId}`,
+          },
         },
-      },
-    });
+      });
 
-    websiteBucket.addToResourcePolicy(policyStatement);
+    websiteBucket.addToResourcePolicy(websiteBucketPolicyStatement);
   }
 }

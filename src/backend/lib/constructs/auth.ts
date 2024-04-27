@@ -30,15 +30,23 @@ export class AuthStack extends cdk.Stack {
       },
     });
 
-    new cognito.UserPoolClient(this, 'UserPoolClient', {
+    const userPoolClient = new cognito.UserPoolClient(this, "DiaryUserPoolClient", {
       userPool,
-      generateSecret: false,
+      userPoolClientName: "diary-userpool-client",
+      authFlows: {
+        adminUserPassword: true,
+        custom: true,
+        userSrp: true,
+      },
+      supportedIdentityProviders: [
+        cognito.UserPoolClientIdentityProvider.COGNITO,
+      ],
     });
 
     const identityPool = new cognito.CfnIdentityPool(this, 'IdentityPool', {
       allowUnauthenticatedIdentities: false,
       cognitoIdentityProviders: [{
-        clientId: userPool.userPoolClientId,
+        clientId: userPoolClient.userPoolClientId,
         providerName: userPool.userPoolProviderName,
       }],
     });
