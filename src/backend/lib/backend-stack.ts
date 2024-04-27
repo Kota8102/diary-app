@@ -3,6 +3,9 @@ import { Construct } from "constructs";
 import * as s3 from "aws-cdk-lib/aws-s3";
 import * as cognito from "aws-cdk-lib/aws-cognito";
 import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
+import { ApiStack } from './constructs/api';
+import { AuthStack } from './constructs/auth';
+import { WebHostingStack } from './constructs/web';
 
 interface BackendStackProps extends cdk.StackProps { }
 

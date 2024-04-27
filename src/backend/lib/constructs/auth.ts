@@ -52,7 +52,7 @@ export class AuthStack extends cdk.Stack {
     });
 
     userPool.addDomain('UserPoolDomain', {
-      cognitoDomain: { domainPrefix: 'unique-prefix-123' },
+      cognitoDomain: { domainPrefix: 'dairy-851725642854' },
     });
   }
 }
