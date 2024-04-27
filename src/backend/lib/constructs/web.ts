@@ -29,14 +29,27 @@ export class WebHostingStack extends cdk.Stack {
       }],
     });
 
-    const distribution = new cloudfront.Distribution(this, 'WebDistribution', {
+    const cfnOriginAccessControl = new cdk.aws_cloudfront.CfnOriginAccessControl(
+      this,
+      "OriginAccessControl",
+      {
+        originAccessControlConfig: {
+          name: "OriginAccessControlForAppBucket",
+          originAccessControlOriginType: "s3",
+          signingBehavior: "always",
+          signingProtocol: "sigv4",
+          description: "S3 Access Control",
+        },
+      }
+    );
+
+    const distribution =new cdk.aws_cloudfront.Distribution(this, 'distro', {
       defaultBehavior: {
-        origin: new cloudfrontOrigins.S3Origin(websiteBucket, {
-          originAccessIdentity: new cloudfront.OriginAccessIdentity(this, 'OAI')
-        }),
-        viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+        origin: new cdk.aws_cloudfront_origins.S3Origin(websiteBucket),
+        viewerProtocolPolicy: cdk.aws_cloudfront.ViewerProtocolPolicy.HTTPS_ONLY
       },
-      defaultRootObject: 'index.html',
+      defaultRootObject: "index.html",
+      geoRestriction: cdk.aws_cloudfront.GeoRestriction.allowlist('US', 'JP'),
     });
 
     const websiteBucketPolicyStatement = new cdk.aws_iam.PolicyStatement({
@@ -52,5 +65,11 @@ export class WebHostingStack extends cdk.Stack {
       });
 
     websiteBucket.addToResourcePolicy(websiteBucketPolicyStatement);
+
+    const cfnDistribution = distribution.node.defaultChild as cdk.aws_cloudfront.CfnDistribution
+    cfnDistribution.addPropertyOverride('DistributionConfig.Origins.0.OriginAccessControlId', cfnOriginAccessControl.getAtt('Id'))
+    cfnDistribution.addPropertyOverride('DistributionConfig.Origins.0.DomainName', websiteBucket.bucketRegionalDomainName)
+    cfnDistribution.addOverride('Properties.DistributionConfig.Origins.0.S3OriginConfig.OriginAccessIdentity', "")
+    cfnDistribution.addPropertyDeletionOverride('DistributionConfig.Origins.0.CustomOriginConfig')
   }
 }
