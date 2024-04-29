@@ -12,14 +12,14 @@ interface BackendStackProps extends cdk.StackProps { }
 export class BackendStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: BackendStackProps) {
     super(scope, id, props);
-
+    // ウェブホスティングスタックのインスタンス化
+    new WebHostingStack(this, 'WebHostingStack');
+    
     // const logBucket = new s3.Bucket(this, `LogBucket`, {
     //   removalPolicy: cdk.RemovalPolicy.DESTROY,
     //   enforceSSL: true,
     //   serverAccessLogsPrefix: "log/",
     // });
-     // ウェブホスティングスタックのインスタンス化
-     new WebHostingStack(this, 'WebHostingStack');
 
     new dynamodb.Table(this, `DiaryContentsTable`, {
       partitionKey: {
@@ -179,21 +179,6 @@ export class BackendStack extends cdk.Stack {
     // cfnDistribution.addOverride('Properties.DistributionConfig.Origins.0.S3OriginConfig.OriginAccessIdentity', "")
     // cfnDistribution.addPropertyDeletionOverride('DistributionConfig.Origins.0.CustomOriginConfig')
 
-    // new cdk.aws_s3_deployment.BucketDeployment(this, 'WebsiteDeploy', {
-    //   sources: [
-    //     cdk.aws_s3_deployment.Source.data(
-    //       '/index.html',
-    //       '<html><body><h1>Hello World</h1></body></html>'
-    //     ),
-    //     // cdk.aws_s3_deployment.Source.data(
-    //     //   '/error.html',
-    //     //   '<html><body><h1>Error!!!!!!!!!!!!!</h1></body></html>'
-    //     // ),
-    //   ],
-    //   destinationBucket: websiteBucket,
-    //   distribution: distribution,
-    //   distributionPaths: ['/*'],
-    //   accessControl: s3.BucketAccessControl.PUBLIC_READ_WRITE
-    // });
+   
   }
 }

@@ -4,6 +4,7 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cloudfrontOrigins from 'aws-cdk-lib/aws-cloudfront-origins';
+import { AwsSolutionsChecks, NagSuppressions } from 'cdk-nag';
 
 export class WebHostingStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -71,5 +72,28 @@ export class WebHostingStack extends cdk.Stack {
     cfnDistribution.addPropertyOverride('DistributionConfig.Origins.0.DomainName', websiteBucket.bucketRegionalDomainName)
     cfnDistribution.addOverride('Properties.DistributionConfig.Origins.0.S3OriginConfig.OriginAccessIdentity', "")
     cfnDistribution.addPropertyDeletionOverride('DistributionConfig.Origins.0.CustomOriginConfig')
+
+    NagSuppressions.addStackSuppressions(this, [
+      {
+        id: 'AwsSolutions-CFR2',
+        reason: '暫定的にオフにしているが、本番環境では必要に応じてWAFの導入も行う。',
+       },
+       {
+        id: 'AwsSolutions-CFR4',
+        reason: 'カスタムドメインが必要になるので暫定的にオフにします',
+       }, 
+       {
+        id: 'AwsSolutions-CFR5',
+        reason: 'カスタムドメインが必要になるので暫定的にオフにします',
+       }, 
+       {
+        id: 'AwsSolutions-CFR3',
+        reason: 'CloudFrontのロギングをオフにします。S3のパブリックアクセスをオフにしなければオンに出来無さそうでした',
+       },
+       {
+        id: 'AwsSolutions-S5',
+        reason: 'OAIの強制をオフにします。OACを使うので',
+       },
+    ])
   }
 }
