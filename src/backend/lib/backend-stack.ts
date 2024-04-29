@@ -13,11 +13,13 @@ export class BackendStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: BackendStackProps) {
     super(scope, id, props);
 
-    const logBucket = new s3.Bucket(this, `LogBucket`, {
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
-      enforceSSL: true,
-      serverAccessLogsPrefix: "log/",
-    });
+    // const logBucket = new s3.Bucket(this, `LogBucket`, {
+    //   removalPolicy: cdk.RemovalPolicy.DESTROY,
+    //   enforceSSL: true,
+    //   serverAccessLogsPrefix: "log/",
+    // });
+     // ウェブホスティングスタックのインスタンス化
+     new WebHostingStack(this, 'WebHostingStack');
 
     new dynamodb.Table(this, `DiaryContentsTable`, {
       partitionKey: {
@@ -113,69 +115,69 @@ export class BackendStack extends cdk.Stack {
     });
 
     //  Hosting S3 & CloudFront 
-    const websiteBucket = new s3.Bucket(this, 'diary-hosting-bucket', {
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
-      enforceSSL: true,
-      serverAccessLogsBucket: logBucket,
-      serverAccessLogsPrefix: "DiaryHostingBucketLog/",
-      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
-      websiteIndexDocument: 'index.html',
-      cors: [
-        {
-          allowedMethods: [s3.HttpMethods.GET, s3.HttpMethods.HEAD],
-          allowedOrigins: ["*"],
-          allowedHeaders: ["*"],
-        },
-      ],
-    });   
+    // const websiteBucket = new s3.Bucket(this, 'diary-hosting-bucket', {
+    //   removalPolicy: cdk.RemovalPolicy.DESTROY,
+    //   enforceSSL: true,
+    //   serverAccessLogsBucket: logBucket,
+    //   serverAccessLogsPrefix: "DiaryHostingBucketLog/",
+    //   blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+    //   websiteIndexDocument: 'index.html',
+    //   cors: [
+    //     {
+    //       allowedMethods: [s3.HttpMethods.GET, s3.HttpMethods.HEAD],
+    //       allowedOrigins: ["*"],
+    //       allowedHeaders: ["*"],
+    //     },
+    //   ],
+    // });   
 
-    const cfnOriginAccessControl = new cdk.aws_cloudfront.CfnOriginAccessControl(
-      this,
-      "OriginAccessControl",
-      {
-        originAccessControlConfig: {
-          name: "OriginAccessControlForAppBucket",
-          originAccessControlOriginType: "s3",
-          signingBehavior: "always",
-          signingProtocol: "sigv4",
-          description: "S3 Access Control",
-        },
-      }
-    );
+    // const cfnOriginAccessControl = new cdk.aws_cloudfront.CfnOriginAccessControl(
+    //   this,
+    //   "OriginAccessControl",
+    //   {
+    //     originAccessControlConfig: {
+    //       name: "OriginAccessControlForAppBucket",
+    //       originAccessControlOriginType: "s3",
+    //       signingBehavior: "always",
+    //       signingProtocol: "sigv4",
+    //       description: "S3 Access Control",
+    //     },
+    //   }
+    // );
 
 
-    const distribution =new cdk.aws_cloudfront.Distribution(this, 'distro', {
-      defaultBehavior: {
-        origin: new cdk.aws_cloudfront_origins.S3Origin(websiteBucket),
-        viewerProtocolPolicy: cdk.aws_cloudfront.ViewerProtocolPolicy.HTTPS_ONLY
-      },
-      defaultRootObject: "index.html",
-      // enableLogging: true, // Optional, this is implied if logBucket is specified
-      // logBucket: logBucket,
-      // logFilePrefix: 'distribution/',
-      // logIncludesCookies: true,
-      geoRestriction: cdk.aws_cloudfront.GeoRestriction.allowlist('US', 'JP'),
-    });
+    // const distribution =new cdk.aws_cloudfront.Distribution(this, 'distro', {
+    //   defaultBehavior: {
+    //     origin: new cdk.aws_cloudfront_origins.S3Origin(websiteBucket),
+    //     viewerProtocolPolicy: cdk.aws_cloudfront.ViewerProtocolPolicy.HTTPS_ONLY
+    //   },
+    //   defaultRootObject: "index.html",
+    //   // enableLogging: true, // Optional, this is implied if logBucket is specified
+    //   // logBucket: logBucket,
+    //   // logFilePrefix: 'distribution/',
+    //   // logIncludesCookies: true,
+    //   geoRestriction: cdk.aws_cloudfront.GeoRestriction.allowlist('US', 'JP'),
+    // });
 
-    const websiteBucketPolicyStatement = new cdk.aws_iam.PolicyStatement({
-      actions: ["s3:GetObject"],
-      effect: cdk.aws_iam.Effect.ALLOW,
-      principals: [new cdk.aws_iam.ServicePrincipal("cloudfront.amazonaws.com")],
-      resources: [`${websiteBucket.bucketArn}/*`],
-      conditions: {
-        StringEquals: {
-          "AWS:SourceArn": `arn:aws:cloudfront::${this.account}:distribution/${distribution.distributionId}`,
-        },
-      },
-    });
+    // const websiteBucketPolicyStatement = new cdk.aws_iam.PolicyStatement({
+    //   actions: ["s3:GetObject"],
+    //   effect: cdk.aws_iam.Effect.ALLOW,
+    //   principals: [new cdk.aws_iam.ServicePrincipal("cloudfront.amazonaws.com")],
+    //   resources: [`${websiteBucket.bucketArn}/*`],
+    //   conditions: {
+    //     StringEquals: {
+    //       "AWS:SourceArn": `arn:aws:cloudfront::${this.account}:distribution/${distribution.distributionId}`,
+    //     },
+    //   },
+    // });
 
-    websiteBucket.addToResourcePolicy(websiteBucketPolicyStatement);
+    // websiteBucket.addToResourcePolicy(websiteBucketPolicyStatement);
 
-    const cfnDistribution = distribution.node.defaultChild as cdk.aws_cloudfront.CfnDistribution
-    cfnDistribution.addPropertyOverride('DistributionConfig.Origins.0.OriginAccessControlId', cfnOriginAccessControl.getAtt('Id'))
-    cfnDistribution.addPropertyOverride('DistributionConfig.Origins.0.DomainName', websiteBucket.bucketRegionalDomainName)
-    cfnDistribution.addOverride('Properties.DistributionConfig.Origins.0.S3OriginConfig.OriginAccessIdentity', "")
-    cfnDistribution.addPropertyDeletionOverride('DistributionConfig.Origins.0.CustomOriginConfig')
+    // const cfnDistribution = distribution.node.defaultChild as cdk.aws_cloudfront.CfnDistribution
+    // cfnDistribution.addPropertyOverride('DistributionConfig.Origins.0.OriginAccessControlId', cfnOriginAccessControl.getAtt('Id'))
+    // cfnDistribution.addPropertyOverride('DistributionConfig.Origins.0.DomainName', websiteBucket.bucketRegionalDomainName)
+    // cfnDistribution.addOverride('Properties.DistributionConfig.Origins.0.S3OriginConfig.OriginAccessIdentity', "")
+    // cfnDistribution.addPropertyDeletionOverride('DistributionConfig.Origins.0.CustomOriginConfig')
 
     // new cdk.aws_s3_deployment.BucketDeployment(this, 'WebsiteDeploy', {
     //   sources: [
