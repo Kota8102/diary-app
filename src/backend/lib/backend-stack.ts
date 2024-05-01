@@ -17,6 +17,9 @@ export class BackendStack extends cdk.Stack {
 
     // 認証機能スタックのインスタンス化
     new AuthStack(this, 'AuthStack');
+
+    // 認証機能スタックのインスタンス化
+    new ApiStack(this, 'ApiStack');
     
     // new dynamodb.Table(this, `DiaryContentsTable`, {
     //   partitionKey: {
@@ -31,85 +34,6 @@ export class BackendStack extends cdk.Stack {
     //   pointInTimeRecovery: true,
     // });
 
-    // const userPool = new cognito.UserPool(this, `DiaryUserPool`, {
-    //   userPoolName: `diary-user-pool`,
-    //   signInAliases: {
-    //     email: true,
-    //   },
-    //   selfSignUpEnabled: true,
-    //   autoVerify: {
-    //     email: true,
-    //   },
-    //   userVerification: {
-    //     emailSubject: 'メールアドレスを認証してください。',
-    //     emailBody: 'ご登録ありがとうございます。 あなたの認証コードは {####} です。',
-    //     emailStyle: cognito.VerificationEmailStyle.CODE,
-    //   },
-    //   standardAttributes: {
-    //     familyName: {
-    //       mutable: false,
-    //       required: true,
-    //     },
-    //     givenName: {
-    //       mutable: false,
-    //       required: true,
-    //     },
-    //     address: {
-    //       mutable: true,
-    //       required: false,
-    //     },
-    //     gender: {
-    //       mutable: true,
-    //       required: true,
-    //     },
-    //     email: {
-    //       mutable: false,
-    //       required: true,
-    //     },
-    //   },
-    //   passwordPolicy: {
-    //     minLength: 8,
-    //     requireLowercase: true,
-    //     requireUppercase: true,
-    //     requireDigits: true,
-    //     requireSymbols: true,
-    //   },
-    //   accountRecovery: cognito.AccountRecovery.EMAIL_ONLY,
-    //   mfa: cognito.Mfa.REQUIRED,
-    //   mfaSecondFactor: {
-    //     sms: true,
-    //     otp: true,
-    //   },
-    //   removalPolicy: cdk.RemovalPolicy.DESTROY,
-    // });
-
-    // const userPoolClient = new cognito.UserPoolClient(this, "DiaryUserPoolClient", {
-    //   userPool,
-    //   userPoolClientName: "diary-userpool-client",
-    //   authFlows: {
-    //     adminUserPassword: true,
-    //     custom: true,
-    //     userSrp: true,
-    //   },
-    //   supportedIdentityProviders: [
-    //     cognito.UserPoolClientIdentityProvider.COGNITO,
-    //   ],
-    // });
-
-    // // Cognito Identity Pool
-    // const identityPool = new cognito.CfnIdentityPool(this, "IdentityPool", {
-    //   allowUnauthenticatedIdentities: false, // Don't allow unathenticated users
-    //   cognitoIdentityProviders: [
-    //     {
-    //       clientId: userPoolClient.userPoolClientId,
-    //       providerName: userPool.userPoolProviderName,
-    //     },
-    //   ],
-    //  });
-
-    // userPool.addDomain('UserPoolDomain', {
-    //   cognitoDomain: { domainPrefix: 'dairy-851725642854' },
-    // });
 
    
   }
