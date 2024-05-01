@@ -20,18 +20,5 @@ export class BackendStack extends cdk.Stack {
 
     // 認証機能スタックのインスタンス化
     new ApiStack(this, 'ApiStack');
-    
-    // new dynamodb.Table(this, `DiaryContentsTable`, {
-    //   partitionKey: {
-    //     name: "user_id",
-    //     type: dynamodb.AttributeType.STRING,
-    //   },
-    //   sortKey: {
-    //     name: "date",
-    //     type: dynamodb.AttributeType.STRING,
-    //   },
-    //   removalPolicy: cdk.RemovalPolicy.DESTROY,
-    //   pointInTimeRecovery: true,
-    // });
   }
 }
