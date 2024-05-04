@@ -21,10 +21,17 @@ export class ApiStack extends cdk.Stack {
       pointInTimeRecovery: true,
     });
 
+    const LambdaRole = new cdk.aws_iam.Role(this, 'Lambda Excecution Role', {
+      assumedBy: new cdk.aws_iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+    
+    LambdaRole.addManagedPolicy(cdk.aws_iam.ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaBasicExecutionRole"));
+
     const diaryCreateFunction = new lambda.Function(this, 'diar-create-lambda', {
       runtime: lambda.Runtime.PYTHON_3_11,
       handler: 'diary_create.lambda_handler',
-      code: lambda.Code.fromAsset('lambda'),
+      code: lambda.Code.fromAsset('src/backend/lambda/diary_create'),
+      role: LambdaRole
     });
     table.grantWriteData(diaryCreateFunction);
     // const backendLambda = new lambda.Function(this, 'BackendLambda', {
