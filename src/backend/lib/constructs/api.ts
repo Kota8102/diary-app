@@ -30,22 +30,11 @@ export class ApiStack extends cdk.Stack {
     const diaryCreateFunction = new lambda.Function(this, 'diar-create-lambda', {
       runtime: lambda.Runtime.PYTHON_3_11,
       handler: 'diary_create.lambda_handler',
-      code: lambda.Code.fromAsset('src/backend/lambda/diary_create'),
+      code: lambda.Code.fromAsset('lambda'),
       role: LambdaRole
     });
     table.grantWriteData(diaryCreateFunction);
-    // const backendLambda = new lambda.Function(this, 'BackendLambda', {
-    //   runtime: lambda.Runtime.NODEJS_14_X,
-    //   code: lambda.Code.fromAsset('path/to/lambda/code'),
-    //   handler: 'index.handler',
-    // });
 
-    // const api = new apigateway.RestApi(this, 'ApiGateway', {
-    //   restApiName: 'ServiceAPI',
-    // });
-
-    // const lambdaIntegration = new apigateway.LambdaIntegration(backendLambda);
-    // api.root.addMethod('GET', lambdaIntegration);
     NagSuppressions.addStackSuppressions(this, [
       {
         id: 'AwsSolutions-L1',
