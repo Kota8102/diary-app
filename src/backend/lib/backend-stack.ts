@@ -13,12 +13,12 @@ export class BackendStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: BackendStackProps) {
     super(scope, id, props);
     // ウェブホスティングスタックのインスタンス化
-    new WebHostingStack(this, 'WebHostingStack');
+    const hostingStack = new WebHostingStack(this, 'WebHostingStack');
 
     // 認証機能スタックのインスタンス化
-    new AuthStack(this, 'AuthStack');
+    const authStack = new AuthStack(this, 'AuthStack');
 
     // 認証機能スタックのインスタンス化
-    new ApiStack(this, 'ApiStack');
+    const apiStack= new ApiStack(this, 'ApiStack');
   }
 }

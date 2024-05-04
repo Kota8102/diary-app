@@ -70,5 +70,5 @@ jobs:
 
       - name: CDK Deploy
         if: startsWith(github.ref, 'refs/heads/feature/') ||  github.ref == 'refs/heads/main'
-        run: npm run cdk deploy BackendStack
+        run: npm run cdk deploy --all
         working-directory: src/backend

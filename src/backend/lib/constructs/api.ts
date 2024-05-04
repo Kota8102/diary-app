@@ -27,7 +27,7 @@ export class ApiStack extends cdk.Stack {
     
     LambdaRole.addManagedPolicy(cdk.aws_iam.ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaBasicExecutionRole"));
 
-    const diaryCreateFunction = new lambda.Function(this, 'diar-create-lambda', {
+    const diaryCreateFunction = new lambda.Function(this, 'diary-create-lambda', {
       runtime: lambda.Runtime.PYTHON_3_11,
       handler: 'diary_create.lambda_handler',
       code: lambda.Code.fromAsset('lambda'),
