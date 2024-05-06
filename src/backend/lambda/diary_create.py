@@ -1,10 +1,11 @@
 # lambda/diary_handler.py
 import boto3
 import uuid
+import os
 
 def lambda_handler(event, context):
     dynamodb = boto3.resource('dynamodb')
-    table = dynamodb.Table('diary-contents-table')
+    table = dynamodb.Table(os.getenv('TABLE_NAME'))
 
     # Example payload
     user_id = event['user_id']

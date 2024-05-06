@@ -31,19 +31,12 @@ export class ApiStack extends Construct {
       runtime: lambda.Runtime.PYTHON_3_11,
       handler: 'diary_create.lambda_handler',
       code: lambda.Code.fromAsset('lambda'),
-      role: LambdaRole
+      role: LambdaRole,
+      environment: {
+        TABLE_NAME: table.tableName
+      }
     });
     table.grantWriteData(diaryCreateFunction);
 
-    // NagSuppressions.addStackSuppressions(this, [
-    //   {
-    //     id: 'AwsSolutions-L1',
-    //     reason: 'CDKにより自動で作成されるLambdaに適用されてしまうため',
-    //    },
-    //    {
-    //     id: 'AwsSolutions-IAM4',
-    //     reason: 'CDKにより自動で作成されるLambdaに適用されてしまうため',
-    //    },
-    // ])
   }
 }
