@@ -5,9 +5,9 @@ import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
 import { AwsSolutionsChecks, NagSuppressions } from 'cdk-nag';
 
-export class ApiStack extends cdk.Stack {
+export class ApiStack extends Construct {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
-    super(scope, id, props);
+    super(scope, id);
     const table =new dynamodb.Table(this, `diary-contents-table`, {
       partitionKey: {
         name: "user_id",
@@ -35,15 +35,15 @@ export class ApiStack extends cdk.Stack {
     });
     table.grantWriteData(diaryCreateFunction);
 
-    NagSuppressions.addStackSuppressions(this, [
-      {
-        id: 'AwsSolutions-L1',
-        reason: 'CDKにより自動で作成されるLambdaに適用されてしまうため',
-       },
-       {
-        id: 'AwsSolutions-IAM4',
-        reason: 'CDKにより自動で作成されるLambdaに適用されてしまうため',
-       },
-    ])
+    // NagSuppressions.addStackSuppressions(this, [
+    //   {
+    //     id: 'AwsSolutions-L1',
+    //     reason: 'CDKにより自動で作成されるLambdaに適用されてしまうため',
+    //    },
+    //    {
+    //     id: 'AwsSolutions-IAM4',
+    //     reason: 'CDKにより自動で作成されるLambdaに適用されてしまうため',
+    //    },
+    // ])
   }
 }
