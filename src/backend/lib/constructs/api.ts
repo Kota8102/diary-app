@@ -58,5 +58,15 @@ export class ApiStack extends Construct {
       }
     });
     table.grantReadData(diaryReadFunction)
+    const diaryDeleteFunction = new lambda.Function(this, 'diary-delete-lambda', {
+      runtime: lambda.Runtime.PYTHON_3_11,
+      handler: 'diary_delete.lambda_handler',
+      code: lambda.Code.fromAsset('lambda'),
+      role: LambdaRole,
+      environment: {
+        TABLE_NAME: table.tableName
+      }
+    });
+    table.grant(diaryDeleteFunction,"dynamodb:DeleteItem")
   }
 }
