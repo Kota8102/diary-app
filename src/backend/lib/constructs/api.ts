@@ -58,7 +58,7 @@ export class ApiStack extends Construct {
       }
     });
     table.grantReadData(diaryReadFunction)
-    
+
     const diaryDeleteFunction = new lambda.Function(this, 'diary-delete-lambda', {
       runtime: lambda.Runtime.PYTHON_3_11,
       handler: 'diary_delete.lambda_handler',
@@ -69,5 +69,57 @@ export class ApiStack extends Construct {
       }
     });
     table.grant(diaryDeleteFunction,"dynamodb:DeleteItem")
+
+     // API Gateway の作成
+     const logGroup = new cdk.aws_logs.LogGroup(this, 'ApiGatewayAccessLogs');
+     const api = new apigateway.RestApi(this, 'DiaryApi', {
+      restApiName: 'Diary API',
+      deployOptions: {
+        // アクセスロギングの設定
+        accessLogDestination: new apigateway.LogGroupLogDestination(logGroup),
+        accessLogFormat: apigateway.AccessLogFormat.jsonWithStandardFields({
+          caller: true,
+          httpMethod: true,
+          ip: true,
+          protocol: true,
+          requestTime: true,
+          resourcePath: true,
+          responseLength: true,
+          status: true,
+          user: true
+        }),
+        // CloudWatch Logsへのログ出力を有効にします。
+        loggingLevel: apigateway.MethodLoggingLevel.INFO,
+        dataTraceEnabled: true
+      }
+    });
+
+    // Request Validatorの作成
+    const requestValidator = api.addRequestValidator('RequestValidator', {
+      validateRequestBody: true,
+      validateRequestParameters: true
+    });
+
+    // エンドポイントの設定
+    const diary = api.root.addResource('diary');
+
+    // POSTエンドポイント - 日記の作成
+    diary.addMethod('POST', new apigateway.LambdaIntegration(diaryCreateFunction));
+
+    // PUTエンドポイント - 日記の編集
+    diary.addMethod('PUT', new apigateway.LambdaIntegration(diaryEditFunction));
+    // GETエンドポイント - 日記の閲覧
+    diary.addMethod('GET', new apigateway.LambdaIntegration(diaryReadFunction));
+    // DELETEエンドポイント - 日記の削除
+    diary.addMethod('DELETE', new apigateway.LambdaIntegration(diaryDeleteFunction));
+
+    
+
+  //   api.deployOptions = {
+  //   accessLogDestination: new apigateway.LogGroupLogDestination(logGroup),
+  //   accessLogFormat: apigateway.AccessLogFormat.jsonWithStandardFields(),
+  //   loggingLevel: apigateway.MethodLoggingLevel.INFO,
+  //   dataTraceEnabled: true
+  // };
   }
 }
