@@ -12,13 +12,22 @@ interface BackendStackProps extends cdk.StackProps { }
 export class BackendStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: BackendStackProps) {
     super(scope, id, props);
+
+    const logBucket = new s3.Bucket(this, 'LogBucket', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      enforceSSL: true,
+      serverAccessLogsPrefix: 'log/',
+    });
+
     // ウェブホスティングスタックのインスタンス化
-    new WebHostingStack(this, 'WebHostingStack');
+    const hostingStack = new WebHostingStack(this, 'WebHostingStack',{
+      logBucket,
+    });
 
     // 認証機能スタックのインスタンス化
-    new AuthStack(this, 'AuthStack');
+    const authStack = new AuthStack(this, 'AuthStack');
 
     // 認証機能スタックのインスタンス化
-    new ApiStack(this, 'ApiStack');
+    const apiStack= new ApiStack(this, 'ApiStack');
   }
 }
