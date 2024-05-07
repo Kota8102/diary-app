@@ -38,5 +38,15 @@ export class ApiStack extends Construct {
     });
     table.grantWriteData(diaryCreateFunction);
 
+    const diaryEditFunction = new lambda.Function(this, 'diary-edit-lambda', {
+      runtime: lambda.Runtime.PYTHON_3_11,
+      handler: 'diary_edit.lambda_handler',
+      code: lambda.Code.fromAsset('lambda'),
+      role: LambdaRole,
+      environment: {
+        TABLE_NAME: table.tableName
+      }
+    });
+    table.grantReadWriteData(diaryEditFunction)
   }
 }
