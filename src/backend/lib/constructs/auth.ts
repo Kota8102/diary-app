@@ -53,7 +53,7 @@ export class AuthStack extends Construct {
     });
 
     userPool.addDomain('UserPoolDomain', {
-      cognitoDomain: { domainPrefix: 'dairy-851725642854' },
+      cognitoDomain: { domainPrefix: `dairy-${userPool.env.account}` },
     });
 
     // NagSuppressions.addStackSuppressions(this, [
