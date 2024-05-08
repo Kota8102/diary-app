@@ -1,5 +1,6 @@
 import * as cdk from "aws-cdk-lib";
 import { Construct } from "constructs";
+import * as s3 from 'aws-cdk-lib/aws-s3';
 import { ApiStack } from './constructs/api';
 import { AuthStack } from './constructs/auth';
 import { WebHostingStack } from './constructs/web';
