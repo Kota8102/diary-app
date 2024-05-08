@@ -89,7 +89,8 @@ export class ApiStack extends Construct {
      });
      const api = new apigateway.RestApi(this, 'DiaryApi', {
       restApiName: 'diary-basic-api',
-      // removalPolicy: cdk.RemovalPolicy.DESTROY,
+      cloudWatchRole: true,
+      cloudWatchRoleRemovalPolicy: cdk.RemovalPolicy.DESTROY,
       deployOptions: {
         // アクセスロギングの設定
         accessLogDestination: new apigateway.LogGroupLogDestination(logGroup),

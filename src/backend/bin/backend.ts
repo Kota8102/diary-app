@@ -3,9 +3,6 @@ import * as cdk from "aws-cdk-lib";
 import { BackendStack } from "../lib/backend-stack";
 import { AwsSolutionsChecks, NagSuppressions } from 'cdk-nag';
 import { Aspects } from 'aws-cdk-lib';
-import { ApiStack } from '../lib/constructs/api';
-import { AuthStack } from '../lib/constructs/auth';
-import { WebHostingStack } from '../lib/constructs/web';
 
 const app = new cdk.App();
 
