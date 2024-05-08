@@ -23,6 +23,7 @@ export class ApiStack extends Construct {
 
     const LambdaRole = new cdk.aws_iam.Role(this, 'Lambda Excecution Role', {
       assumedBy: new cdk.aws_iam.ServicePrincipal('lambda.amazonaws.com'),
+      roleName: 'lambda-basic-excecution-role',
     });
     
     LambdaRole.addManagedPolicy(cdk.aws_iam.ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaBasicExecutionRole"));
@@ -70,10 +71,25 @@ export class ApiStack extends Construct {
     });
     table.grant(diaryDeleteFunction,"dynamodb:DeleteItem")
 
+    // CloudWatch Logsへのアクセスを許可するロールの作成
+    const cloudwatchLogsRole = new cdk.aws_iam.Role(this, 'APIGatewayCloudWatchLogsRole', {
+      roleName: 'apigateway-cloudwatchlogs-role',
+      assumedBy: new cdk.aws_iam.ServicePrincipal('apigateway.amazonaws.com'),
+      managedPolicies: [
+        cdk.aws_iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonAPIGatewayPushToCloudWatchLogs')
+      ]
+    });
+
      // API Gateway の作成
-     const logGroup = new cdk.aws_logs.LogGroup(this, 'ApiGatewayAccessLogs');
+     const logGroup = new cdk.aws_logs.LogGroup(this, 'ApiGatewayAccessLogs',{
+      logGroupName: 'apigateway-accesslogs',
+      retention: 14,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+
+     });
      const api = new apigateway.RestApi(this, 'DiaryApi', {
-      restApiName: 'Diary API',
+      restApiName: 'diary-basic-api',
+      // removalPolicy: cdk.RemovalPolicy.DESTROY,
       deployOptions: {
         // アクセスロギングの設定
         accessLogDestination: new apigateway.LogGroupLogDestination(logGroup),
