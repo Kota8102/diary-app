@@ -3,7 +3,6 @@ import { Construct } from 'constructs';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
-import { AwsSolutionsChecks, NagSuppressions } from 'cdk-nag';
 
 export class ApiStack extends Construct {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -33,6 +32,7 @@ export class ApiStack extends Construct {
       handler: 'diary_create.lambda_handler',
       code: lambda.Code.fromAsset('lambda'),
       role: LambdaRole,
+      logRetention: 14,
       environment: {
         TABLE_NAME: table.tableName
       }
@@ -44,6 +44,7 @@ export class ApiStack extends Construct {
       handler: 'diary_edit.lambda_handler',
       code: lambda.Code.fromAsset('lambda'),
       role: LambdaRole,
+      logRetention: 14,
       environment: {
         TABLE_NAME: table.tableName
       }
@@ -54,6 +55,7 @@ export class ApiStack extends Construct {
       handler: 'diary_read.lambda_handler',
       code: lambda.Code.fromAsset('lambda'),
       role: LambdaRole,
+      logRetention: 14,
       environment: {
         TABLE_NAME: table.tableName
       }
@@ -65,6 +67,7 @@ export class ApiStack extends Construct {
       handler: 'diary_delete.lambda_handler',
       code: lambda.Code.fromAsset('lambda'),
       role: LambdaRole,
+      logRetention: 14,
       environment: {
         TABLE_NAME: table.tableName
       }
@@ -130,13 +133,5 @@ export class ApiStack extends Construct {
     // DELETEエンドポイント - 日記の削除
     diary.addMethod('DELETE', new apigateway.LambdaIntegration(diaryDeleteFunction));
 
-    
-
-  //   api.deployOptions = {
-  //   accessLogDestination: new apigateway.LogGroupLogDestination(logGroup),
-  //   accessLogFormat: apigateway.AccessLogFormat.jsonWithStandardFields(),
-  //   loggingLevel: apigateway.MethodLoggingLevel.INFO,
-  //   dataTraceEnabled: true
-  // };
   }
 }
