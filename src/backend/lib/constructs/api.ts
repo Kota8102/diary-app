@@ -8,6 +8,7 @@ export class ApiStack extends Construct {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id);
     const table =new dynamodb.Table(this, `diary-contents-table`, {
+      tableName: 'diary-basic-table',
       partitionKey: {
         name: "user_id",
         type: dynamodb.AttributeType.STRING,
@@ -28,7 +29,7 @@ export class ApiStack extends Construct {
     LambdaRole.addManagedPolicy(cdk.aws_iam.ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaBasicExecutionRole"));
 
     const diaryCreateFunction = new lambda.Function(this, 'diary-create-lambda', {
-      functionName: 'create-dairy-item-lambda'
+      functionName: 'create-dairy-item-lambda',
       runtime: lambda.Runtime.PYTHON_3_11,
       handler: 'diary_create.lambda_handler',
       code: lambda.Code.fromAsset('lambda'),
@@ -41,7 +42,7 @@ export class ApiStack extends Construct {
     table.grantWriteData(diaryCreateFunction);
 
     const diaryEditFunction = new lambda.Function(this, 'diary-edit-lambda', {
-      functionName: 'edit-dairy-item-lambda'
+      functionName: 'edit-dairy-item-lambda',
       runtime: lambda.Runtime.PYTHON_3_11,
       handler: 'diary_edit.lambda_handler',
       code: lambda.Code.fromAsset('lambda'),
@@ -53,7 +54,7 @@ export class ApiStack extends Construct {
     });
     table.grantReadWriteData(diaryEditFunction)
     const diaryReadFunction = new lambda.Function(this, 'diary-read-lambda', {
-      functionName: 'read-dairy-item-lambda'
+      functionName: 'read-dairy-item-lambda',
       runtime: lambda.Runtime.PYTHON_3_11,
       handler: 'diary_read.lambda_handler',
       code: lambda.Code.fromAsset('lambda'),
@@ -66,7 +67,7 @@ export class ApiStack extends Construct {
     table.grantReadData(diaryReadFunction)
 
     const diaryDeleteFunction = new lambda.Function(this, 'diary-delete-lambda', {
-      functionName: 'delete-dairy-item-lambda'
+      functionName: 'delete-dairy-item-lambda',
       runtime: lambda.Runtime.PYTHON_3_11,
       handler: 'diary_delete.lambda_handler',
       code: lambda.Code.fromAsset('lambda'),
