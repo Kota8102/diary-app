@@ -3,9 +3,6 @@ import * as cdk from "aws-cdk-lib";
 import { BackendStack } from "../lib/backend-stack";
 import { AwsSolutionsChecks, NagSuppressions } from 'cdk-nag';
 import { Aspects } from 'aws-cdk-lib';
-import { ApiStack } from '../lib/constructs/api';
-import { AuthStack } from '../lib/constructs/auth';
-import { WebHostingStack } from '../lib/constructs/web';
 
 const app = new cdk.App();
 
@@ -50,5 +47,17 @@ NagSuppressions.addStackSuppressions(backendStack, [
  {
   id: 'AwsSolutions-S5',
   reason: 'OAIの強制をオフにします。OACを使うので',
+ },
+ {
+  id: 'AwsSolutions-COG4',
+  reason: 'オーソライザーの要求を一時的にオフにします。(本番はON)',
+ },
+ {
+  id: 'AwsSolutions-COG2',
+  reason: 'CognitoでMFAは要求しません。',
+ },
+ {
+  id: 'AwsSolutions-APIG4',
+  reason: 'オーソライザーの要求を一時的にオフにします。(本番はON)',
  },
 ]);

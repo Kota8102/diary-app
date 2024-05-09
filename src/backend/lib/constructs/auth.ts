@@ -1,7 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
-import { AwsSolutionsChecks, NagSuppressions } from 'cdk-nag';
 
 export class AuthStack extends Construct {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -56,20 +55,5 @@ export class AuthStack extends Construct {
       cognitoDomain: { domainPrefix: `dairy-${userPool.env.account}` },
     });
 
-    // NagSuppressions.addStackSuppressions(this, [
-    //   {
-    //     id: 'AwsSolutions-COG2',
-    //     reason: '一般ユーザにMFAはいらないと判断した.',
-    //   },
-    //   {
-    //     id: 'AwsSolutions-COG3',
-    //     reason: 'このプロジェクトではAdvancedSecurityModeをENFORCEDに設定する必要はないと判断した。',
-    //   },
-    //   {
-    //     id: 'AwsSolutions-IAM5',
-    //     reason: '暫定的にオフにしているが、本番環境では適切なIAMポリシーを設定すること。',
-    //   },
-      
-    // ])
   }
 }

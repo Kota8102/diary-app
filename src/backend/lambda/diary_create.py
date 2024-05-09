@@ -1,17 +1,19 @@
-# lambda/diary_handler.py
+import json
 import boto3
-import uuid
 import os
+import uuid
 
 def lambda_handler(event, context):
     dynamodb = boto3.resource('dynamodb')
     table = dynamodb.Table(os.getenv('TABLE_NAME'))
 
-    # Example payload
-    user_id = event['user_id']
-    date = event['date']
+    # event['body'] を JSON として解析
+    body = json.loads(event['body'])
+
+    user_id = body['user_id']
+    date = body['date']
     diary_id = str(uuid.uuid4())
-    content = event['content']
+    content = body['content']
     is_deleted = False
 
     table.put_item(
@@ -26,5 +28,5 @@ def lambda_handler(event, context):
 
     return {
         'statusCode': 200,
-        'body': 'Success'
+        'body': json.dumps('Success')
     }
