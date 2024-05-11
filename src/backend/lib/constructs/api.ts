@@ -175,7 +175,7 @@ export class ApiStack extends Construct {
       "generativeAiLambdaRole",
       {
         assumedBy: new cdk.aws_iam.ServicePrincipal("lambda.amazonaws.com"),
-        roleName: "lambda-basic-excecution-role",
+        roleName: "generative-ai-lambda-role",
       }
     );
     const ssmPolicy = new cdk.aws_iam.PolicyStatement({
