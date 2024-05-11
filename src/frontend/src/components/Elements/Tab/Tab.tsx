@@ -1,38 +1,44 @@
 import { Link } from 'react-router-dom'
 
-import { calendar, add, setting, bouquet, flower } from '../../../assets/icons'
+import {
+  outlinedAdd,
+  outlinedBouquet,
+  outlinedCalendar,
+  outlinedFlower,
+  outlinedSetting,
+} from '../../../assets/icons'
 
 export const Tab = () => {
   return (
     <div className="flex justify-around items-center h-14 bg-secondaryBackground">
       <Link to="/diarylist">
         <img
-          src={calendar}
-          alt="calendar"
+          src={outlinedCalendar}
+          alt="outlined calendar"
         />
       </Link>
       <Link to="/">
         <img
-          src={bouquet}
-          alt="bouquet"
+          src={outlinedBouquet}
+          alt="outlined bouquet"
         />
       </Link>
       <Link to="/">
         <img
-          src={flower}
-          alt="flower"
+          src={outlinedFlower}
+          alt="outlined flower"
         />
       </Link>
       <Link to="/diary">
         <img
-          src={add}
-          alt="add"
+          src={outlinedAdd}
+          alt="outlined add"
         />
       </Link>
       <Link to="/setting">
         <img
-          src={setting}
-          alt="setting"
+          src={outlinedSetting}
+          alt="outlined setting"
         />
       </Link>
     </div>

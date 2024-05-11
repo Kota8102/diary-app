@@ -1,9 +1,19 @@
-export { default as add } from './outlined-add.svg'
+export { default as outlinedAdd } from './outlined-add.svg'
 
-export { default as bouquet } from './outlined-bouquet.svg'
+export { default as outlinedBouquet } from './outlined-bouquet.svg'
 
-export { default as calendar } from './outlined-calender.svg'
+export { default as outlinedCalendar } from './outlined-calendar.svg'
 
-export { default as flower } from './outlined-flower.svg'
+export { default as outlinedFlower } from './outlined-flower.svg'
 
-export { default as setting } from './outlined-setting.svg'
+export { default as outlinedSetting } from './outlined-setting.svg'
+
+export { default as add } from './add.svg'
+
+export { default as bouquet } from './bouquet.svg'
+
+export { default as calendar } from './calendar.svg'
+
+export { default as flower } from './flower.svg'
+
+export { default as setting } from './setting.svg'
