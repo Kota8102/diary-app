@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 
-import { calendar, add, profile, bouquet, flower } from '../../../assets/icons'
+import { calendar, add, setting, bouquet, flower } from '../../../assets/icons'
 
 export const Tab = () => {
   return (
@@ -11,13 +11,13 @@ export const Tab = () => {
           alt="calendar"
         />
       </Link>
-      <Link to="/setting">
+      <Link to="/">
         <img
           src={bouquet}
           alt="bouquet"
         />
       </Link>
-      <Link to="/setting">
+      <Link to="/">
         <img
           src={flower}
           alt="flower"
@@ -31,8 +31,8 @@ export const Tab = () => {
       </Link>
       <Link to="/setting">
         <img
-          src={profile}
-          alt="profile"
+          src={setting}
+          alt="setting"
         />
       </Link>
     </div>

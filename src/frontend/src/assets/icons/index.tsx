@@ -6,4 +6,4 @@ export { default as calendar } from './outlined-calender.svg'
 
 export { default as flower } from './outlined-flower.svg'
 
-export { default as profile } from './outlined-profile.svg'
+export { default as setting } from './outlined-setting.svg'
