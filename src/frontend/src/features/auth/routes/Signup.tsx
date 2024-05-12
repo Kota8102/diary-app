@@ -1,9 +1,9 @@
 import { MainLayout } from '../../../components/layout'
 
-export const Login = () => {
+export const Signup = () => {
   return (
     <MainLayout>
-      <div>login</div>
+      <div>signup</div>
     </MainLayout>
   )
 }
