@@ -184,10 +184,6 @@ export class ApiStack extends Construct {
     });
     generativeAiLambdaRole.addToPolicy(ssmPolicy);
 
-    new ssm.StringParameter(this, "openai-api-endpoint", {
-      parameterName: "OpenAI_API_ENDPOINT",
-      stringValue: "dummy",
-    });
     new ssm.StringParameter(this, "openai-api-key", {
       parameterName: "OpenAI_API_KEY",
       stringValue: "dummy",
