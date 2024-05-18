@@ -65,10 +65,10 @@ jobs:
 
       - name: CDK Synth
         if: startsWith(github.ref, 'refs/heads/feature/')
-        run: npm run cdk synth --all -c openAiApiKey=dummy2
+        run: npm run cdk synth --all --context openAiApiKey=dummy2
         working-directory: src/backend
 
       - name: CDK Deploy
         if: startsWith(github.ref, 'refs/heads/feature/') ||  github.ref == 'refs/heads/main'
-        run: npm run cdk deploy --all -c openAiApiKey=${{ secrets.OpenAI_API_KEY }}
+        run: npm run cdk deploy --all --context openAiApiKey=${{ secrets.OpenAI_API_KEY }}
         working-directory: src/backend
