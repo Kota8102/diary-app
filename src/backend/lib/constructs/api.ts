@@ -3,7 +3,6 @@ import * as apigateway from 'aws-cdk-lib/aws-apigateway'
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb'
 import * as lambda from 'aws-cdk-lib/aws-lambda'
 import { DynamoEventSource } from 'aws-cdk-lib/aws-lambda-event-sources'
-import * as ssm from 'aws-cdk-lib/aws-ssm'
 import { Construct } from 'constructs'
 
 export class Api extends Construct {
@@ -155,11 +154,6 @@ export class Api extends Construct {
       resources: ['*'],
     })
     generativeAiLambdaRole.addToPolicy(ssmPolicy)
-
-    new ssm.StringParameter(this, 'openaiApiKey', {
-      parameterName: 'OpenAI_API_KEY',
-      stringValue: 'dummy',
-    })
 
     const diaryGenerateTitleCreateFunction = new lambda.Function(
       this,

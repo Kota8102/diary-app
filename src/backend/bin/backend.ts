@@ -1,14 +1,14 @@
 #!/usr/bin/env node
-import * as cdk from "aws-cdk-lib";
-import { BackendStack } from "../lib/backend-stack";
-import { AwsSolutionsChecks, NagSuppressions } from 'cdk-nag';
-import { Aspects } from 'aws-cdk-lib';
+import * as cdk from 'aws-cdk-lib'
+import { Aspects } from 'aws-cdk-lib'
+import { AwsSolutionsChecks, NagSuppressions } from 'cdk-nag'
+import { BackendStack } from '../lib/backend-stack'
 
-const app = new cdk.App();
+const app = new cdk.App()
 
-Aspects.of(app).add(new AwsSolutionsChecks());
+Aspects.of(app).add(new AwsSolutionsChecks())
 
-const backendStack = new BackendStack(app, "BackendStack", {});
+const backendStack = new BackendStack(app, 'BackendStack', {})
 
 NagSuppressions.addStackSuppressions(backendStack, [
   {
