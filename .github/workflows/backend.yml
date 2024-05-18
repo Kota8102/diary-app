@@ -65,7 +65,7 @@ jobs:
 
       - name: CDK Synth
         if: startsWith(github.ref, 'refs/heads/feature/')
-        run: npm run cdk synth --all --context openAiApiKey=dummy2
+        run: npm run cdk synth --all
         working-directory: src/backend
 
       - name: CDK Deploy
