@@ -63,7 +63,7 @@ export class Web extends Construct {
       ],
       destinationBucket: s3BucketInterface,
       distribution: cloudFrontWebDistribution,
-      outputSourceDirectory: 'src/backend/dist',
+      outputSourceDirectory: 'src/frontend/dist',
       buildCommands: [
         'npm install -w src/frontend',
         'npm run build -w src/frontend',
