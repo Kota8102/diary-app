@@ -205,7 +205,7 @@ export class ApiStack extends Construct {
         },
       }
     );
-    table.grantWriteData(diaryGenerateTitleCreateFunction);
+    generativeAiTable.grantWriteData(diaryGenerateTitleCreateFunction);
     table.grantStreamRead(diaryGenerateTitleCreateFunction);
     diaryGenerateTitleCreateFunction.addEventSource(
       new DynamoEventSource(table, {
