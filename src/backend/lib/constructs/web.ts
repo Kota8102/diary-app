@@ -1,74 +1,79 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import * as s3 from 'aws-cdk-lib/aws-s3';
+import { CloudFrontToS3 } from '@aws-solutions-constructs/aws-cloudfront-s3';
+import { NodejsBuild } from 'deploy-time-build';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import * as cloudfrontOrigins from 'aws-cdk-lib/aws-cloudfront-origins';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as waf from 'aws-cdk-lib/aws-wafv2';
+import * as cognito from 'aws-cdk-lib/aws-cognito';
+import * as idPool from '@aws-cdk/aws-cognito-identitypool-alpha';
 
-export interface WebHostingProps {
-  readonly logBucket: s3.IBucket;
+
+export interface WebProps {
+  userPool: cognito.UserPool;
+  userPoolClient: cognito.UserPoolClient;
+  identityPool: idPool.IdentityPool;
 }
 
-export class WebHostingStack extends Construct {
-  constructor(scope: Construct, id: string, props: WebHostingProps) {
+export class Web extends Construct {
+
+  constructor(scope: Construct, id: string, props: WebProps) {
     super(scope, id);
-    
-    const websiteBucket = new s3.Bucket(this, 'WebsiteBucket', {
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
-      enforceSSL: true,
-      serverAccessLogsBucket: props.logBucket,
-      serverAccessLogsPrefix: 'WebHostingBucketLog/',
-      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
-      websiteIndexDocument: 'index.html',
-      cors: [{
-        allowedMethods: [s3.HttpMethods.GET, s3.HttpMethods.HEAD],
-        allowedOrigins: ['*'],
-        allowedHeaders: ['*'],
-      }],
-    });
 
-    const cfnOriginAccessControl = new cdk.aws_cloudfront.CfnOriginAccessControl(
-      this,
-      "OriginAccessControl",
-      {
-        originAccessControlConfig: {
-          name: "OriginAccessControlForAppBucket",
-          originAccessControlOriginType: "s3",
-          signingBehavior: "always",
-          signingProtocol: "sigv4",
-          description: "S3 Access Control",
-        },
-      }
-    );
-
-    const distribution =new cdk.aws_cloudfront.Distribution(this, 'distro', {
-      defaultBehavior: {
-        origin: new cdk.aws_cloudfront_origins.S3Origin(websiteBucket),
-        viewerProtocolPolicy: cdk.aws_cloudfront.ViewerProtocolPolicy.HTTPS_ONLY
+    const { cloudFrontWebDistribution, s3BucketInterface } = new CloudFrontToS3(this, 'Web', {
+      insertHttpSecurityHeaders: false,
+      bucketProps: {
+        blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+        encryption: s3.BucketEncryption.S3_MANAGED,
+        enforceSSL: true,
+        autoDeleteObjects: true,
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
       },
-      defaultRootObject: "index.html",
-      geoRestriction: cdk.aws_cloudfront.GeoRestriction.allowlist('US', 'JP'),
+      loggingBucketProps: {
+        objectOwnership: s3.ObjectOwnership.OBJECT_WRITER,
+        autoDeleteObjects: true,
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+        serverAccessLogsPrefix: 'logs',
+      },
+      cloudFrontLoggingBucketProps: {
+        objectOwnership: s3.ObjectOwnership.OBJECT_WRITER,
+        autoDeleteObjects: true,
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+        serverAccessLogsPrefix: 'logs',
+      },
+      cloudFrontDistributionProps: {
+        geoRestriction: cloudfront.GeoRestriction.allowlist('JP'),
+        errorResponses: [
+          {
+            httpStatus: 403,
+            responsePagePath: '/index.html',
+            responseHttpStatus: 200,
+            ttl: cdk.Duration.seconds(0),
+          }
+        ],
+      }
     });
 
-    const websiteBucketPolicyStatement = new cdk.aws_iam.PolicyStatement({
-        actions: ["s3:GetObject"],
-        effect: cdk.aws_iam.Effect.ALLOW,
-        principals: [new cdk.aws_iam.ServicePrincipal("cloudfront.amazonaws.com")],
-        resources: [`${websiteBucket.bucketArn}/*`],
-        conditions: {
-          StringEquals: {
-            "AWS:SourceArn": `arn:aws:cloudfront::${distribution.env.account}:distribution/${distribution.distributionId}`,
-          },
-        },
-      });
-
-    websiteBucket.addToResourcePolicy(websiteBucketPolicyStatement);
-
-    const cfnDistribution = distribution.node.defaultChild as cdk.aws_cloudfront.CfnDistribution
-    cfnDistribution.addPropertyOverride('DistributionConfig.Origins.0.OriginAccessControlId', cfnOriginAccessControl.getAtt('Id'))
-    cfnDistribution.addPropertyOverride('DistributionConfig.Origins.0.DomainName', websiteBucket.bucketRegionalDomainName)
-    cfnDistribution.addOverride('Properties.DistributionConfig.Origins.0.S3OriginConfig.OriginAccessIdentity', "")
-    cfnDistribution.addPropertyDeletionOverride('DistributionConfig.Origins.0.CustomOriginConfig')
-
+    new NodejsBuild(this, 'WebBuild', {
+      assets: [
+        {
+          path: '../../',
+          exclude: ['.git', 'node_modules', 'docs', 'node_modules', 'src/backend', 'src/frontend/build', 'src/fontend/node_modules'],
+        }
+      ],
+      destinationBucket: s3BucketInterface,
+      distribution: cloudFrontWebDistribution,
+      outputSourceDirectory: 'src/backend/dist',
+      buildCommands: [
+        'npm install -w src/frontend',
+        'npm run build -w src/frontend',
+      ],
+      buildEnvironment: {
+        REACT_APP_IDENTITY_POOL_ID: props.identityPool.identityPoolId,
+        REACT_APP_REGION: cdk.Stack.of(this).region,
+        REACT_APP_USER_POOL_ID: props.userPool.userPoolId,
+        REACT_APP_USER_POOL_CLIENT_ID: props.userPoolClient.userPoolClientId,
+      }
+    });
   }
 }
