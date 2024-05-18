@@ -182,6 +182,15 @@ export class ApiStack extends Construct {
       actions: ["ssm:GetParameter"],
       resources: ["*"],
     });
+    const dynamodbStreamPolicy = new cdk.aws_iam.PolicyStatement({
+      actions: [
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator",
+        "dynamodb:DescribeStream",
+        "dynamodb:ListStreams",
+      ],
+      resources: [table.tableArn],
+    });
     generativeAiLambdaRole.addToPolicy(ssmPolicy);
 
     new ssm.StringParameter(this, "openai-api-key", {
