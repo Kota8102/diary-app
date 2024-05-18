@@ -9,6 +9,7 @@ const app = new cdk.App()
 Aspects.of(app).add(new AwsSolutionsChecks())
 
 const openAiApiKey = app.node.tryGetContext('OpenAiApiKey')
+console.log(`OpenAIAPIKEY: ${openAiApiKey}`)
 
 const backendStack = new BackendStack(app, 'BackendStack', {
   openAiApiKey: openAiApiKey,

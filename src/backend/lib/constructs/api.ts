@@ -161,7 +161,7 @@ export class ApiStack extends Construct {
     new ssm.StringParameter(this, 'openaiApiKey', {
       parameterName: 'OpenAI_API_KEY',
       stringValue: props.openAiApiKey,
-    })
+    }).applyRemovalPolicy(cdk.RemovalPolicy.DESTROY)
 
     const diaryGenerateTitleCreateFunction = new lambda.Function(
       this,
