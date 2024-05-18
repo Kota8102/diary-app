@@ -16,6 +16,7 @@ export interface WebProps {
 }
 
 export class Web extends Construct {
+  public readonly distribution: cloudfront.Distribution;
 
   constructor(scope: Construct, id: string, props: WebProps) {
     super(scope, id);
@@ -75,5 +76,7 @@ export class Web extends Construct {
         REACT_APP_USER_POOL_CLIENT_ID: props.userPoolClient.userPoolClientId,
       }
     });
+
+    this.distribution = cloudFrontWebDistribution;
   }
 }

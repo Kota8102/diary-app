@@ -32,5 +32,8 @@ export class BackendStack extends cdk.Stack {
       identityPool: identity.identityPool,
     });
 
+    new cdk.CfnOutput(this, 'WebFrontend', {
+      value: `https://${web.distribution.distributionDomainName}`,
+    })
   }
 }
