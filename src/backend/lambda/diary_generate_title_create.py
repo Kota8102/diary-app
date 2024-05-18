@@ -1,6 +1,7 @@
 import json
 import boto3
-import requests
+import urllib.request
+import urllib.parse
 
 def lambda_handler(event, context):
     for record in event['Records']:
@@ -24,7 +25,7 @@ def generate_title_and_save_to_dynamodb(diary_content):
     }
     
     response = send_request_to_openai_api(api_endpoint, api_key, request_data)
-    generated_title = response.json()['choices'][0]['message']['content']
+    generated_title = json.loads(response)['choices'][0]['message']['content']
     
     dynamodb = boto3.resource('dynamodb')
     table_name = 'generative-ai-table'
@@ -42,6 +43,8 @@ def send_request_to_openai_api(api_endpoint, api_key, request_data):
         'Authorization': 'Bearer ' + api_key
     }
 
-    response = requests.post(api_endpoint, headers=headers, json=request_data)
+    data = json.dumps(request_data).encode('utf-8')
+    req = urllib.request.Request(api_endpoint, data=data, headers=headers)
+    response = urllib.request.urlopen(req).read().decode('utf-8')
     
     return response

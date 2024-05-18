@@ -197,8 +197,8 @@ export class ApiStack extends Construct {
         runtime: lambda.Runtime.PYTHON_3_11,
         handler: "diary_generate_title_create.lambda_handler",
         code: lambda.Code.fromAsset("lambda"),
-        role: LambdaRole,
-        logRetention: 14,
+        role: generativeAiLambdaRole,
+
         environment: {
           TABLE_NAME: generativeAiTable.tableName,
         },
