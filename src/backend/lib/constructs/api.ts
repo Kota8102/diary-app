@@ -182,17 +182,23 @@ export class ApiStack extends Construct {
       actions: ["ssm:GetParameter"],
       resources: ["*"],
     });
-    const dynamodbStreamPolicy = new cdk.aws_iam.PolicyStatement({
-      actions: [
-        "dynamodb:GetRecords",
-        "dynamodb:GetShardIterator",
-        "dynamodb:DescribeStream",
-        "dynamodb:ListStreams",
-      ],
-      resources: [table.tableArn],
-    });
+    // tableStreamArnが存在するかチェックし、存在する場合にのみPolicyStatementを作成する
+    const dynamodbStreamPolicy = table.tableStreamArn
+      ? new cdk.aws_iam.PolicyStatement({
+          actions: [
+            "dynamodb:GetRecords",
+            "dynamodb:GetShardIterator",
+            "dynamodb:DescribeStream",
+            "dynamodb:ListStreams",
+          ],
+          resources: [table.tableStreamArn],
+        })
+      : null;
+    // dynamodbStreamPolicyがnullでないことを確認してから、ポリシーをアタッチする
+    if (dynamodbStreamPolicy) {
+      generativeAiLambdaRole.addToPolicy(dynamodbStreamPolicy);
+    }
     generativeAiLambdaRole.addToPolicy(ssmPolicy);
-    generativeAiLambdaRole.addToPolicy(dynamodbStreamPolicy);
 
     new ssm.StringParameter(this, "openai-api-key", {
       parameterName: "OpenAI_API_KEY",
