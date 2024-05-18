@@ -8,7 +8,6 @@ export class Api extends Construct {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id);
     const table = new dynamodb.Table(this, `diary-contents-table`, {
-      tableName: 'diary-basic-table',
       partitionKey: {
         name: "user_id",
         type: dynamodb.AttributeType.STRING,
@@ -23,13 +22,11 @@ export class Api extends Construct {
 
     const LambdaRole = new cdk.aws_iam.Role(this, 'Lambda Excecution Role', {
       assumedBy: new cdk.aws_iam.ServicePrincipal('lambda.amazonaws.com'),
-      roleName: 'lambda-basic-excecution-role',
     });
 
     LambdaRole.addManagedPolicy(cdk.aws_iam.ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaBasicExecutionRole"));
 
     const diaryCreateFunction = new lambda.Function(this, 'diary-create-lambda', {
-      functionName: 'create-dairy-item-lambda',
       runtime: lambda.Runtime.PYTHON_3_11,
       handler: 'diary_create.lambda_handler',
       code: lambda.Code.fromAsset('lambda'),
@@ -42,7 +39,6 @@ export class Api extends Construct {
     table.grantWriteData(diaryCreateFunction);
 
     const diaryEditFunction = new lambda.Function(this, 'diary-edit-lambda', {
-      functionName: 'edit-dairy-item-lambda',
       runtime: lambda.Runtime.PYTHON_3_11,
       handler: 'diary_edit.lambda_handler',
       code: lambda.Code.fromAsset('lambda'),
@@ -54,7 +50,6 @@ export class Api extends Construct {
     });
     table.grantReadWriteData(diaryEditFunction)
     const diaryReadFunction = new lambda.Function(this, 'diary-read-lambda', {
-      functionName: 'read-dairy-item-lambda',
       runtime: lambda.Runtime.PYTHON_3_11,
       handler: 'diary_read.lambda_handler',
       code: lambda.Code.fromAsset('lambda'),
@@ -67,7 +62,6 @@ export class Api extends Construct {
     table.grantReadData(diaryReadFunction)
 
     const diaryDeleteFunction = new lambda.Function(this, 'diary-delete-lambda', {
-      functionName: 'delete-dairy-item-lambda',
       runtime: lambda.Runtime.PYTHON_3_11,
       handler: 'diary_delete.lambda_handler',
       code: lambda.Code.fromAsset('lambda'),
@@ -81,7 +75,6 @@ export class Api extends Construct {
 
     // CloudWatch Logsへのアクセスを許可するロールの作成
     const cloudwatchLogsRole = new cdk.aws_iam.Role(this, 'APIGatewayCloudWatchLogsRole', {
-      roleName: 'apigateway-cloudwatchlogs-role',
       assumedBy: new cdk.aws_iam.ServicePrincipal('apigateway.amazonaws.com'),
       managedPolicies: [
         cdk.aws_iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonAPIGatewayPushToCloudWatchLogs')
@@ -90,13 +83,11 @@ export class Api extends Construct {
 
     // API Gateway の作成
     const logGroup = new cdk.aws_logs.LogGroup(this, 'ApiGatewayAccessLogs', {
-      logGroupName: 'apigateway-accesslogs',
       retention: 14,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
-
     });
+
     const api = new apigateway.RestApi(this, 'DiaryApi', {
-      restApiName: 'diary-basic-api',
       cloudWatchRole: true,
       cloudWatchRoleRemovalPolicy: cdk.RemovalPolicy.DESTROY,
       deployOptions: {
