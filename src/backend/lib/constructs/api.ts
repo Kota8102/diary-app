@@ -6,8 +6,12 @@ import { DynamoEventSource } from 'aws-cdk-lib/aws-lambda-event-sources'
 import * as ssm from 'aws-cdk-lib/aws-ssm'
 import { Construct } from 'constructs'
 
+interface ApiStackProps extends cdk.StackProps {
+  openAiApiKey: string
+}
+
 export class ApiStack extends Construct {
-  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+  constructor(scope: Construct, id: string, props: ApiStackProps) {
     super(scope, id)
     const table = new dynamodb.Table(this, `diaryContentsTable`, {
       partitionKey: {
@@ -156,7 +160,7 @@ export class ApiStack extends Construct {
 
     new ssm.StringParameter(this, 'openaiApiKey', {
       parameterName: 'OpenAI_API_KEY',
-      stringValue: 'dummy',
+      stringValue: props.openAiApiKey,
     })
 
     const diaryGenerateTitleCreateFunction = new lambda.Function(

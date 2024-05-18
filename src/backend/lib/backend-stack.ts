@@ -1,31 +1,35 @@
-import * as cdk from "aws-cdk-lib";
-import { Construct } from "constructs";
-import * as s3 from 'aws-cdk-lib/aws-s3';
-import { ApiStack } from './constructs/api';
-import { AuthStack } from './constructs/auth';
-import { WebHostingStack } from './constructs/web';
+import * as cdk from 'aws-cdk-lib'
+import * as s3 from 'aws-cdk-lib/aws-s3'
+import { Construct } from 'constructs'
+import { ApiStack } from './constructs/api'
+import { AuthStack } from './constructs/auth'
+import { WebHostingStack } from './constructs/web'
 
-interface BackendStackProps extends cdk.StackProps { }
+interface BackendStackProps extends cdk.StackProps {
+  openAiApiKey: string
+}
 
 export class BackendStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: BackendStackProps) {
-    super(scope, id, props);
+    super(scope, id, props)
 
     const logBucket = new s3.Bucket(this, 'LogBucket', {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       enforceSSL: true,
       serverAccessLogsPrefix: 'log/',
-    });
+    })
 
     // ウェブホスティングスタックのインスタンス化
-    const hostingStack = new WebHostingStack(this, 'WebHostingStack',{
+    const hostingStack = new WebHostingStack(this, 'WebHostingStack', {
       logBucket,
-    });
+    })
 
     // 認証機能スタックのインスタンス化
-    const authStack = new AuthStack(this, 'AuthStack');
+    const authStack = new AuthStack(this, 'AuthStack')
 
     // API機能スタックのインスタンス化
-    const apiStack= new ApiStack(this, 'ApiStack');
+    const apiStack = new ApiStack(this, 'ApiStack', {
+      openAiApiKey: props.openAiApiKey,
+    })
   }
 }
