@@ -46,10 +46,6 @@ jobs:
         run: npm ci -w backend
         working-directory: src/backend
 
-      - name: Build
-        run: npm run build
-        working-directory: src/backend
-
       - name: display secrets
         run: |
           echo env: ${{ needs.set-environment.outputs.environment }}
