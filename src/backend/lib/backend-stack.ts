@@ -1,9 +1,7 @@
 import * as cdk from 'aws-cdk-lib'
 import * as s3 from 'aws-cdk-lib/aws-s3'
 import { Construct } from 'constructs'
-import { ApiStack } from './constructs/api'
-import { AuthStack } from './constructs/auth'
-import { WebHostingStack } from './constructs/web'
+import { Api, Auth, Identity, Web } from './constructs'
 
 interface BackendStackProps extends cdk.StackProps {}
 
@@ -18,7 +16,7 @@ export class BackendStack extends cdk.Stack {
     })
 
     // 認証機能スタックのインスタンス化
-    const auth = new Auth(this, 'Auth');
+    const auth = new Auth(this, 'Auth')
 
     const identity = new Identity(this, 'Identity', {
       userPool: auth.userPool,
@@ -26,13 +24,13 @@ export class BackendStack extends cdk.Stack {
     })
 
     // API機能スタックのインスタンス化
-    const apiStack = new Api(this, 'Api');
+    const api = new Api(this, 'Api')
 
     const web = new Web(this, 'Web', {
       userPool: auth.userPool,
       userPoolClient: auth.userPoolClient,
       identityPool: identity.identityPool,
-    });
+    })
 
     new cdk.CfnOutput(this, 'WebFrontend', {
       value: `https://${web.distribution.distributionDomainName}`,
