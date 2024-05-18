@@ -7,14 +7,14 @@ def lambda_handler(event, context):
     for record in event['Records']:
         if record['eventName'] == 'INSERT':
             diary_content = record['dynamodb']['NewImage']['diary_content']['S']
-            generate_title_and_save_to_dynamodb(diary_content)
+            generate_title_and_save_to_dynamodb(diary_content, record)
 
     return {
         'statusCode': 200,
         'body': json.dumps('Processed DynamoDB Stream records.')
     }
 
-def generate_title_and_save_to_dynamodb(diary_content):
+def generate_title_and_save_to_dynamodb(diary_content, record):
     api_endpoint = "https://api.openai.com/v1/chat/completions"
     api_key = get_parameter_from_parameter_store('OpenAI_API_KEY')
     
