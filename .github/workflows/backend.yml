@@ -43,7 +43,7 @@ jobs:
           node-version: "20.x"
 
       - name: Setup dependencies
-        run: npm ci -w backend
+        run: npm ci
         working-directory: src/backend
 
       - name: display secrets
