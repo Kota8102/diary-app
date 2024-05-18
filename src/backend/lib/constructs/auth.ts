@@ -47,10 +47,6 @@ export class Auth extends Construct {
       ],
     });
 
-    userPool.addDomain('UserPoolDomain', {
-      cognitoDomain: { domainPrefix: `dairy-${userPool.env.account}` },
-    });
-
     this.userPool = userPool;
     this.userPoolClient = userPoolClient;
   }
