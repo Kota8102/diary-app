@@ -2,6 +2,7 @@ import * as cdk from "aws-cdk-lib";
 import * as apigateway from "aws-cdk-lib/aws-apigateway";
 import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
 import * as lambda from "aws-cdk-lib/aws-lambda";
+import { DynamoEventSource } from "aws-cdk-lib/aws-lambda-event-sources";
 import * as ssm from "aws-cdk-lib/aws-ssm";
 import { Construct } from "constructs";
 
@@ -168,6 +169,7 @@ export class ApiStack extends Construct {
       },
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       pointInTimeRecovery: true,
+      stream: dynamodb.StreamViewType.NEW_AND_OLD_IMAGES,
     });
 
     const generativeAiLambdaRole = new cdk.aws_iam.Role(
@@ -182,22 +184,6 @@ export class ApiStack extends Construct {
       actions: ["ssm:GetParameter"],
       resources: ["*"],
     });
-    // tableStreamArnが存在するかチェックし、存在する場合にのみPolicyStatementを作成する
-    const dynamodbStreamPolicy = table.tableStreamArn
-      ? new cdk.aws_iam.PolicyStatement({
-          actions: [
-            "dynamodb:GetRecords",
-            "dynamodb:GetShardIterator",
-            "dynamodb:DescribeStream",
-            "dynamodb:ListStreams",
-          ],
-          resources: [table.tableStreamArn],
-        })
-      : null;
-    // dynamodbStreamPolicyがnullでないことを確認してから、ポリシーをアタッチする
-    if (dynamodbStreamPolicy) {
-      generativeAiLambdaRole.addToPolicy(dynamodbStreamPolicy);
-    }
     generativeAiLambdaRole.addToPolicy(ssmPolicy);
 
     new ssm.StringParameter(this, "openai-api-key", {
@@ -214,12 +200,17 @@ export class ApiStack extends Construct {
         handler: "diary_generate_title_create.lambda_handler",
         code: lambda.Code.fromAsset("lambda"),
         role: generativeAiLambdaRole,
-
         environment: {
           TABLE_NAME: generativeAiTable.tableName,
         },
       }
     );
-    generativeAiTable.grantWriteData(diaryGenerateTitleCreateFunction);
+    table.grantWriteData(diaryGenerateTitleCreateFunction);
+    table.grantStreamRead(diaryGenerateTitleCreateFunction);
+    diaryGenerateTitleCreateFunction.addEventSource(
+      new DynamoEventSource(table, {
+        startingPosition: lambda.StartingPosition.LATEST,
+      })
+    );
   }
 }
