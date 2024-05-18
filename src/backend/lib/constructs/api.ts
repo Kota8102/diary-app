@@ -4,10 +4,10 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
 
-export class ApiStack extends Construct {
+export class Api extends Construct {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id);
-    const table =new dynamodb.Table(this, `diary-contents-table`, {
+    const table = new dynamodb.Table(this, `diary-contents-table`, {
       tableName: 'diary-basic-table',
       partitionKey: {
         name: "user_id",
@@ -25,7 +25,7 @@ export class ApiStack extends Construct {
       assumedBy: new cdk.aws_iam.ServicePrincipal('lambda.amazonaws.com'),
       roleName: 'lambda-basic-excecution-role',
     });
-    
+
     LambdaRole.addManagedPolicy(cdk.aws_iam.ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaBasicExecutionRole"));
 
     const diaryCreateFunction = new lambda.Function(this, 'diary-create-lambda', {
@@ -77,7 +77,7 @@ export class ApiStack extends Construct {
         TABLE_NAME: table.tableName
       }
     });
-    table.grant(diaryDeleteFunction,"dynamodb:DeleteItem")
+    table.grant(diaryDeleteFunction, "dynamodb:DeleteItem")
 
     // CloudWatch Logsへのアクセスを許可するロールの作成
     const cloudwatchLogsRole = new cdk.aws_iam.Role(this, 'APIGatewayCloudWatchLogsRole', {
@@ -88,14 +88,14 @@ export class ApiStack extends Construct {
       ]
     });
 
-     // API Gateway の作成
-     const logGroup = new cdk.aws_logs.LogGroup(this, 'ApiGatewayAccessLogs',{
+    // API Gateway の作成
+    const logGroup = new cdk.aws_logs.LogGroup(this, 'ApiGatewayAccessLogs', {
       logGroupName: 'apigateway-accesslogs',
       retention: 14,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
 
-     });
-     const api = new apigateway.RestApi(this, 'DiaryApi', {
+    });
+    const api = new apigateway.RestApi(this, 'DiaryApi', {
       restApiName: 'diary-basic-api',
       cloudWatchRole: true,
       cloudWatchRoleRemovalPolicy: cdk.RemovalPolicy.DESTROY,
