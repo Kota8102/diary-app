@@ -2,7 +2,11 @@ import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 
-export class AuthStack extends Construct {
+export class Auth extends Construct {
+  public readonly userPool: cognito.UserPool;
+  public readonly userPoolClient: cognito.UserPoolClient;
+  public readonly identityPool: cognito.CfnIdentityPool;
+
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id);
 
@@ -43,17 +47,7 @@ export class AuthStack extends Construct {
       ],
     });
 
-    const identityPool = new cognito.CfnIdentityPool(this, 'IdentityPool', {
-      allowUnauthenticatedIdentities: false,
-      cognitoIdentityProviders: [{
-        clientId: userPoolClient.userPoolClientId,
-        providerName: userPool.userPoolProviderName,
-      }],
-    });
-
-    userPool.addDomain('UserPoolDomain', {
-      cognitoDomain: { domainPrefix: `dairy-${userPool.env.account}` },
-    });
-
+    this.userPool = userPool;
+    this.userPoolClient = userPoolClient;
   }
 }
