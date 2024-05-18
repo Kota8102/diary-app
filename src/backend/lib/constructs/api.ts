@@ -3,15 +3,10 @@ import * as apigateway from 'aws-cdk-lib/aws-apigateway'
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb'
 import * as lambda from 'aws-cdk-lib/aws-lambda'
 import { DynamoEventSource } from 'aws-cdk-lib/aws-lambda-event-sources'
-import * as ssm from 'aws-cdk-lib/aws-ssm'
 import { Construct } from 'constructs'
 
-interface ApiStackProps extends cdk.StackProps {
-  openAiApiKey: string
-}
-
 export class ApiStack extends Construct {
-  constructor(scope: Construct, id: string, props: ApiStackProps) {
+  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id)
     const table = new dynamodb.Table(this, `diaryContentsTable`, {
       partitionKey: {
@@ -157,11 +152,6 @@ export class ApiStack extends Construct {
       resources: ['*'],
     })
     generativeAiLambdaRole.addToPolicy(ssmPolicy)
-
-    new ssm.StringParameter(this, 'openaiApiKey', {
-      parameterName: 'OpenAI_API_KEY',
-      stringValue: props.openAiApiKey,
-    }).applyRemovalPolicy(cdk.RemovalPolicy.DESTROY)
 
     const diaryGenerateTitleCreateFunction = new lambda.Function(
       this,

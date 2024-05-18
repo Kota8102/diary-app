@@ -5,9 +5,7 @@ import { ApiStack } from './constructs/api'
 import { AuthStack } from './constructs/auth'
 import { WebHostingStack } from './constructs/web'
 
-interface BackendStackProps extends cdk.StackProps {
-  openAiApiKey: string
-}
+interface BackendStackProps extends cdk.StackProps {}
 
 export class BackendStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: BackendStackProps) {
@@ -28,8 +26,6 @@ export class BackendStack extends cdk.Stack {
     const authStack = new AuthStack(this, 'AuthStack')
 
     // API機能スタックのインスタンス化
-    const apiStack = new ApiStack(this, 'ApiStack', {
-      openAiApiKey: props.openAiApiKey,
-    })
+    const apiStack = new ApiStack(this, 'ApiStack')
   }
 }
