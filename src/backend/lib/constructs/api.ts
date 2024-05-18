@@ -21,6 +21,7 @@ export class ApiStack extends Construct {
       },
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       pointInTimeRecovery: true,
+      stream: dynamodb.StreamViewType.NEW_AND_OLD_IMAGES,
     });
 
     const LambdaRole = new cdk.aws_iam.Role(this, "Lambda Excecution Role", {
@@ -169,7 +170,6 @@ export class ApiStack extends Construct {
       },
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       pointInTimeRecovery: true,
-      stream: dynamodb.StreamViewType.NEW_AND_OLD_IMAGES,
     });
 
     const generativeAiLambdaRole = new cdk.aws_iam.Role(
