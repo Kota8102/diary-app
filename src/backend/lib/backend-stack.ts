@@ -17,15 +17,25 @@ export class BackendStack extends cdk.Stack {
       serverAccessLogsPrefix: 'log/',
     })
 
-    // ウェブホスティングスタックのインスタンス化
-    const hostingStack = new WebHostingStack(this, 'WebHostingStack', {
-      logBucket,
+    // 認証機能スタックのインスタンス化
+    const auth = new Auth(this, 'Auth');
+
+    const identity = new Identity(this, 'Identity', {
+      userPool: auth.userPool,
+      userPoolClient: auth.userPoolClient,
     })
 
-    // 認証機能スタックのインスタンス化
-    const authStack = new AuthStack(this, 'AuthStack')
-
     // API機能スタックのインスタンス化
-    const apiStack = new ApiStack(this, 'ApiStack')
+    const apiStack = new Api(this, 'Api');
+
+    const web = new Web(this, 'Web', {
+      userPool: auth.userPool,
+      userPoolClient: auth.userPoolClient,
+      identityPool: identity.identityPool,
+    });
+
+    new cdk.CfnOutput(this, 'WebFrontend', {
+      value: `https://${web.distribution.distributionDomainName}`,
+    })
   }
 }

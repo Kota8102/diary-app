@@ -42,8 +42,7 @@ NagSuppressions.addStackSuppressions(backendStack, [
   },
   {
     id: 'AwsSolutions-CFR3',
-    reason:
-      'CloudFrontのロギングをオフにします。S3のパブリックアクセスをオフにしなければオンに出来無さそうでした',
+    reason: 'CloudFrontのロギングをオフにします。S3のパブリックアクセスをオフにしなければオンに出来無さそうでした',
   },
   {
     id: 'AwsSolutions-S5',
@@ -61,4 +60,8 @@ NagSuppressions.addStackSuppressions(backendStack, [
     id: 'AwsSolutions-APIG4',
     reason: 'オーソライザーの要求を一時的にオフにします。(本番はON)',
   },
-])
+  {
+    id: 'AwsSolutions-CB4',
+    reason: 'CodeBuildプロジェクトのKMSキーの使用を一時的にオフにします。(本番はON)',
+  },
+]);

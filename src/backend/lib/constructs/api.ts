@@ -5,7 +5,7 @@ import * as lambda from 'aws-cdk-lib/aws-lambda'
 import { DynamoEventSource } from 'aws-cdk-lib/aws-lambda-event-sources'
 import { Construct } from 'constructs'
 
-export class ApiStack extends Construct {
+export class Api extends Construct {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id)
     const table = new dynamodb.Table(this, `diaryContentsTable`, {
@@ -24,8 +24,9 @@ export class ApiStack extends Construct {
 
     const LambdaRole = new cdk.aws_iam.Role(this, 'Lambda Excecution Role', {
       assumedBy: new cdk.aws_iam.ServicePrincipal('lambda.amazonaws.com'),
-      roleName: 'lambda-basic-excecution-role',
-    })
+    });
+
+    LambdaRole.addManagedPolicy(cdk.aws_iam.ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaBasicExecutionRole"));
 
     const diaryCreateFunction = new lambda.Function(this, 'diaryCreateLambda', {
       runtime: lambda.Runtime.PYTHON_3_11,
@@ -38,7 +39,6 @@ export class ApiStack extends Construct {
       },
     })
     table.grantWriteData(diaryCreateFunction)
-
     const diaryEditFunction = new lambda.Function(this, 'diaryEditLambda', {
       runtime: lambda.Runtime.PYTHON_3_11,
       handler: 'diary_edit.lambda_handler',
@@ -69,6 +69,7 @@ export class ApiStack extends Construct {
       role: LambdaRole,
       logRetention: 14,
       environment: {
+
         TABLE_NAME: table.tableName,
       },
     })
@@ -89,6 +90,7 @@ export class ApiStack extends Construct {
       retention: 14,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     })
+
     const api = new apigateway.RestApi(this, 'DiaryApi', {
       cloudWatchRole: true,
       cloudWatchRoleRemovalPolicy: cdk.RemovalPolicy.DESTROY,
