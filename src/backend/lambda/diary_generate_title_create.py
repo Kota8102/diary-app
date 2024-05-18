@@ -1,18 +1,25 @@
 import json
 import boto3
+import os
 import urllib.request
 import urllib.parse
 
 def lambda_handler(event, context):
-    for record in event['Records']:
-        if record['eventName'] == 'INSERT':
-            diary_content = record['dynamodb']['NewImage']['diary_content']['S']
-            generate_title_and_save_to_dynamodb(diary_content, record)
+    try:
+      for record in event['Records']:
+          if record['eventName'] == 'INSERT':
+              diary_content = record['dynamodb']['NewImage']['diary_content']['S']
+              generate_title_and_save_to_dynamodb(diary_content, record)
 
-    return {
-        'statusCode': 200,
-        'body': json.dumps('Processed DynamoDB Stream records.')
-    }
+      return {
+          'statusCode': 200,
+          'body': json.dumps('Processed DynamoDB Stream records.')
+      }
+    except Exception as e:
+      return {
+          'statusCode': 500,
+          'body': json.dumps(f'An error occurred: {str(e)}')
+      }
 
 def generate_title_and_save_to_dynamodb(diary_content, record):
     api_endpoint = "https://api.openai.com/v1/chat/completions"
@@ -28,7 +35,7 @@ def generate_title_and_save_to_dynamodb(diary_content, record):
     generated_title = json.loads(response)['choices'][0]['message']['content']
     
     dynamodb = boto3.resource('dynamodb')
-    table_name = 'generative-ai-table'
+    table_name = os.environ['TABLE_NAME']
     table = dynamodb.Table(table_name)
     table.put_item(Item={'user_id': record['dynamodb']['NewImage']['user_id']['S'], 'date': record['dynamodb']['NewImage']['date']['S'], 'title': generated_title})
 

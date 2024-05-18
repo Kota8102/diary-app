@@ -9,8 +9,7 @@ import { Construct } from 'constructs'
 export class ApiStack extends Construct {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id)
-    const table = new dynamodb.Table(this, `diary-contents-table`, {
-      tableName: 'diary-basic-table',
+    const table = new dynamodb.Table(this, `diaryContentsTable`, {
       partitionKey: {
         name: 'user_id',
         type: dynamodb.AttributeType.STRING,
@@ -29,8 +28,7 @@ export class ApiStack extends Construct {
       roleName: 'lambda-basic-excecution-role',
     })
 
-    const diaryCreateFunction = new lambda.Function(this, 'diary-create-lambda', {
-      functionName: 'create-dairy-item-lambda',
+    const diaryCreateFunction = new lambda.Function(this, 'diaryCreateLambda', {
       runtime: lambda.Runtime.PYTHON_3_11,
       handler: 'diary_create.lambda_handler',
       code: lambda.Code.fromAsset('lambda'),
@@ -42,8 +40,7 @@ export class ApiStack extends Construct {
     })
     table.grantWriteData(diaryCreateFunction)
 
-    const diaryEditFunction = new lambda.Function(this, 'diary-edit-lambda', {
-      functionName: 'edit-dairy-item-lambda',
+    const diaryEditFunction = new lambda.Function(this, 'diaryEditLambda', {
       runtime: lambda.Runtime.PYTHON_3_11,
       handler: 'diary_edit.lambda_handler',
       code: lambda.Code.fromAsset('lambda'),
@@ -54,8 +51,7 @@ export class ApiStack extends Construct {
       },
     })
     table.grantReadWriteData(diaryEditFunction)
-    const diaryReadFunction = new lambda.Function(this, 'diary-read-lambda', {
-      functionName: 'read-dairy-item-lambda',
+    const diaryReadFunction = new lambda.Function(this, 'diaryReadLambda', {
       runtime: lambda.Runtime.PYTHON_3_11,
       handler: 'diary_read.lambda_handler',
       code: lambda.Code.fromAsset('lambda'),
@@ -67,8 +63,7 @@ export class ApiStack extends Construct {
     })
     table.grantReadData(diaryReadFunction)
 
-    const diaryDeleteFunction = new lambda.Function(this, 'diary-delete-lambda', {
-      functionName: 'delete-dairy-item-lambda',
+    const diaryDeleteFunction = new lambda.Function(this, 'diaryDeleteLambda', {
       runtime: lambda.Runtime.PYTHON_3_11,
       handler: 'diary_delete.lambda_handler',
       code: lambda.Code.fromAsset('lambda'),
@@ -82,7 +77,6 @@ export class ApiStack extends Construct {
 
     // CloudWatch Logsへのアクセスを許可するロールの作成
     const cloudwatchLogsRole = new cdk.aws_iam.Role(this, 'APIGatewayCloudWatchLogsRole', {
-      roleName: 'apigateway-cloudwatchlogs-role',
       assumedBy: new cdk.aws_iam.ServicePrincipal('apigateway.amazonaws.com'),
       managedPolicies: [
         cdk.aws_iam.ManagedPolicy.fromAwsManagedPolicyName(
@@ -93,12 +87,10 @@ export class ApiStack extends Construct {
 
     // API Gateway の作成
     const logGroup = new cdk.aws_logs.LogGroup(this, 'ApiGatewayAccessLogs', {
-      logGroupName: 'apigateway-accesslogs',
       retention: 14,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     })
     const api = new apigateway.RestApi(this, 'DiaryApi', {
-      restApiName: 'diary-basic-api',
       cloudWatchRole: true,
       cloudWatchRoleRemovalPolicy: cdk.RemovalPolicy.DESTROY,
       deployOptions: {
@@ -140,8 +132,7 @@ export class ApiStack extends Construct {
     // DELETEエンドポイント - 日記の削除
     diary.addMethod('DELETE', new apigateway.LambdaIntegration(diaryDeleteFunction))
 
-    const generativeAiTable = new dynamodb.Table(this, `generative-ai-table`, {
-      tableName: 'generative-ai-table',
+    const generativeAiTable = new dynamodb.Table(this, `generativeAiTable`, {
       partitionKey: {
         name: 'user_id',
         type: dynamodb.AttributeType.STRING,
@@ -156,7 +147,6 @@ export class ApiStack extends Construct {
 
     const generativeAiLambdaRole = new cdk.aws_iam.Role(this, 'generativeAiLambdaRole', {
       assumedBy: new cdk.aws_iam.ServicePrincipal('lambda.amazonaws.com'),
-      roleName: 'generative-ai-lambda-role',
     })
     const ssmPolicy = new cdk.aws_iam.PolicyStatement({
       actions: ['ssm:GetParameter'],
@@ -164,16 +154,15 @@ export class ApiStack extends Construct {
     })
     generativeAiLambdaRole.addToPolicy(ssmPolicy)
 
-    new ssm.StringParameter(this, 'openai-api-key', {
+    new ssm.StringParameter(this, 'openaiApiKey', {
       parameterName: 'OpenAI_API_KEY',
       stringValue: 'dummy',
     })
 
     const diaryGenerateTitleCreateFunction = new lambda.Function(
       this,
-      'diary-generate-title-create-lambda',
+      'diaryGenerateTitleCreateLambda',
       {
-        functionName: 'diary-generate-title-create-lambda',
         runtime: lambda.Runtime.PYTHON_3_11,
         handler: 'diary_generate_title_create.lambda_handler',
         code: lambda.Code.fromAsset('lambda'),
