@@ -192,6 +192,7 @@ export class ApiStack extends Construct {
       resources: [table.tableArn],
     });
     generativeAiLambdaRole.addToPolicy(ssmPolicy);
+    generativeAiLambdaRole.addToPolicy(dynamodbStreamPolicy);
 
     new ssm.StringParameter(this, "openai-api-key", {
       parameterName: "OpenAI_API_KEY",
