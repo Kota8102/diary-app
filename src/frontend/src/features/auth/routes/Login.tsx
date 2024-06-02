@@ -1,6 +1,8 @@
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../cognito-auth';
+import { MainLayout } from '../../../components/layout'
 // import { Button } from '../../../components/Elements/Button';
 
 export const Login = () => {
@@ -22,6 +24,7 @@ export const Login = () => {
   };
 
   return (
+    <MainLayout>
     <div className="flex flex-col items-center justify-center h-full">
       <form onSubmit={handleLogin} className="space-y-4">
         <div>
@@ -47,5 +50,6 @@ export const Login = () => {
         <button type="submit">ログイン</button>
       </form>
     </div>
+    </MainLayout>
   );
 };

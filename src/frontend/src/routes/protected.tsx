@@ -1,8 +1,10 @@
 import { Outlet, Navigate } from 'react-router-dom'
 
 import { MainLayout } from '../components/layout'
+import { Bouquet } from '../features/bouquet'
 import { Diary } from '../features/diary'
 import { DiaryEntryRoutes } from '../features/diaryEntry'
+import { Flower } from '../features/flower'
 import { NotFound } from '../features/notfound'
 import { Setting } from '../features/setting'
 import { AuthRoutes } from '../features/auth'
@@ -33,6 +35,8 @@ export const protectedRoutes = [
       { path: '/diarylist/*', element: <Diary /> },
       { path: 'setting', element: <Setting /> },
       { path: '/auth/*', element: <AuthRoutes /> },
+      { path: 'bouquet', element: <Bouquet /> },
+      { path: 'flower', element: <Flower /> },
       { path: '*', element: <NotFound /> },
     ],
   },

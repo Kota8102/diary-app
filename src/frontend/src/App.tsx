@@ -7,6 +7,7 @@ function App() {
       <AppRoutes />
     </ProvideAuth>
   );
+
 }
 
 export default App

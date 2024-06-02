@@ -4,6 +4,7 @@ import { AuthChoice } from './AuthChoice'
 import { Login } from './Login'
 import { SignUp } from './SignUp'
 
+
 export const AuthRoutes = () => {
   return (
     <Routes>
