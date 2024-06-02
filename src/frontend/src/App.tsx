@@ -1,7 +1,12 @@
 import { AppRoutes } from './routes'
+import { ProvideAuth } from './features/auth/cognito-auth';
 
 function App() {
-  return <AppRoutes />
+  return (
+    <ProvideAuth>
+      <AppRoutes />
+    </ProvideAuth>
+  );
 }
 
 export default App

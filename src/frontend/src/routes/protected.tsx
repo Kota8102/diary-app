@@ -5,6 +5,7 @@ import { Diary } from '../features/diary'
 import { DiaryEntryRoutes } from '../features/diaryEntry'
 import { NotFound } from '../features/notfound'
 import { Setting } from '../features/setting'
+import { AuthRoutes } from '../features/auth'
 
 const App = () => {
   return (
@@ -31,6 +32,7 @@ export const protectedRoutes = [
       { path: '/diary/*', element: <DiaryEntryRoutes /> },
       { path: '/diarylist/*', element: <Diary /> },
       { path: 'setting', element: <Setting /> },
+      { path: '/auth/*', element: <AuthRoutes /> },
       { path: '*', element: <NotFound /> },
     ],
   },
