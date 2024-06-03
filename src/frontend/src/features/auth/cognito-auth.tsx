@@ -8,7 +8,6 @@ const AwsConfigAuth = {
   userPoolWebClientId: import.meta.env.VITE_COGNITO_WEB_CLIENT_ID,
   authenticationFlowType: 'USER_SRP_AUTH',
 }
-console.log(import.meta.env.COGNITO_REGION)
 
 Amplify.configure({Auth: AwsConfigAuth});
 
