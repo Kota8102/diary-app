@@ -1,5 +1,4 @@
 import { Route, Routes } from 'react-router-dom'
-
 import { AuthChoice } from './AuthChoice'
 import { Login } from './Login'
 import { SignUp } from './SignUp'

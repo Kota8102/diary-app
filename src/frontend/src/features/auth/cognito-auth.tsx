@@ -64,23 +64,22 @@ const useProvideAuth = (): UseAuth => {
       });
   }, []);
 
-  const signUp = async (username, password) => {
+  const signUp = async (username: string, password: string) => {
     try {
-      const result = await Auth.signUp({
+      await Auth.signUp({
         username,
         password,
         attributes: {
-          // 必要な追加属性があればここに追記
-          email: username,  // 仮に email として username を使う場合
+          username
         }
       });
-      console.log('サインアップ成功:', result);
-      return { success: true, message: '' };
+
+      return { success: true, message: 'サインアップが成功しました。' };
     } catch (error) {
-      console.error('サインアップエラー:', error);
-      return { success: false, message: error.message || 'サインアップに失敗しました。' };
+      return { success: false, message: (error instanceof Error) ? error.message : 'サインアップに失敗しました。' };
+
     }
-  };  
+  };
 
   const confirmSignUp = async (verificationCode: string) => {
     try {
