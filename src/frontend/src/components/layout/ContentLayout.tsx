@@ -11,7 +11,7 @@ type ContentLayoutProps = {
 export const ContentLayout = ({ children, pagetitle }: ContentLayoutProps) => {
   return (
     <div className="flex flex-col h-screen">
-      <div className="flex-grow overflow-auto p-4 h-screen">
+      <div className="flex-grow overflow-auto p-8 h-screen">
         <PageTitle title={pagetitle} />
         <div className="pt-4">{children}</div>
       </div>

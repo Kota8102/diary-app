@@ -1,45 +1,138 @@
-/* 曜日のフォントスタイルを通常に変更 */
-.fc .fc-daygrid-day-number {
-  font-weight: normal !important;
+/* タイトルの文字サイズを調整 */
+.fc .fc-toolbar-title {
+  font-size: 1rem;
+  font-weight: 100;
 }
 
-/* 全ての枠線を無くすためのスタイル */
+/* 日付を枠の中心に */
+.fc .fc-daygrid-day-top {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  height: 0;
+  padding-bottom: 100%; /* セルを正方形にする */
+  position: relative;
+}
+
+/* 曜日の色を変更 */
+.fc .fc-col-header-cell {
+  background-color: #FDFAF8 !important;
+  font-weight: normal;
+  font-size: 1rem;
+  font-weight: 100;
+  padding: 10px 0; /* パディングを追加して広くする */
+  text-align: center; /* 中央揃え */
+}
+
+/* 日付セルの内容を中央に配置 */
+.fc .fc-daygrid-day-frame {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 0; /* パディングをリセット */
+  height: 100%; /* 高さを100%に設定 */
+}
+
+/* 日付番号の位置調整とフォントサイズの変更 */
+.fc .fc-daygrid-day-number {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  font-size: 1.2rem;
+  font-weight: 100;
+}
+
+/* 日付セルの背景色を透明に */
+.fc .fc-daygrid-day-bg {
+  background-color: transparent !important;
+}
+
+/* 今日の日付セルの色を変更し、フォントを白に設定 */
+.fc .fc-day-today {
+  background-color: #A16B3B !important;
+  color: white !important;
+  border-radius: 50%;
+}
+
+/* すべての枠線を削除 */
 .fc .fc-col-header-cell,
 .fc .fc-daygrid-day,
 .fc .fc-scrollgrid-sync-inner,
 .fc .fc-daygrid-day-frame,
 .fc .fc-daygrid-day-top,
-.fc .fc-daygrid-day-events {
+.fc .fc-daygrid-day-events,
+.fc .fc-scrollgrid,
+.fc .fc-scrollgrid-section,
+.fc .fc-scrollgrid-section > td,
+.fc .fc-daygrid-body-unbalanced .fc-daygrid-day,
+.fc .fc-col-header-cell-cushion,
+.fc .fc-daygrid-day-number,
+.fc .fc-daygrid-day-bg,
+.fc .fc-scrollgrid-liquid,
+.fc .fc-scrollgrid-section-body,
+.fc .fc-daygrid {
   border: none !important;
 }
 
-.fc .fc-scrollgrid {
+/* 曜日の枠線を削除 */
+.fc .fc-col-header-cell {
+  border-right: none !important;
+}
+
+/* Satの右側の枠線を削除 */
+.fc .fc-col-header-cell.fc-day-sat .fc-scrollgrid-sync-inner {
+  border-right: none !important;
+}
+
+/* セクションの枠線削除 */
+.fc .fc-scrollgrid-section > td {
+  border-right: none !important;
+}
+
+/* 曜日と日付のpaddingを調整 */
+.fc .fc-toolbar.fc-header-toolbar {
+  margin-bottom: 1rem;
+}
+
+/* todayボタンの色を変更 */
+.fc .fc-toolbar .fc-button.fc-today-button {
+  background-color: #D9A39E !important; 
+  color: black !important;
   border: none !important;
-}
-
-/* 曜日ヘッダーのフォントスタイルを通常に変更 */
-.fc .fc-col-header-cell-cushion {
-  font-weight: normal !important;
-}
-
-/* 日月タイトルの文字サイズを調整 */
-.fc .fc-toolbar-title {
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
   font-size: 1rem;
+  font-weight: 200;
 }
 
-.fc .fc-daygrid-day-top {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
+.fc .fc-toolbar .fc-button.fc-today-button:hover {
+  background-color: #C58C89 !important; /* ホバー時の色 */
+  color: #333 !important;
 }
 
-/* ページいっぱいに表示 */
-.fc {
-  height: 100vh;
-} 
+/* ナビゲーションボタンの色を変更 */
+.fc .fc-toolbar .fc-button.fc-prev-button,
+.fc .fc-toolbar .fc-button.fc-next-button {
+  background-color: transparent !important;
+  color: black !important;
+  padding: 0.3rem 0.3rem;
+  border-radius: 2rem;
+  font-size: 1rem;
+  font-weight: 100;
+  margin-right: 0.5rem; /* ボタンの間にスペースを追加 */
+}
 
-* 各日付の縦のサイズを調整 */
-.fc .fc-daygrid-day-frame {
-  min-height: 50px; /* 適宜調整してください */
+.fc .fc-toolbar .fc-button.fc-prev-button:hover,
+.fc .fc-toolbar .fc-button.fc-next-button:hover {
+  background-color: #C58C89 !important; /* ホバー時の色 */
+  color: white !important;
+}
+
+/* ナビゲーションボタンの最終ボタンに右マージンを削除 */
+.fc .fc-toolbar .fc-button.fc-next-button {
+  margin-right: 0;
 }

@@ -8,26 +8,23 @@ import { ContentLayout } from '../../../components/layout'
 import '../styles/calendar.css'
 
 export const Calendar = () => {
-  const handleDateClick = (arg: any) => {
-    console.log(arg.dateStr)
-  }
-
   return (
     <div>
-      <ContentLayout pagetitle="calendar">
-        <FullCalendar
-          plugins={[dayGridPlugin, interactionPlugin]}
-          initialView="dayGridMonth"
-          locales={[jaLocale]}
-          locale="en"
-          headerToolbar={{
-            left: 'title',
-            center: '',
-            right: '',
-          }}
-          events={[]}
-          dateClick={handleDateClick}
-        />
+      <ContentLayout pagetitle="Calendar">
+        <div className="pt-5">
+          <FullCalendar
+            plugins={[dayGridPlugin, interactionPlugin]}
+            initialView="dayGridMonth"
+            locales={[jaLocale]}
+            locale="en"
+            headerToolbar={{
+              left: 'title',
+              center: '',
+              right: 'today prev,next',
+            }}
+            height="auto"
+          />
+        </div>
       </ContentLayout>
     </div>
   )
