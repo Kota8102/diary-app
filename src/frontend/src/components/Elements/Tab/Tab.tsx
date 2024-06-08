@@ -1,5 +1,3 @@
-import { Link, useLocation } from 'react-router-dom'
-
 import {
   calendar,
   bouquet,
@@ -13,96 +11,41 @@ import {
   setting,
 } from '../../../assets/icons'
 
-export const Tab = () => {
-  const { pathname } = useLocation()
+import { TabItem } from './TabItem'
 
+export const Tab = () => {
   return (
-    <div className="flex justify-around items-center h-14 bg-light-bgTab">
-      <Link to="/calendar">
-        {pathname === '/calendar' ? (
-          <img
-            src={calendar}
-            alt="calendar"
-            width="40"
-            height="40"
-          />
-        ) : (
-          <img
-            src={outlinedCalendar}
-            alt="outlined calendar"
-            width="40"
-            height="40"
-          />
-        )}
-      </Link>
-      <Link to="/bouquet">
-        {pathname === '/bouquet' ? (
-          <img
-            src={bouquet}
-            alt="bouquet"
-            width="40"
-            height="40"
-          />
-        ) : (
-          <img
-            src={outlinedBouquet}
-            alt="outlined bouquet"
-            width="40"
-            height="40"
-          />
-        )}
-      </Link>
-      <Link to="/flower">
-        {pathname === '/flower' ? (
-          <img
-            src={flower}
-            alt="flower"
-            width="40"
-            height="40"
-          />
-        ) : (
-          <img
-            src={outlinedFlower}
-            alt="outlined flower"
-            width="40"
-            height="40"
-          />
-        )}
-      </Link>
-      <Link to="/diary">
-        {pathname === '/diary' ? (
-          <img
-            src={add}
-            alt="add"
-            width="40"
-            height="40"
-          />
-        ) : (
-          <img
-            src={outlinedAdd}
-            alt="outlined add"
-            width="40"
-            height="40"
-          />
-        )}
-      </Link>
-      <Link to="/setting">
-        {pathname === '/setting' ? (
-          <img
-            src={setting}
-            alt="setting"
-            width="40"
-            height="40"
-          />
-        ) : (
-          <img
-            src={outlinedSetting}
-            alt="outlined setting"
-            width="40"
-            height="40"
-          />
-        )}
-      </Link>
+    <div className="flex justify-around items-center bg-light-bgTab">
+      <TabItem
+        linkPath="/calendar"
+        label="カレンダー"
+        activeIcon={calendar}
+        inactiveIcon={outlinedCalendar}
+      />
+      <TabItem
+        linkPath="/bouquet"
+        label="花束をみる"
+        activeIcon={bouquet}
+        inactiveIcon={outlinedBouquet}
+      />
+      <TabItem
+        linkPath="/flower"
+        label="花をみる"
+        activeIcon={flower}
+        inactiveIcon={outlinedFlower}
+      />
+      <TabItem
+        linkPath="/diary"
+        label="日記を追加"
+        activeIcon={add}
+        inactiveIcon={outlinedAdd}
+      />
+      <TabItem
+        linkPath="/setting"
+        label="設定"
+        activeIcon={setting}
+        inactiveIcon={outlinedSetting}
+      />
     </div>
   )
 }
