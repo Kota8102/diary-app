@@ -70,7 +70,7 @@ export class Web extends Construct {
         'npm run build -w src/frontend',
       ],
       buildEnvironment: {
-        REACT_APP_IDENTITY_POOL_ID: props.identityPool.identityPoolId,
+        // REACT_APP_IDENTITY_POOL_ID: props.identityPool.identityPoolId,
         VITE_COGNITO_REGION: cdk.Stack.of(this).region,
         VITE_COGNITO_USER_POOL_ID: props.userPool.userPoolId,
         VITE_COGNITO_APP_USER_POOL_CLIENT_ID: props.userPoolClient.userPoolClientId,
