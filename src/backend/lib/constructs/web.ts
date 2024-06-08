@@ -71,9 +71,9 @@ export class Web extends Construct {
       ],
       buildEnvironment: {
         REACT_APP_IDENTITY_POOL_ID: props.identityPool.identityPoolId,
-        REACT_APP_REGION: cdk.Stack.of(this).region,
-        REACT_APP_USER_POOL_ID: props.userPool.userPoolId,
-        REACT_APP_USER_POOL_CLIENT_ID: props.userPoolClient.userPoolClientId,
+        VITE_COGNITO_REGION: cdk.Stack.of(this).region,
+        VITE_COGNITO_USER_POOL_ID: props.userPool.userPoolId,
+        VITE_COGNITO_APP_USER_POOL_CLIENT_ID: props.userPoolClient.userPoolClientId,
       }
     });
 
