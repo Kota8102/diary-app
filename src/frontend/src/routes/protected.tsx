@@ -7,7 +7,6 @@ import { DiaryEntryRoutes } from '../features/diaryEntry'
 import { Flower } from '../features/flower'
 import { NotFound } from '../features/notfound'
 import { Setting } from '../features/setting'
-// import { AuthRoutes } from '../features/auth'
 
 const App = () => {
   return (
@@ -34,7 +33,6 @@ export const protectedRoutes = [
       { path: '/diary/*', element: <DiaryEntryRoutes /> },
       { path: '/calendar/*', element: <Diary /> },
       { path: 'setting', element: <Setting /> },
-      { path: '/auth/*', element: <AuthRoutes /> },
       { path: 'bouquet', element: <Bouquet /> },
       { path: 'flower', element: <Flower /> },
       { path: '*', element: <NotFound /> },
