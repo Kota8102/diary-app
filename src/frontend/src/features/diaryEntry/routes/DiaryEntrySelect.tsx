@@ -15,7 +15,7 @@ export const DiaryEntrySelect = () => {
   })
 
   return (
-    <ContentLayout>
+    <ContentLayout pagetitle="Diary">
       <div className="h-full flex flex-col items-center gap-20 justify-center">
         <Button
           text="今日の日記"

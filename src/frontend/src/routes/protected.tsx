@@ -31,7 +31,7 @@ export const protectedRoutes = [
         ),
       },
       { path: '/diary/*', element: <DiaryEntryRoutes /> },
-      { path: '/diarylist/*', element: <Diary /> },
+      { path: '/calendar/*', element: <Diary /> },
       { path: 'setting', element: <Setting /> },
       { path: 'bouquet', element: <Bouquet /> },
       { path: 'flower', element: <Flower /> },

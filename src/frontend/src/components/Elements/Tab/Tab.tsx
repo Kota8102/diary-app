@@ -17,7 +17,7 @@ export const Tab = () => {
   return (
     <div className="flex justify-around items-center bg-light-bgTab">
       <TabItem
-        linkPath="/diarylist"
+        linkPath="/calendar"
         label="カレンダー"
         activeIcon={calendar}
         inactiveIcon={outlinedCalendar}
@@ -31,8 +31,8 @@ export const Tab = () => {
       <TabItem
         linkPath="/flower"
         label="花をみる"
-         activeIcon={flower}
-          inactiveIcon={outlinedFlower}
+        activeIcon={flower}
+        inactiveIcon={outlinedFlower}
       />
       <TabItem
         linkPath="/diary"
