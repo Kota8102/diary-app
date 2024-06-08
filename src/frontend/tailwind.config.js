@@ -1,32 +1,49 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-  ],
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
-    colors: {
-      primaryBackground: '#d4cdc7',
-      secondaryBackground: '#c8c1b9',
-      primaryButton: '#f5f5f5',
+      colors: {
+        light: {
+          bgDefault: '#FDFAF8',
+          bgText: '#F6F3F0',
+          bgModal: '#F6F3F0',
+          textPaleBg: '#404040',
+          textPlaceholder: '#404040',
+          textWeakBg: '#FFFFFF',
+          buttonPrimaryDefault: '#CFC8C1',
+          buttonPrimaryHover: '#E7E0DA',
+          buttonPrimaryPress: '#B1ADA8',
+          buttonPrimaryDisabled: '#E6E6E6',
+          buttonSecondaryDefault: '#E2A48B',
+          buttonSecondaryHover: '#F4C8B7',
+          buttonSecondaryPress: '#CD7450',
+          line: '#000000',
+        },
+        dark: {
+          bgDefault: '#111326',
+          bgText: '#1E2035',
+          bgMmodal: '#1E2035',
+          textDefault: '#FFFFFF',
+          buttonPrimaryDefault: '#111326',
+          buttonPrimaryHover: '#474C79',
+          buttonPrimaryPress: '#000000',
+          buttonSecondaryDefault: '#1E2DCB',
+          buttonSecondaryHover: '#888FDB',
+          buttonSecondaryPress: '#293180',
+          line: '#FFFFFF',
+        },
+      },
+      height: {
+        screen: ['100vh', '100dvh'],
+      },
+      minHeight: {
+        screen: ['100vh', '100dvh'],
+      },
+      maxHeight: {
+        screen: ['100vh', '100dvh'],
+      },
     },
-    height: {
-      'screen': [
-        '100vh','100dvh'
-      ]
-    },
-    minHeight: {
-      'screen': [
-        '100vh','100dvh'
-      ]
-    },
-    maxHeight: {
-      'screen': [
-        '100vh','100dvh'
-      ]
-    }
+    plugins: [],
   },
-  plugins: [],
-}
 }
