@@ -1,0 +1,45 @@
+/* 曜日のフォントスタイルを通常に変更 */
+.fc .fc-daygrid-day-number {
+  font-weight: normal !important;
+}
+
+/* 全ての枠線を無くすためのスタイル */
+.fc .fc-col-header-cell,
+.fc .fc-daygrid-day,
+.fc .fc-scrollgrid-sync-inner,
+.fc .fc-daygrid-day-frame,
+.fc .fc-daygrid-day-top,
+.fc .fc-daygrid-day-events {
+  border: none !important;
+}
+
+.fc .fc-scrollgrid {
+  border: none !important;
+}
+
+/* 曜日ヘッダーのフォントスタイルを通常に変更 */
+.fc .fc-col-header-cell-cushion {
+  font-weight: normal !important;
+}
+
+/* 日月タイトルの文字サイズを調整 */
+.fc .fc-toolbar-title {
+  font-size: 1rem;
+}
+
+.fc .fc-daygrid-day-top {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+/* ページいっぱいに表示 */
+.fc {
+  height: 100vh;
+} 
+
+* 各日付の縦のサイズを調整 */
+.fc .fc-daygrid-day-frame {
+  min-height: 50px; /* 適宜調整してください */
+}
