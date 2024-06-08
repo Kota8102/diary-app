@@ -8,6 +8,7 @@ export default {
           bgDefault: '#FDFAF8',
           bgText: '#F6F3F0',
           bgModal: '#F6F3F0',
+          bgTab: '#EDEAE6',
           textPaleBg: '#404040',
           textPlaceholder: '#404040',
           textWeakBg: '#FFFFFF',
@@ -23,7 +24,7 @@ export default {
         dark: {
           bgDefault: '#111326',
           bgText: '#1E2035',
-          bgMmodal: '#1E2035',
+          bgModal: '#1E2035',
           textDefault: '#FFFFFF',
           buttonPrimaryDefault: '#111326',
           buttonPrimaryHover: '#474C79',
