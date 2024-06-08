@@ -24,9 +24,11 @@ export class Api extends Construct {
 
     const LambdaRole = new cdk.aws_iam.Role(this, 'Lambda Excecution Role', {
       assumedBy: new cdk.aws_iam.ServicePrincipal('lambda.amazonaws.com'),
-    });
+    })
 
-    LambdaRole.addManagedPolicy(cdk.aws_iam.ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaBasicExecutionRole"));
+    LambdaRole.addManagedPolicy(
+      cdk.aws_iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole')
+    )
 
     const diaryCreateFunction = new lambda.Function(this, 'diaryCreateLambda', {
       runtime: lambda.Runtime.PYTHON_3_11,
@@ -69,7 +71,6 @@ export class Api extends Construct {
       role: LambdaRole,
       logRetention: 14,
       environment: {
-
         TABLE_NAME: table.tableName,
       },
     })
@@ -175,5 +176,16 @@ export class Api extends Construct {
         startingPosition: lambda.StartingPosition.LATEST,
       })
     )
+
+    const titleGetFunction = new lambda.Function(this, 'titleGetFunction', {
+      runtime: lambda.Runtime.PYTHON_3_11,
+      handler: 'title_get.lambda_handler',
+      code: lambda.Code.fromAsset('lambda'),
+      environment: {
+        TABLE_NAME: generativeAiTable.tableName,
+      },
+    })
+
+    generativeAiTable.grantReadData(titleGetFunction)
   }
 }
