@@ -18,8 +18,8 @@ export const Tab = () => {
 
   return (
     <div className="flex justify-around items-center h-14 bg-light-bgTab">
-      <Link to="/diarylist">
-        {pathname === '/diarylist' ? (
+      <Link to="/calendar">
+        {pathname === '/calendar' ? (
           <img
             src={calendar}
             alt="calendar"

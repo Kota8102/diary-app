@@ -1,9 +1,9 @@
-name: backend
+name: aws-deploy
 
 on:
   push:
     paths:
-      - "src/backend/**"
+      - "src/**"
       - ".github/workflows/backend.yml"
     branches:
       - "main"
