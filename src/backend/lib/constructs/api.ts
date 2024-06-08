@@ -3,11 +3,20 @@ import * as apigateway from 'aws-cdk-lib/aws-apigateway'
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb'
 import * as lambda from 'aws-cdk-lib/aws-lambda'
 import { DynamoEventSource } from 'aws-cdk-lib/aws-lambda-event-sources'
+import * as s3 from 'aws-cdk-lib/aws-s3'
 import { Construct } from 'constructs'
 
 export class Api extends Construct {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id)
+    const imageBucket = new s3.Bucket(this, 'imageBucket', {
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+    })
+
+    const musicBucket = new s3.Bucket(this, 'musicBucket', {
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+    })
+
     const table = new dynamodb.Table(this, `diaryContentsTable`, {
       partitionKey: {
         name: 'user_id',
