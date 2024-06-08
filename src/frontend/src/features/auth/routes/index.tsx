@@ -4,7 +4,7 @@ import { MainLayout } from '../../../components/layout'
 
 import { AuthChoice } from './AuthChoice'
 import { Login } from './Login'
-import { SignUp } from './Signup'
+import { SignUp } from './temp'
 
 export const AuthRoutes = () => {
   return (
