@@ -16,7 +16,7 @@ export const Button = ({ text, path }: ButtonProps) => {
 
   return (
     <button
-      className="w-full bg-primaryButton p-4 rounded-lg text-black font-semibold"
+      className="w-full bg-light-buttonPrimaryDefault p-4 rounded-lg text-black font-semibold"
       onClick={handleClick}>
       {text}
     </button>

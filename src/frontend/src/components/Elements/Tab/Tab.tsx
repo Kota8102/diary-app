@@ -17,7 +17,7 @@ export const Tab = () => {
   const { pathname } = useLocation()
 
   return (
-    <div className="flex justify-around items-center h-14 bg-secondaryBackground">
+    <div className="flex justify-around items-center h-14 bg-light-bgTab">
       <Link to="/diarylist">
         {pathname === '/diarylist' ? (
           <img
