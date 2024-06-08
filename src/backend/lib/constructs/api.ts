@@ -11,12 +11,14 @@ export class Api extends Construct {
     super(scope, id)
     const imageBucket = new s3.Bucket(this, 'imageBucket', {
       removalPolicy: cdk.RemovalPolicy.RETAIN,
-      serverAccessLogsPrefix: 'logs/'
+      serverAccessLogsPrefix: 'logs/',
+      enforceSSL: true,
     })
 
     const musicBucket = new s3.Bucket(this, 'musicBucket', {
       removalPolicy: cdk.RemovalPolicy.RETAIN,
-      serverAccessLogsPrefix: 'logs/'
+      serverAccessLogsPrefix: 'logs/',
+      enforceSSL: true,
     })
 
     const table = new dynamodb.Table(this, `diaryContentsTable`, {
