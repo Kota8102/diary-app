@@ -1,55 +1,56 @@
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../cognito-auth';
-import { MainLayout } from '../../../components/layout'
-// import { Button } from '../../../components/Elements/Button';
+import { AuthLayout } from '../../../components/layout'
+import { Input } from '../components'
+import { useAuth } from '../utils/cognito-auth'
 
 export const Login = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const { signIn } = useAuth();
-  const navigate = useNavigate();
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const { signIn } = useAuth()
+  const navigate = useNavigate()
 
   const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+    event.preventDefault()
     console.log(event)
     alert(event)
-    const result = await signIn(username, password);
+    const result = await signIn(username, password)
     if (result.success) {
-      navigate('/'); // ログイン成功後のリダイレクト先
+      navigate('/') // ログイン成功後のリダイレクト先
     } else {
-      alert(result.message);
+      alert(result.message)
     }
-  };
+  }
 
   return (
-    <MainLayout>
-    <div className="flex flex-col items-center justify-center h-full">
-      <form onSubmit={handleLogin} className="space-y-4">
-        <div>
-          <label htmlFor="username">ユーザー名</label>
-          <input
+    <AuthLayout>
+      <div className="flex flex-col h-full p-5 gap-5">
+        <h2 className="flex items-center justify-center p-20">ログイン</h2>
+        <form
+          onSubmit={handleLogin}
+          className="space-y-7">
+          <Input
             id="username"
+            label="メールアドレス"
             type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            className="border px-2 py-1"
           />
-        </div>
-        <div>
-          <label htmlFor="password">パスワード</label>
-          <input
+          <Input
             id="password"
+            label="パスワード"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="border px-2 py-1"
           />
-        </div>
-        <button type="submit">ログイン</button>
-      </form>
-    </div>
-    </MainLayout>
-  );
-};
+          <button
+            type="submit"
+            className="w-full bg-light-buttonPrimaryDefault p-2 rounded hover:bg-light-buttonPrimaryHover transition-colors duration-200">
+            ログイン
+          </button>
+        </form>
+      </div>
+    </AuthLayout>
+  )
+}

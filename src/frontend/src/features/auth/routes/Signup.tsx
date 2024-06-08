@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
-import { MainLayout } from '../../../components/layout'
-import { useAuth } from '../cognito-auth' // useAuth フックが定義されているパスを確認してください。
+
+import { AuthLayout } from '../../../components/layout'
+import { Input } from '../components'
+import { useAuth } from '../utils/cognito-auth'
 
 export const SignUp = () => {
   const { signUp } = useAuth() // useAuth フックから signUp 関数を取得
@@ -23,34 +25,36 @@ export const SignUp = () => {
   }
 
   return (
-    <MainLayout>
-      <div className="sign-up-form">
-        <h2>サインアップ</h2>
+    <AuthLayout>
+      <div className="flex flex-col h-full p-5 gap-5">
+        <h2 className="flex items-center justify-center p-20">新規登録</h2>
         {error && <p className="error">{error}</p>}
-        <form onSubmit={handleSignUp}>
-          <label htmlFor="username">メールアドレス</label>
-          <input
+        <form
+          onSubmit={handleSignUp}
+          className="space-y-7">
+          <Input
             id="username"
             type="text"
+            label="メールアドレス"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            required
           />
-          <label htmlFor="password">パスワード</label>
-          <input
+          <Input
             id="password"
             type="password"
+            label="パスワード"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            required
           />
           <button
             type="submit"
-            disabled={isLoading}>
-            {isLoading ? '登録中...' : 'サインアップ'}
+            className="w-full bg-light-buttonPrimaryDefault p-2 rounded hover:bg-light-buttonPrimaryHover transition-colors duration-200"
+            // disabled={isLoading}>
+          >
+            {isLoading ? '登録中...' : 'ログイン'}
           </button>
         </form>
       </div>
-    </MainLayout>
+    </AuthLayout>
   )
 }
