@@ -2,9 +2,7 @@ import { ContentLayout } from '../../../components/layout'
 
 export const Setting = () => {
   return (
-    <ContentLayout>
-      <h2 className="text-lg p-4">設定設定</h2>
-
+    <ContentLayout pagetitle="設定設定">
       <div className="flex flex-col w-full divide-y divide-gray-400">
         <a
           href="#"
