@@ -1,6 +1,7 @@
 import { ContentLayout } from '../../../components/layout/ContentLayout'
 import { Button } from '../components/button'
 
+
 export const DiaryEntrySelect = () => {
   // 今日の日付をYYYY/MM/DD形式で取得
   const today = new Date().toLocaleDateString('ja-JP', {

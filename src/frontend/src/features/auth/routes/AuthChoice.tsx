@@ -1,18 +1,21 @@
+import React from 'react'
+
 import logo from '../../../assets/logo.svg'
-import { MainLayout } from '../../../components/layout'
+import { AuthLayout } from '../../../components/layout'
 import { Button } from '../components/button'
 
-export const AuthChoice = () => {
+export const AuthChoice: React.FC = () => {
   return (
-    <MainLayout>
-      <div className="flex flex-col justify-between items-center min-h-screen py-4">
-        <div className="flex flex-grow items-center">
+    <AuthLayout>
+      <div className="flex flex-col justify-between items-center min-h-screen py-12 bg-light-bgDefault">
+        <div className="flex flex-grow items-center justify-center">
           <img
             src={logo}
             alt="logo"
+            className="w-32 h-32"
           />
         </div>
-        <div className="w-full flex flex-col gap-3 px-4">
+        <div className="w-full flex flex-col gap-6 px-4">
           <Button
             path="/auth/signup"
             text="新規登録"
@@ -23,6 +26,6 @@ export const AuthChoice = () => {
           />
         </div>
       </div>
-    </MainLayout>
+    </AuthLayout>
   )
 }
