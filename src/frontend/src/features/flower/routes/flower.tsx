@@ -8,8 +8,8 @@ import { ContentLayout } from '../../../components/layout'
 import { flower1, flower2 } from '../../../example'
 
 export const Flower = () => {
-  const [title, setTitle] = useState<string>('カフェと店員さんとケーキ')
-  const [note, setNote] = useState<string>(
+  const [title] = useState<string>('カフェと店員さんとケーキ')
+  const [note] = useState<string>(
     '今日はカフェで勉強した。勉強していたら、カフェの店員さんが話しかけてくれて、今頑張っている試験について話した。そしたら、頑張ってるねって言ってケーキをプレゼントしてもらった。嬉しい！めっちゃ美味しかったし、また行こうと思った！'
   )
 
