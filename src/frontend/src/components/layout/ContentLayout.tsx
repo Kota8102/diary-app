@@ -1,6 +1,4 @@
 import React from 'react'
-
-import { PageTitle } from '../Elements/PageTitle'
 import { Tab } from '../Elements/Tab'
 
 type ContentLayoutProps = {
@@ -11,9 +9,11 @@ type ContentLayoutProps = {
 export const ContentLayout = ({ children, pagetitle }: ContentLayoutProps) => {
   return (
     <div className="flex flex-col h-screen">
-      <div className="flex-grow overflow-auto p-8 h-screen">
-        <PageTitle title={pagetitle} />
-        <div className="pt-4 h-full">{children}</div>
+      <div className="flex flex-col flex-grow overflow-auto p-5">
+        {pagetitle && (
+          <h1 className="text-2xl text-light-textPlaceholder pl-1 pb-2">{pagetitle}</h1>
+        )}
+        <div className="flex-grow pt-4">{children}</div>
       </div>
       <Tab />
     </div>

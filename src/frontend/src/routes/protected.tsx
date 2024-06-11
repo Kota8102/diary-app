@@ -31,7 +31,7 @@ export const protectedRoutes = [
           />
         ),
       },
-      { path: '/write-diary/*', element: <WriteDiaryRoutes /> },
+      { path: '/diary/*', element: <WriteDiaryRoutes /> },
       { path: '/calendar/*', element: <Diary /> },
       { path: 'setting', element: <Setting /> },
       { path: 'bouquet', element: <Bouquet /> },

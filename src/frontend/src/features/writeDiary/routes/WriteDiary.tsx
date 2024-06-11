@@ -1,31 +1,40 @@
-// WriteDiary.tsx
 import { ContentLayout } from '../../../components/layout/ContentLayout'
 import { Button } from '../../../components/Elements/Button'
-import { useNavigate } from '../../../utils/useNavigate'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { vase1, vase2, vase3 } from '../../../assets/icons'
 
 export const WriteDiary = () => {
   // 今日の日付を取得
-  const today = new Date().toLocaleDateString('ja-JP', {
-    timeZone: 'Asia/Tokyo',
-  })
+  const today = new Date()
+    .toLocaleDateString('ja-JP', {
+      timeZone: 'Asia/Tokyo',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    })
+    .replace(/\//g, '-')
 
   // 昨日の日付を取得
   const yesterday = new Date()
   yesterday.setDate(yesterday.getDate() - 1)
-  const yesterdayStr = yesterday.toLocaleDateString('ja-JP', {
-    timeZone: 'Asia/Tokyo',
-  })
-
+  const yesterdayStr = yesterday
+    .toLocaleDateString('ja-JP', {
+      timeZone: 'Asia/Tokyo',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    })
+    .replace(/\//g, '-')
   // ページ遷移用の関数を取得
   const navigateTo = useNavigate()
+  const location = useLocation()
 
   const handleTodaySubmit = () => {
-    navigateTo(`/${today}`)
+    navigateTo(`${location.pathname}/${today}`)
   }
 
   const handleYesterdaySubmit = () => {
-    navigateTo(`/${yesterdayStr}`)
+    navigateTo(`${location.pathname}/${yesterdayStr}`)
   }
 
   return (

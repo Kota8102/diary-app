@@ -1,25 +1,56 @@
-import { useSearchParams } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { useParams, useNavigate } from 'react-router-dom'
+import moment from 'moment'
+import Datetime from 'react-datetime'
 
-import { TextArea } from '../../../components/Elements/TextArea'
+import { ContentLayout } from '../../../components/layout/ContentLayout'
+import { DisabledButton } from '../../../components/Elements/Button'
+
+import '../styles/react-datetime.css'
 
 export const WriteDiaryInput = () => {
-  const [searchParams] = useSearchParams()
-  const date = searchParams.get('date')
+  const { date } = useParams()
+  const navigate = useNavigate()
+
+  const [diary, setDiary] = useState('')
+
+  // yyyy--mm-dd以外の日付が入力された場合、トップページにリダイレクト
+  useEffect(() => {
+    const datePattern = /^\d{4}-\d{2}-\d{2}$/
+    if (!datePattern.test(date ?? '')) {
+      navigate('/')
+    }
+  }, [date, navigate])
+
+  const handleDateChange = (newDate: moment.Moment | string) => {
+    const formattedDate = moment(newDate).format('YYYY-MM-DD')
+    navigate(`/diary/${formattedDate}`)
+  }
 
   return (
-    <div className="flex flex-col h-screen">
-      <div className="pt-8 pb-4 px-4">
-        <h1 className="text-lg text-left p-3">日記を入力</h1>
-        <p className="text-left p-3 text-3xl">{date}</p>
+    <ContentLayout pagetitle="Diary">
+      <div className="flex flex-col w-full h-full gap-5">
+        <Datetime
+          initialValue={moment(date, 'YYYY-MM-DD')}
+          dateFormat={'YYYY / MM / DD'}
+          timeFormat={false}
+          onChange={handleDateChange}
+        />
+        <textarea
+          className="flex-grow w-full p-4 rounded-md bg-light-bgText resize-none"
+          placeholder="ここに日記を入力してください。"
+          value={diary}
+          onChange={(e) => setDiary(e.target.value)}
+        />
+        <DisabledButton
+          text="生成する"
+          onClick={() => {}}
+          css=""
+          disabled={diary.trim() === ''}
+          enabledCss="bg-light-buttonPrimaryDefault hover:bg-light-buttonPrimaryHover"
+          disabledCss="bg-light-buttonPrimaryDisabled"
+        />
       </div>
-      <div className="flex-grow px-4">
-        <TextArea />
-      </div>
-      <div className="p-4">
-        <button className="w-full bg-gray-200 p-4 rounded-lg shadow text-gray-700 font-semibold">
-          完了
-        </button>
-      </div>
-    </div>
+    </ContentLayout>
   )
 }
