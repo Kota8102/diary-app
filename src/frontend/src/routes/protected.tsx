@@ -3,10 +3,11 @@ import { Outlet, Navigate } from 'react-router-dom'
 import { MainLayout } from '../components/layout'
 import { Bouquet } from '../features/bouquet'
 import { Diary } from '../features/diary'
-import { DiaryEntryRoutes } from '../features/diaryEntry'
+// import { DiaryEntryRoutes } from '../features/diaryEntry'
 import { Flower } from '../features/flower'
 import { NotFound } from '../features/notfound'
 import { Setting } from '../features/setting'
+import { WriteDiaryRoutes } from '../features/writeDiary'
 
 const App = () => {
   return (
@@ -25,12 +26,12 @@ export const protectedRoutes = [
         index: true,
         element: (
           <Navigate
-            to="/diary"
+            to="/write-diary"
             replace
           />
         ),
       },
-      { path: '/diary/*', element: <DiaryEntryRoutes /> },
+      { path: '/write-diary/*', element: <WriteDiaryRoutes /> },
       { path: '/calendar/*', element: <Diary /> },
       { path: 'setting', element: <Setting /> },
       { path: 'bouquet', element: <Bouquet /> },
