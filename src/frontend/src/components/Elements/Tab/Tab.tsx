@@ -15,7 +15,7 @@ import { TabItem } from './TabItem'
 
 export const Tab = () => {
   return (
-    <div className="flex justify-around items-center bg-light-bgTab">
+    <div className="flex justify-between items-center bg-light-bgTab">
       <TabItem
         linkPath="/calendar"
         label="カレンダー"
