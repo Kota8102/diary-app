@@ -1,22 +1,19 @@
-import { useNavigate } from 'react-router-dom'
+import { MouseEventHandler } from 'react'
 
 type ButtonProps = {
   text: string
-  path?: string
+  onClick?: MouseEventHandler<HTMLButtonElement>
+  css?: string
 }
 
-export const Button = ({ text, path }: ButtonProps) => {
-  const navigate = useNavigate()
-
-  const handleClick = () => {
-    if (path) {
-      navigate(path)
-    }
-  }
-
+export const Button = ({ text, onClick, css = 'bg-light-buttonPrimaryDefault' }: ButtonProps) => {
   return (
-    <div className="primaryButton rounded-lg">
-      <button onClick={handleClick}>{text}</button>
+    <div className={`rounded-lg ${css} p-3 w-full text-center text-base`}>
+      <button
+        className={`rounded-lg`}
+        onClick={onClick}>
+        {text}
+      </button>
     </div>
   )
 }
