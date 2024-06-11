@@ -26,7 +26,7 @@ export const protectedRoutes = [
         index: true,
         element: (
           <Navigate
-            to="/write-diary"
+            to="/diary"
             replace
           />
         ),
