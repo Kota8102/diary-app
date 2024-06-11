@@ -187,5 +187,8 @@ export class Api extends Construct {
     })
 
     generativeAiTable.grantReadData(titleGetFunction)
+
+    const title = api.root.addResource('title')
+    title.addMethod('GET', new apigateway.LambdaIntegration(titleGetFunction))
   }
 }
