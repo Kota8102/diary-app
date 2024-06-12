@@ -31,6 +31,11 @@ export class BackendStack extends cdk.Stack {
       userPool: auth.userPool,
       userPoolClient: auth.userPoolClient,
       identityPool: identity.identityPool,
+      api: api.api,
+    })
+
+    new cdk.CfnOutput(this, 'ApiURL', {
+      value: api.api.url,
     })
 
     new cdk.CfnOutput(this, 'WebFrontend', {

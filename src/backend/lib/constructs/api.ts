@@ -6,6 +6,8 @@ import { DynamoEventSource } from 'aws-cdk-lib/aws-lambda-event-sources'
 import { Construct } from 'constructs'
 
 export class Api extends Construct {
+  public readonly api: apigateway.RestApi
+
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id)
     const table = new dynamodb.Table(this, `diaryContentsTable`, {
@@ -190,5 +192,7 @@ export class Api extends Construct {
 
     const title = api.root.addResource('title')
     title.addMethod('GET', new apigateway.LambdaIntegration(titleGetFunction))
+
+    this.api = api
   }
 }

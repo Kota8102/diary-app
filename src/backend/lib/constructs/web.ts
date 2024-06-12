@@ -7,12 +7,13 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as waf from 'aws-cdk-lib/aws-wafv2';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as idPool from '@aws-cdk/aws-cognito-identitypool-alpha';
-
+import * as agw from 'aws-cdk-lib/aws-apigateway';
 
 export interface WebProps {
   userPool: cognito.UserPool;
   userPoolClient: cognito.UserPoolClient;
   identityPool: idPool.IdentityPool;
+  api: agw.RestApi;
 }
 
 export class Web extends Construct {
@@ -74,6 +75,7 @@ export class Web extends Construct {
         VITE_COGNITO_REGION: cdk.Stack.of(this).region,
         VITE_COGNITO_USER_POOL_ID: props.userPool.userPoolId,
         VITE_COGNITO_APP_USER_POOL_CLIENT_ID: props.userPoolClient.userPoolClientId,
+        VITE_APP_API_ENDPOINT: props.api.url,
       }
     });
 
