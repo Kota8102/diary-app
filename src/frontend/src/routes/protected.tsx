@@ -1,42 +1,66 @@
-import { Outlet, Navigate } from 'react-router-dom'
-
 import { MainLayout } from '../components/layout'
 import { Bouquet } from '../features/bouquet'
 import { Diary } from '../features/diary'
-// import { DiaryEntryRoutes } from '../features/diaryEntry'
 import { Flower } from '../features/flower'
 import { NotFound } from '../features/notfound'
 import { Setting } from '../features/setting'
 import { WriteDiaryRoutes } from '../features/writeDiary'
 
-const App = () => {
-  return (
-    <MainLayout>
-      <Outlet />
-    </MainLayout>
-  )
-}
-
 export const protectedRoutes = [
   {
     path: '/',
-    element: <App />,
-    children: [
-      {
-        index: true,
-        element: (
-          <Navigate
-            to="/diary"
-            replace
-          />
-        ),
-      },
-      { path: '/diary/*', element: <WriteDiaryRoutes /> },
-      { path: '/calendar/*', element: <Diary /> },
-      { path: 'setting', element: <Setting /> },
-      { path: 'bouquet', element: <Bouquet /> },
-      { path: 'flower', element: <Flower /> },
-      { path: '*', element: <NotFound /> },
-    ],
+    element: (
+      <MainLayout>
+        <Diary />
+      </MainLayout>
+    ), // デフォルトで表示するコンポーネントを指定
+  },
+  {
+    path: '/diary/*',
+    element: (
+      <MainLayout>
+        <WriteDiaryRoutes />
+      </MainLayout>
+    ),
+  },
+  {
+    path: '/calendar/*',
+    element: (
+      <MainLayout>
+        <Diary />
+      </MainLayout>
+    ),
+  },
+  {
+    path: 'setting',
+    element: (
+      <MainLayout>
+        <Setting />
+      </MainLayout>
+    ),
+  },
+  {
+    path: 'bouquet',
+    element: (
+      <MainLayout>
+        <Bouquet />
+      </MainLayout>
+    ),
+  },
+  {
+    path: 'flower',
+    element: (
+      <MainLayout>
+        <Flower />
+      </MainLayout>
+    ),
+  },
+  {
+    path: '*',
+    element: (
+      <MainLayout>
+        <NotFound />
+      </MainLayout>
+    ),
   },
 ]
