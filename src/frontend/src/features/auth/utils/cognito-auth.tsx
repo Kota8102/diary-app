@@ -94,7 +94,7 @@ const useProvideAuth = (): UseAuth => {
     }
   }
 
-  const confirmSignUp = async (verificationCode: string) => {
+  const confirmSignUp = async (username: string, password: string, verificationCode: string) => {
     try {
       await Auth.confirmSignUp(username, verificationCode)
       const result = await signIn(username, password)

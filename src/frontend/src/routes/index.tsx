@@ -4,14 +4,16 @@ import { useRoutes } from 'react-router-dom'
 // import { useAuth } from '../features/auth/utils/cognito-auth'
 
 import { protectedRoutes } from './protected'
-// import { publicRoutes } from './public'
+import { publicRoutes } from './public'
 
 export const AppRoutes = () => {
   // const { isAuthenticated } = useAuth()
   // const commonRoutes = [{ path: '/', element: <Landing /> }]
   // const routes = isAuthenticated ? protectedRoutes : publicRoutes
   // const element = useRoutes([...routes, ...commonRoutes])
-  const element = useRoutes([...protectedRoutes])
+  const element = useRoutes([...protectedRoutes, ...publicRoutes])
 
+  // return <>{element}</>
   return <>{element}</>
+  
 }

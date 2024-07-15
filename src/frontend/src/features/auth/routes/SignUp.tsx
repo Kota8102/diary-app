@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import { AuthLayout } from '../../../components/layout'
 import { Input } from '../components'
 import { useAuth } from '../utils/cognito-auth'
+import { useNavigate } from 'react-router-dom'
 
 export const SignUp = () => {
   const { signUp } = useAuth() // useAuth フックから signUp 関数を取得
@@ -10,6 +11,7 @@ export const SignUp = () => {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const navigate = useNavigate()
 
   const handleSignUp = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -21,6 +23,7 @@ export const SignUp = () => {
     } else {
       setError('')
       alert('登録成功！確認コードを入力してアカウントを有効化してください。')
+      navigate('/auth/confirm')
     }
   }
 
