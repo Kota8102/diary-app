@@ -17,7 +17,7 @@ interface UseAuth {
   username: string
   currentAuthenticatedUser: () => Promise<unknown>
   signUp: (username: string, password: string) => Promise<Result>
-  confirmSignUp: (verificationCode: string) => Promise<Result>
+  confirmSignUp: (sername: string, password: string, verificationCode: string) => Promise<Result>
   signIn: (username: string, password: string) => Promise<Result>
   signInComplete: (username: string, oldPassword: string, newPassword: string) => Promise<Result>
   signOut: () => void
@@ -59,7 +59,7 @@ const useProvideAuth = (): UseAuth => {
   const [isLoading, setIsLoading] = useState(true)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
+  // const [password, setPassword] = useState('')
 
   useEffect(() => {
     Auth.currentAuthenticatedUser()
@@ -94,11 +94,11 @@ const useProvideAuth = (): UseAuth => {
     }
   }
 
-  const confirmSignUp = async (verificationCode: string) => {
+  const confirmSignUp = async (username: string, password: string, verificationCode: string) => {
     try {
       await Auth.confirmSignUp(username, verificationCode)
       const result = await signIn(username, password)
-      setPassword('')
+      // setPassword('')
 
       return result
     } catch (error) {
