@@ -52,6 +52,7 @@ jobs:
           echo aws region: ${{ secrets.AWS_REGION }}
           echo aws account: ${{ secrets.AWS_ACCOUNT }}
           echo actions role: ${{ secrets.ACTIONS_ROLE}}
+          echo certificate ARN: ${{ secrets.certificateArn }}
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -66,5 +67,8 @@ jobs:
 
       - name: CDK Deploy
         if: startsWith(github.ref, 'refs/heads/feature/') ||  github.ref == 'refs/heads/main'
+        env:
+          CERTIFICATE_ARN: ${{ secrets.certificateArn }}
+          ENVIRONMENT: ${{ needs.set-environment.outputs.environment }}
         run: npm run cdk deploy --all
         working-directory: src/backend

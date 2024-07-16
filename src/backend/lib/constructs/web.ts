@@ -7,6 +7,7 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as waf from 'aws-cdk-lib/aws-wafv2';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as idPool from '@aws-cdk/aws-cognito-identitypool-alpha';
+import * as acm from 'aws-cdk-lib/aws-certificatemanager';
 
 
 export interface WebProps {
@@ -20,6 +21,23 @@ export class Web extends Construct {
 
   constructor(scope: Construct, id: string, props: WebProps) {
     super(scope, id);
+
+   // 環境変数に基づいて条件を設定
+    const isProd = process.env.ENVIRONMENT === 'prod';
+    let certificateArn: acm.ICertificate | undefined = undefined;
+    let domainNames: string[] | undefined = undefined;
+
+    if (isProd) {
+      // 既存の証明書のARNを指定
+      const existingCertificateArn = process.env.CERTIFICATE_ARN;
+      if (typeof existingCertificateArn === 'string') { // ここでstring型であることを確認
+        const certificate = acm.Certificate.fromCertificateArn(this, 'Certificate', existingCertificateArn);
+        certificateArn = certificate;
+        domainNames = ['bouquet-note.com', '*.bouquet-note.com'];
+      } else {
+        console.error('CERTIFICATE_ARN environment variable is undefined.');
+      }
+    }
 
     const { cloudFrontWebDistribution, s3BucketInterface } = new CloudFrontToS3(this, 'Web', {
       insertHttpSecurityHeaders: false,
@@ -43,6 +61,8 @@ export class Web extends Construct {
         serverAccessLogsPrefix: 'logs',
       },
       cloudFrontDistributionProps: {
+        certificate: certificateArn, // 条件に基づいてSSL証明書を設定
+        domainNames: domainNames, // 条件に基づいてドメイン名を設定
         geoRestriction: cloudfront.GeoRestriction.allowlist('JP'),
         errorResponses: [
           {
@@ -70,7 +90,6 @@ export class Web extends Construct {
         'npm run build -w src/frontend',
       ],
       buildEnvironment: {
-        // REACT_APP_IDENTITY_POOL_ID: props.identityPool.identityPoolId,
         VITE_COGNITO_REGION: cdk.Stack.of(this).region,
         VITE_COGNITO_USER_POOL_ID: props.userPool.userPoolId,
         VITE_COGNITO_APP_USER_POOL_CLIENT_ID: props.userPoolClient.userPoolClientId,
