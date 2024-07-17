@@ -194,11 +194,14 @@ export class Api extends Construct {
       enforceSSL: true,
       serverAccessLogsPrefix: 'log/',
     })
+    const iamRoleForFlowerGenerateFunction = new iam.Role(this, 'iamRoleForLambdaReader', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    })
     flowerImageBucket.addToResourcePolicy(
       new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
         actions: ['s3:PutObject'],
-        principals: [new iam.ServicePrincipal('lambda.amazonaws.com')],
+        principals: [iamRoleForFlowerGenerateFunction],
         resources: [flowerImageBucket.bucketArn + '/*'],
       })
     )
@@ -206,6 +209,7 @@ export class Api extends Construct {
     const flowerGenerateFunction = new lambda.Function(this, 'flowerGenerateFunction', {
       runtime: lambda.Runtime.PYTHON_3_11,
       handler: 'flower_generate.lambda_handler',
+      role: iamRoleForFlowerGenerateFunction,
       code: lambda.Code.fromAsset('lambda/flower_generate', {
         bundling: {
           image: lambda.Runtime.PYTHON_3_11.bundlingImage,
