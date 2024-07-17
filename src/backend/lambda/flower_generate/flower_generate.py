@@ -72,13 +72,28 @@ def upload_image_to_s3(img_url, bucket_name, s3_key):
     print(f"bucket name: {bucket_name}")
     try:
         with urllib.request.urlopen(img_url) as response:
-            s3 = boto3.client('s3')
-            s3.put_object(Bucket=bucket_name, Key=s3_key, Body=response.read())
-            s3_url = f"https://{bucket_name}.s3.amazonaws.com/{s3_key}"
-            return s3_url
+            if response.status == 200:
+                try:
+                    s3 = boto3.client('s3')
+                    s3.put_object(Bucket=bucket_name, Key=s3_key, Body=response.read())
+                    s3_url = f"https://{bucket_name}.s3.amazonaws.com/{s3_key}"
+                    return s3_url
+                except boto3.exceptions.S3UploadFailedError as e:
+                    print(f"Error uploading image to S3: {e}")
+                    raise
+                except Exception as e:
+                    print(f"Unexpected error uploading image to S3: {e}")
+                    raise
+            else:
+                print(f"Error downloading image, status code: {response.status}")
+                raise Exception("Failed to download image from URL")
     except urllib.error.URLError as e:
         print(f"Error downloading image: {e.reason}")
-        raise Exception("Failed to download image from DALL-E")
+        raise
+    except Exception as e:
+        print(f"Unexpected error downloading image: {e}")
+        raise
+  
 
 def save_image_url_to_dynamodb(record, s3_url):
     print("save_image_url_to_dynamodb")
