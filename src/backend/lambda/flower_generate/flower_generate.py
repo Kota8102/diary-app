@@ -50,39 +50,32 @@ def get_parameter_from_parameter_store(parameter_name):
 
 def generate_image_dalle(api_key, prompt):
     print("generate_image_dalle")
+    client = OpenAI(api_key=api_key)  
+    print("created openai client")
     try:
-        client = OpenAI(api_key=api_key)  # ここで例外が発生するかどうか確認
-        print("created openai client")
-        try:
-            response = client.images.generate(
-                model="dall-e-3",
-                prompt=prompt,
-                size="1024x1024",
-                quality="standard",
-                n=1
-            )
-            print(f"Response: {response}")
-            img_url = response.data[0].url
-            return img_url
-        except Exception as e:
-            print(f"Error generating image: {e}")
-            raise
+        response = client.images.generate(
+            model="dall-e-3",
+            prompt=prompt,
+            size="1024x1024",
+            quality="standard",
+            n=1
+        )
+        print(f"Response: {response}")
+        img_url = response.data[0].url
+        return img_url
     except Exception as e:
-        print(f"Error creating OpenAI client: {e}")
+        print(f"Error generating image: {e}")
         raise
 
 def upload_image_to_s3(img_url, bucket_name, s3_key):
     print("upload_image_to_s3")
+    print(f"bucket name: {bucket_name}")
     try:
         with urllib.request.urlopen(img_url) as response:
-            if response.status == 200:
-                s3 = boto3.client('s3')
-                s3.put_object(Bucket=bucket_name, Key=s3_key, Body=response.read())
-                s3_url = f"https://{bucket_name}.s3.amazonaws.com/{s3_key}"
-                return s3_url
-            else:
-                print(f"Error downloading image: {response.status}")
-                raise Exception("Failed to download image from DALL-E")
+            s3 = boto3.client('s3')
+            s3.put_object(Bucket=bucket_name, Key=s3_key, Body=response.read())
+            s3_url = f"https://{bucket_name}.s3.amazonaws.com/{s3_key}"
+            return s3_url
     except urllib.error.URLError as e:
         print(f"Error downloading image: {e.reason}")
         raise Exception("Failed to download image from DALL-E")
