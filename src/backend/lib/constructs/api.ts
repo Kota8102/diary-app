@@ -232,5 +232,11 @@ export class Api extends Construct {
         actions: ['s3:PutObject'],
       })
     )
+    flowerGenerateFunction.addToRolePolicy(
+      new iam.PolicyStatement({
+        resources: ['arn:aws:ssm:ap-northeast-1:851725642854:parameter/OpenAI_API_KEY'],
+        actions: ['ssm:GetParameter'],
+      })
+    )
   }
 }
