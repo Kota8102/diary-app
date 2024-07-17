@@ -9,9 +9,9 @@ def lambda_handler(event, context):
     try:
         for record in event['Records']:
             if record['eventName'] == 'INSERT':
-                diary_content = record['dynamodb']['NewImage']['diary_content']['S']
+                diary_content = record['dynamodb']['NewImage']['content']['S']
                 generate_image_and_save_to_dynamodb(diary_content, record)
-
+                print(f"content: {diary_content}")
         return {
             'statusCode': 200,
             'body': json.dumps('Processed DynamoDB Stream records.')
