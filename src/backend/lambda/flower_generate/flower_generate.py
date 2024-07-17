@@ -5,6 +5,7 @@ import requests
 from openai import OpenAI
 
 def lambda_handler(event, context):
+    print("Flower Generate Function Start")
     try:
         for record in event['Records']:
             if record['eventName'] == 'INSERT':
