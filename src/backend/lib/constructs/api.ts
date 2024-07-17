@@ -3,6 +3,7 @@ import * as apigateway from 'aws-cdk-lib/aws-apigateway'
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb'
 import * as lambda from 'aws-cdk-lib/aws-lambda'
 import { DynamoEventSource } from 'aws-cdk-lib/aws-lambda-event-sources'
+import * as s3 from 'aws-cdk-lib/aws-s3'
 import { Construct } from 'constructs'
 
 export class Api extends Construct {
@@ -20,6 +21,10 @@ export class Api extends Construct {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       pointInTimeRecovery: true,
       stream: dynamodb.StreamViewType.NEW_AND_OLD_IMAGES,
+    })
+
+    const diaryTableEventSource = new DynamoEventSource(table, {
+      startingPosition: lambda.StartingPosition.LATEST,
     })
 
     const LambdaRole = new cdk.aws_iam.Role(this, 'Lambda Excecution Role', {
@@ -171,11 +176,7 @@ export class Api extends Construct {
     )
     generativeAiTable.grantWriteData(diaryGenerateTitleCreateFunction)
     table.grantStreamRead(diaryGenerateTitleCreateFunction)
-    diaryGenerateTitleCreateFunction.addEventSource(
-      new DynamoEventSource(table, {
-        startingPosition: lambda.StartingPosition.LATEST,
-      })
-    )
+    diaryGenerateTitleCreateFunction.addEventSource(diaryTableEventSource)
 
     const titleGetFunction = new lambda.Function(this, 'titleGetFunction', {
       runtime: lambda.Runtime.PYTHON_3_11,
@@ -185,7 +186,31 @@ export class Api extends Construct {
         TABLE_NAME: generativeAiTable.tableName,
       },
     })
-
     generativeAiTable.grantReadData(titleGetFunction)
+
+    const flowerImageBucket = new s3.Bucket(this, 'flower-image-bucket', {})
+
+    const flowerGenerateFunction = new lambda.Function(this, 'flowerGenerateFunction', {
+      runtime: lambda.Runtime.PYTHON_3_11,
+      handler: 'flower_generate.lambda_handler',
+      code: lambda.Code.fromAsset('lambda', {
+        bundling: {
+          image: lambda.Runtime.PYTHON_3_12.bundlingImage,
+          command: [
+            'bash',
+            '-c',
+            'pip install -r requirements.txt -t /asset-output && cp -au . /asset-output',
+          ],
+        },
+      }),
+      environment: {
+        DIARY_TABLE_NAME: table.tableName,
+        GENERATIVE_AI_TABLE_NAME: generativeAiTable.tableName,
+        FLOWER_BUCKET_NAME: flowerImageBucket.bucketName,
+      },
+    })
+    generativeAiTable.grantWriteData(flowerGenerateFunction)
+    table.grantStreamRead(flowerGenerateFunction)
+    flowerGenerateFunction.addEventSource(diaryTableEventSource)
   }
 }
