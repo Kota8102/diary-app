@@ -188,7 +188,10 @@ export class Api extends Construct {
     })
     generativeAiTable.grantReadData(titleGetFunction)
 
-    const flowerImageBucket = new s3.Bucket(this, 'flower-image-bucket', {})
+    const flowerImageBucket = new s3.Bucket(this, 'flower-image-bucket', {
+      enforceSSL: true,
+      serverAccessLogsPrefix: 'log/',
+    })
 
     const flowerGenerateFunction = new lambda.Function(this, 'flowerGenerateFunction', {
       runtime: lambda.Runtime.PYTHON_3_11,
