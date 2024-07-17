@@ -242,5 +242,12 @@ export class Api extends Construct {
         actions: ['ssm:GetParameter'],
       })
     )
+    flowerGenerateFunction.addToRolePolicy(
+      new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
+        resources: ['arn:aws:logs:*:*:*'],
+      })
+    )
   }
 }

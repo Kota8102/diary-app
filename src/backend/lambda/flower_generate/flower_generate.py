@@ -32,7 +32,7 @@ def generate_image_and_save_to_dynamodb(diary_content, record):
 
     # Upload image to S3
     s3_bucket = os.environ['FLOWER_BUCKET_NAME']
-    s3_key = f"generated_images/{record['dynamodb']['NewImage']['date']['S']}.png"
+    s3_key = f"generated_images/{record['dynamodb']['NewImage']['user_id']['S']}-{record['dynamodb']['NewImage']['date']['S']}.png"
     s3_url = upload_image_to_s3(img_url, s3_bucket, s3_key)
     
     # Save S3 URL to DynamoDB
