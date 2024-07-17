@@ -97,11 +97,21 @@ def upload_image_to_s3(img_url, bucket_name, s3_key):
 
 def save_image_url_to_dynamodb(record, s3_url):
     print("save_image_url_to_dynamodb")
-    dynamodb = boto3.resource('dynamodb')
-    table_name = os.environ['GENERATIVE_AI_TABLE_NAME']
-    table = dynamodb.Table(table_name)
-    table.put_item(Item={
-        'user_id': record['dynamodb']['NewImage']['user_id']['S'],
-        'date': record['dynamodb']['NewImage']['date']['S'],
-        'image_url': s3_url
-    })
+    
+    try:
+        dynamodb = boto3.resource('dynamodb')
+        table_name = os.environ['GENERATIVE_AI_TABLE_NAME']
+        table = dynamodb.Table(table_name)
+
+        item = {
+            'user_id': record['dynamodb']['NewImage']['user_id']['S'],
+            'date': record['dynamodb']['NewImage']['date']['S'],
+            'image_url': s3_url
+        }
+
+        table.put_item(Item=item)
+        print("Image URL saved to DynamoDB successfully.")
+
+    except Exception as e:
+        print(f"Error saving to DynamoDB: {e}")
+        raise
