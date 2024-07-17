@@ -61,7 +61,7 @@ def generate_image_dalle(api_key, prompt):
                 quality="standard",
                 n=1
             )
-            img_url = response['data'][0]['url']
+            img_url = response.data[0]['url']
             return img_url
         except Exception as e:
             print(f"Error generating image: {e}")
