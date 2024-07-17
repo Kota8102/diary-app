@@ -51,9 +51,8 @@ def get_parameter_from_parameter_store(parameter_name):
 def generate_image_dalle(api_key, prompt):
     print("generate_image_dalle")
     try:
-        client = OpenAI()  # ここで例外が発生するかどうか確認
+        client = OpenAI(api_key=api_key)  # ここで例外が発生するかどうか確認
         print("created openai client")
-        client.api_key = api_key
         try:
             response = client.images.generate(
                 model="dall-e-3",
