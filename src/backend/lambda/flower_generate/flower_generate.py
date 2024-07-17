@@ -27,8 +27,10 @@ def generate_image_and_save_to_dynamodb(diary_content, record):
     print("generate_image_and_save_to_dynamoDB")
     # Generate image using OpenAI DALL-E API
     api_key = get_parameter_from_parameter_store('OpenAI_API_KEY')
+    print(f"api key {api_key}")
     img_url = generate_image_dalle(api_key, diary_content)
-    
+    print(f"image url: {img_url}")
+
     # Upload image to S3
     s3_bucket = os.environ['FLOWER_BUCKET_NAME']
     s3_key = f"generated_images/{record['dynamodb']['NewImage']['date']['S']}.png"
@@ -39,9 +41,13 @@ def generate_image_and_save_to_dynamodb(diary_content, record):
 
 def get_parameter_from_parameter_store(parameter_name):
     print("get_parameter_from_parameter_store")
-    ssm = boto3.client('ssm')
-    response = ssm.get_parameter(Name=parameter_name, WithDecryption=True)
-    return response['Parameter']['Value']
+    try:
+        ssm = boto3.client('ssm')
+        response = ssm.get_parameter(Name=parameter_name, WithDecryption=True)
+        return response['Parameter']['Value']
+    except Exception as e:
+        raise Exception(f"Failed to get parameter from parameter store: {e}")
+
 
 def generate_image_dalle(api_key, prompt):
     print("generate_image_dalle")
