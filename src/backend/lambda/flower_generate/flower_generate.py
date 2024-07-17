@@ -8,10 +8,11 @@ def lambda_handler(event, context):
     print("Flower Generate Function Start")
     try:
         for record in event['Records']:
+            print(f"record{record}")
             if record['eventName'] == 'INSERT':
                 diary_content = record['dynamodb']['NewImage']['content']['S']
-                generate_image_and_save_to_dynamodb(diary_content, record)
                 print(f"content: {diary_content}")
+                generate_image_and_save_to_dynamodb(diary_content, record)
         return {
             'statusCode': 200,
             'body': json.dumps('Processed DynamoDB Stream records.')
@@ -23,6 +24,7 @@ def lambda_handler(event, context):
         }
 
 def generate_image_and_save_to_dynamodb(diary_content, record):
+    print("generate_image_and_save_to_dynamoDB")
     # Generate image using OpenAI DALL-E API
     api_key = get_parameter_from_parameter_store('OpenAI_API_KEY')
     img_url = generate_image_dalle(api_key, diary_content)
@@ -36,11 +38,13 @@ def generate_image_and_save_to_dynamodb(diary_content, record):
     save_image_url_to_dynamodb(record, s3_url)
 
 def get_parameter_from_parameter_store(parameter_name):
+    print("get_parameter_from_parameter_store")
     ssm = boto3.client('ssm')
     response = ssm.get_parameter(Name=parameter_name, WithDecryption=True)
     return response['Parameter']['Value']
 
 def generate_image_dalle(api_key, prompt):
+    print("generate_image_dalle")
     client = OpenAI()
     client.api_key = api_key
     try:
@@ -58,6 +62,7 @@ def generate_image_dalle(api_key, prompt):
         raise
 
 def upload_image_to_s3(img_url, bucket_name, s3_key):
+    print("upload_image_to_s3")
     response = requests.get(img_url)
     if response.status_code == 200:
         s3 = boto3.client('s3')
@@ -69,6 +74,7 @@ def upload_image_to_s3(img_url, bucket_name, s3_key):
         raise Exception("Failed to download image from DALL-E")
 
 def save_image_url_to_dynamodb(record, s3_url):
+    print("save_image_url_to_dynamodb")
     dynamodb = boto3.resource('dynamodb')
     table_name = os.environ['GENERATIVE_AI_TABLE_NAME']
     table = dynamodb.Table(table_name)

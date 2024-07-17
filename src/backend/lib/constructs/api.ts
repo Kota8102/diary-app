@@ -1,6 +1,7 @@
 import * as cdk from 'aws-cdk-lib'
 import * as apigateway from 'aws-cdk-lib/aws-apigateway'
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb'
+import * as iam from 'aws-cdk-lib/aws-iam'
 import * as lambda from 'aws-cdk-lib/aws-lambda'
 import { DynamoEventSource } from 'aws-cdk-lib/aws-lambda-event-sources'
 import * as s3 from 'aws-cdk-lib/aws-s3'
@@ -193,6 +194,14 @@ export class Api extends Construct {
       enforceSSL: true,
       serverAccessLogsPrefix: 'log/',
     })
+    flowerImageBucket.addToResourcePolicy(
+      new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: ['s3:PutObject'],
+        principals: [new iam.ServicePrincipal('lambda.amazonaws.com')],
+        resources: [flowerImageBucket.bucketArn + '/*'],
+      })
+    )
 
     const flowerGenerateFunction = new lambda.Function(this, 'flowerGenerateFunction', {
       runtime: lambda.Runtime.PYTHON_3_11,
@@ -217,5 +226,11 @@ export class Api extends Construct {
     generativeAiTable.grantWriteData(flowerGenerateFunction)
     table.grantStreamRead(flowerGenerateFunction)
     flowerGenerateFunction.addEventSource(diaryTableEventSource)
+    flowerGenerateFunction.addToRolePolicy(
+      new iam.PolicyStatement({
+        resources: [flowerImageBucket.bucketArn],
+        actions: ['s3:PutObject'],
+      })
+    )
   }
 }
