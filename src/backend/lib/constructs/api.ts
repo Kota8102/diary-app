@@ -196,9 +196,9 @@ export class Api extends Construct {
     const flowerGenerateFunction = new lambda.Function(this, 'flowerGenerateFunction', {
       runtime: lambda.Runtime.PYTHON_3_11,
       handler: 'flower_generate.lambda_handler',
-      code: lambda.Code.fromAsset('lambda', {
+      code: lambda.Code.fromAsset('lambda/flower_generate', {
         bundling: {
-          image: lambda.Runtime.PYTHON_3_12.bundlingImage,
+          image: lambda.Runtime.PYTHON_3_11.bundlingImage,
           command: [
             'bash',
             '-c',
