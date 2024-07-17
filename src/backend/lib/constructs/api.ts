@@ -190,5 +190,14 @@ export class Api extends Construct {
 
     const title = api.root.addResource('title')
     title.addMethod('GET', new apigateway.LambdaIntegration(titleGetFunction))
+
+    const imageGetFunction = new lambda.Function(this, 'imageGetFunction', {
+      runtime: lambda.Runtime.PYTHON_3_11,
+      handler: 'flower_get.lambda_handler',
+      code: lambda.Code.fromAsset('lambda'),
+      //environment: {
+      //BUCKET_NAME:
+      //}
+    })
   }
 }
