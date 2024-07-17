@@ -24,18 +24,13 @@ def lambda_handler(event, context):
         }
 
 def generate_image_and_save_to_dynamodb(diary_content, record):
-    print("generate_image_and_save_to_dynamoDB")
-    # Generate image using OpenAI DALL-E API
     api_key = get_parameter_from_parameter_store('OpenAI_API_KEY')
     img_url = generate_image_dalle(api_key, diary_content)
-    print(f"image url: {img_url}")
 
-    # Upload image to S3
     s3_bucket = os.environ['FLOWER_BUCKET_NAME']
     s3_key = f"generated_images/{record['dynamodb']['NewImage']['user_id']['S']}-{record['dynamodb']['NewImage']['date']['S']}.png"
     s3_url = upload_image_to_s3(img_url, s3_bucket, s3_key)
     
-    # Save S3 URL to DynamoDB
     save_image_url_to_dynamodb(record, s3_url)
 
 def get_parameter_from_parameter_store(parameter_name):
@@ -68,32 +63,18 @@ def generate_image_dalle(api_key, prompt):
         raise
 
 def upload_image_to_s3(img_url, bucket_name, s3_key):
-    print("upload_image_to_s3")
-    print(f"bucket name: {bucket_name}")
     try:
         with urllib.request.urlopen(img_url) as response:
             if response.status == 200:
-                try:
-                    s3 = boto3.client('s3')
-                    s3.put_object(Bucket=bucket_name, Key=s3_key, Body=response.read())
-                    s3_url = f"https://{bucket_name}.s3.amazonaws.com/{s3_key}"
-                    return s3_url
-                except boto3.exceptions.S3UploadFailedError as e:
-                    print(f"Error uploading image to S3: {e}")
-                    raise
-                except Exception as e:
-                    print(f"Unexpected error uploading image to S3: {e}")
-                    raise
+                s3 = boto3.client('s3')
+                s3.put_object(Bucket=bucket_name, Key=s3_key, Body=response.read())
+                s3_url = f"https://{bucket_name}.s3.amazonaws.com/{s3_key}"
+                return s3_url
             else:
-                print(f"Error downloading image, status code: {response.status}")
-                raise Exception("Failed to download image from URL")
-    except urllib.error.URLError as e:
-        print(f"Error downloading image: {e.reason}")
-        raise
+                raise Exception(f"Error downloading image, status code: {response.status}")
     except Exception as e:
-        print(f"Unexpected error downloading image: {e}")
+        print(f"Error: {e}")
         raise
-  
 
 def save_image_url_to_dynamodb(record, s3_url):
     print("save_image_url_to_dynamodb")

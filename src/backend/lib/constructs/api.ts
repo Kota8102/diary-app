@@ -173,7 +173,7 @@ export class Api extends Construct {
         environment: {
           TABLE_NAME: generativeAiTable.tableName,
         },
-        timeout: cdk.Duration.seconds(15),
+        timeout: cdk.Duration.seconds(30),
       }
     )
     generativeAiTable.grantWriteData(diaryGenerateTitleCreateFunction)
@@ -190,7 +190,7 @@ export class Api extends Construct {
     })
     generativeAiTable.grantReadData(titleGetFunction)
 
-    const flowerImageBucket = new s3.Bucket(this, 'flower-image-bucket', {
+    const flowerImageBucket = new s3.Bucket(this, 'flowerImageBucket', {
       enforceSSL: true,
       serverAccessLogsPrefix: 'log/',
     })
@@ -225,7 +225,7 @@ export class Api extends Construct {
         GENERATIVE_AI_TABLE_NAME: generativeAiTable.tableName,
         FLOWER_BUCKET_NAME: flowerImageBucket.bucketName,
       },
-      timeout: cdk.Duration.seconds(15),
+      timeout: cdk.Duration.seconds(60),
     })
     generativeAiTable.grantWriteData(flowerGenerateFunction)
     table.grantStreamRead(flowerGenerateFunction)
