@@ -3,9 +3,10 @@ import { Route, Routes } from 'react-router-dom'
 import { MainLayout } from '../../../components/layout'
 
 import { AuthChoice } from './AuthChoice'
+import { ConfirmSignUp } from './ConfirmSignUp'
+import { ConsentForm } from './ConsentForm'
 import { Login } from './Login'
 import { SignUp } from './SignUp'
-import { ConfirmSignUp } from './ConfirmSignUp'
 
 export const AuthRoutes = () => {
   return (
@@ -22,6 +23,10 @@ export const AuthRoutes = () => {
         <Route
           path="confirm"
           element={<ConfirmSignUp />}
+        />
+        <Route
+          path="consent"
+          element={<ConsentForm />}
         />
         <Route
           path="/"

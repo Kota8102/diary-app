@@ -5,5 +5,5 @@ type MainLayoutProps = {
 }
 
 export const MainLayout = ({ children }: MainLayoutProps) => {
-  return <div className="h-screen bg-light-bgDefault min-h-screen">{children}</div>
+  return <div className="min-h-screen overflow-x-hidden bg-light-bgDefault">{children}</div>
 }
