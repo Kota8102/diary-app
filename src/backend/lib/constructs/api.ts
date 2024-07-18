@@ -225,13 +225,5 @@ export class Api extends Construct {
         actions: ['ssm:GetParameter'],
       })
     )
-    flowerImageBucket.addToResourcePolicy(
-      new iam.PolicyStatement({
-        effect: iam.Effect.ALLOW,
-        actions: ['s3:PutObject'],
-        principals: [new iam.ArnPrincipal(flowerGenerateFunction.functionArn)],
-        resources: [flowerImageBucket.bucketArn + '/*'],
-      })
-    )
   }
 }
