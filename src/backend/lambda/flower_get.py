@@ -12,8 +12,10 @@ def lambda_handler(event, context):
         
         if image:
             return {
+                'headers': { "Content-Type": "image/png" },
                 'statusCode': 200,
-                'body': json.dumps({'Image': image})
+                'body': json.dumps({'Image': image}),
+                'isBase64Encoded': True
             }
         else:
             return {
@@ -31,10 +33,10 @@ def get_img_from_s3(user_id, date):
         s3 = boto3.client('s3')
         bucket_name = os.environ["BUCKET_NAME"]
         s3_key = f"generated_images/{user_id}-{date}.png"
-        responce = s3.get_object(Bucket=bucket_name, Key=s3_key)
-        body = responce['Body'].read()
-        body = base64.b64encode(body) 
+        response = s3.get_object(Bucket=bucket_name, Key=s3_key)
+        body = response['Body'].read()
+        body = base64.b64encode(body).decode('utf-8') 
         return body 
     except Exception as e:
-        print(f"Error fetching data from DynamoDB: {e}")
+        print(f"Error fetching data from S3: {e}")
         return None
