@@ -189,7 +189,8 @@ export class Api extends Construct {
       },
     })
     generativeAiTable.grantReadData(titleGetFunction)
-    diary.addMethod('GET', new apigateway.LambdaIntegration(titleGetFunction))
+    const titleApi = api.root.addResource('title')
+    titleApi.addMethod('GET', new apigateway.LambdaIntegration(titleGetFunction))
 
     const flowerImageBucket = new s3.Bucket(this, 'flowerImageBucket', {
       enforceSSL: true,
@@ -237,6 +238,7 @@ export class Api extends Construct {
     })
     flowerImageBucket.grantRead(flowerGetFunction)
 
-    diary.addMethod('GET', new apigateway.LambdaIntegration(flowerGetFunction))
+    const flowerApi = api.root.addResource('flower')
+    flowerApi.addMethod('GET', new apigateway.LambdaIntegration(flowerGetFunction))
   }
 }
