@@ -235,6 +235,7 @@ export class Api extends Construct {
       environment: {
         BUCKET_NAME: flowerImageBucket.bucketName,
       },
+      timeout: cdk.Duration.seconds(10),
     })
     flowerImageBucket.grantRead(flowerGetFunction)
 
