@@ -194,22 +194,10 @@ export class Api extends Construct {
       enforceSSL: true,
       serverAccessLogsPrefix: 'log/',
     })
-    const iamRoleForFlowerGenerateFunction = new iam.Role(this, 'iamRoleForLambdaReader', {
-      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-    })
-    flowerImageBucket.addToResourcePolicy(
-      new iam.PolicyStatement({
-        effect: iam.Effect.ALLOW,
-        actions: ['s3:PutObject'],
-        principals: [iamRoleForFlowerGenerateFunction],
-        resources: [flowerImageBucket.bucketArn + '/*'],
-      })
-    )
 
     const flowerGenerateFunction = new lambda.Function(this, 'flowerGenerateFunction', {
       runtime: lambda.Runtime.PYTHON_3_11,
       handler: 'flower_generate.lambda_handler',
-      role: iamRoleForFlowerGenerateFunction,
       code: lambda.Code.fromAsset('lambda/flower_generate', {
         bundling: {
           image: lambda.Runtime.PYTHON_3_11.bundlingImage,
@@ -229,24 +217,20 @@ export class Api extends Construct {
     })
     generativeAiTable.grantWriteData(flowerGenerateFunction)
     table.grantStreamRead(flowerGenerateFunction)
+    flowerImageBucket.grantPut(flowerGenerateFunction)
     flowerGenerateFunction.addEventSource(diaryTableEventSource)
-    flowerGenerateFunction.addToRolePolicy(
-      new iam.PolicyStatement({
-        resources: [flowerImageBucket.bucketArn],
-        actions: ['s3:PutObject'],
-      })
-    )
     flowerGenerateFunction.addToRolePolicy(
       new iam.PolicyStatement({
         resources: ['arn:aws:ssm:ap-northeast-1:851725642854:parameter/OpenAI_API_KEY'],
         actions: ['ssm:GetParameter'],
       })
     )
-    flowerGenerateFunction.addToRolePolicy(
+    flowerImageBucket.addToResourcePolicy(
       new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
-        actions: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
-        resources: ['arn:aws:logs:*:*:*'],
+        actions: ['s3:PutObject'],
+        principals: [new iam.ArnPrincipal(flowerGenerateFunction.functionArn)],
+        resources: [flowerImageBucket.bucketArn + '/*'],
       })
     )
   }
