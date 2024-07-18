@@ -13,7 +13,7 @@ export const TabItem = ({ linkPath, label: text, activeIcon, inactiveIcon }: Tab
   return (
     <Link
       to={linkPath}
-      className="flex flex-col items-center pt-2 pb-5">
+      className="flex flex-col items-center pt-1 pb-3 gap-1 w-1/5">
       {pathname === linkPath ? (
         <img
           src={activeIcon}
@@ -27,7 +27,7 @@ export const TabItem = ({ linkPath, label: text, activeIcon, inactiveIcon }: Tab
           height="32"
         />
       )}
-      <span className="text-xs">{text}</span>
+      <span className="text-[10px]">{text}</span>
     </Link>
   )
 }
