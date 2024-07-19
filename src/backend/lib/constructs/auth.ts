@@ -1,14 +1,14 @@
-import * as cdk from 'aws-cdk-lib';
-import { Construct } from 'constructs';
-import * as cognito from 'aws-cdk-lib/aws-cognito';
+import * as cdk from 'aws-cdk-lib'
+import * as cognito from 'aws-cdk-lib/aws-cognito'
+import { Construct } from 'constructs'
 
 export class Auth extends Construct {
-  public readonly userPool: cognito.UserPool;
-  public readonly userPoolClient: cognito.UserPoolClient;
-  public readonly identityPool: cognito.CfnIdentityPool;
+  public readonly userPool: cognito.UserPool
+  public readonly userPoolClient: cognito.UserPoolClient
+  public readonly identityPool: cognito.CfnIdentityPool
 
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
-    super(scope, id);
+    super(scope, id)
 
     const userPool = new cognito.UserPool(this, 'UserPool', {
       userPoolName: 'app-user-pool',
@@ -32,22 +32,20 @@ export class Auth extends Construct {
         sms: true,
         otp: true,
       },
-    });
+    })
 
-    const userPoolClient = new cognito.UserPoolClient(this, "DiaryUserPoolClient", {
+    const userPoolClient = new cognito.UserPoolClient(this, 'DiaryUserPoolClient', {
       userPool,
-      userPoolClientName: "diary-userpool-client",
+      userPoolClientName: 'diary-userpool-client',
       authFlows: {
         adminUserPassword: true,
         custom: true,
         userSrp: true,
       },
-      supportedIdentityProviders: [
-        cognito.UserPoolClientIdentityProvider.COGNITO,
-      ],
-    });
+      supportedIdentityProviders: [cognito.UserPoolClientIdentityProvider.COGNITO],
+    })
 
-    this.userPool = userPool;
-    this.userPoolClient = userPoolClient;
+    this.userPool = userPool
+    this.userPoolClient = userPoolClient
   }
 }
