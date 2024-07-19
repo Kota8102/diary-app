@@ -189,6 +189,8 @@ export class Api extends Construct {
       },
     })
     generativeAiTable.grantReadData(titleGetFunction)
+    const titleApi = api.root.addResource('title')
+    titleApi.addMethod('GET', new apigateway.LambdaIntegration(titleGetFunction))
 
     const flowerImageBucket = new s3.Bucket(this, 'flowerImageBucket', {
       enforceSSL: true,
@@ -225,5 +227,19 @@ export class Api extends Construct {
         actions: ['ssm:GetParameter'],
       })
     )
+
+    const flowerGetFunction = new lambda.Function(this, 'flowerGetFunction', {
+      runtime: lambda.Runtime.PYTHON_3_11,
+      handler: 'flower_get.lambda_handler',
+      code: lambda.Code.fromAsset('lambda'),
+      environment: {
+        BUCKET_NAME: flowerImageBucket.bucketName,
+      },
+      timeout: cdk.Duration.seconds(10),
+    })
+    flowerImageBucket.grantRead(flowerGetFunction)
+
+    const flowerApi = api.root.addResource('flower')
+    flowerApi.addMethod('GET', new apigateway.LambdaIntegration(flowerGetFunction))
   }
 }
