@@ -50,5 +50,9 @@ export class BackendStack extends cdk.Stack {
     new cdk.CfnOutput(this, 'CognitoUserPoolClientId', {
       value: auth.userPoolClient.userPoolClientId,
     })
+
+    new cdk.CfnOutput(this, 'ApiEndpoint', {
+      value: api.api.url,
+    })
   }
 }
