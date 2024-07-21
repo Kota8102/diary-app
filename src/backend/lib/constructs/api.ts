@@ -1,12 +1,22 @@
 import * as cdk from 'aws-cdk-lib'
 import * as apigateway from 'aws-cdk-lib/aws-apigateway'
+import * as cognito from 'aws-cdk-lib/aws-cognito'
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb'
+import * as iam from 'aws-cdk-lib/aws-iam'
 import * as lambda from 'aws-cdk-lib/aws-lambda'
 import { DynamoEventSource } from 'aws-cdk-lib/aws-lambda-event-sources'
+import * as s3 from 'aws-cdk-lib/aws-s3'
 import { Construct } from 'constructs'
 
+export interface ApiProps {
+  userPool: cognito.UserPool
+}
+
 export class Api extends Construct {
-  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+
+  public readonly api: apigateway.RestApi
+
+  constructor(scope: Construct, id: string, props: ApiProps) {
     super(scope, id)
     const table = new dynamodb.Table(this, `diaryContentsTable`, {
       partitionKey: {
@@ -20,6 +30,10 @@ export class Api extends Construct {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       pointInTimeRecovery: true,
       stream: dynamodb.StreamViewType.NEW_AND_OLD_IMAGES,
+    })
+
+    const diaryTableEventSource = new DynamoEventSource(table, {
+      startingPosition: lambda.StartingPosition.LATEST,
     })
 
     const LambdaRole = new cdk.aws_iam.Role(this, 'Lambda Excecution Role', {
@@ -123,16 +137,27 @@ export class Api extends Construct {
 
     // エンドポイントの設定
     const diary = api.root.addResource('diary')
+    const cognitoAutorither = new apigateway.CognitoUserPoolsAuthorizer(this, 'cognitoAuthorizer', {
+      cognitoUserPools: [props.userPool],
+    })
 
     // POSTエンドポイント - 日記の作成
-    diary.addMethod('POST', new apigateway.LambdaIntegration(diaryCreateFunction))
+    diary.addMethod('POST', new apigateway.LambdaIntegration(diaryCreateFunction), {
+      authorizer: cognitoAutorither,
+    })
 
     // PUTエンドポイント - 日記の編集
-    diary.addMethod('PUT', new apigateway.LambdaIntegration(diaryEditFunction))
+    diary.addMethod('PUT', new apigateway.LambdaIntegration(diaryEditFunction), {
+      authorizer: cognitoAutorither,
+    })
     // GETエンドポイント - 日記の閲覧
-    diary.addMethod('GET', new apigateway.LambdaIntegration(diaryReadFunction))
+    diary.addMethod('GET', new apigateway.LambdaIntegration(diaryReadFunction), {
+      authorizer: cognitoAutorither,
+    })
     // DELETEエンドポイント - 日記の削除
-    diary.addMethod('DELETE', new apigateway.LambdaIntegration(diaryDeleteFunction))
+    diary.addMethod('DELETE', new apigateway.LambdaIntegration(diaryDeleteFunction), {
+      authorizer: cognitoAutorither,
+    })
 
     const generativeAiTable = new dynamodb.Table(this, `generativeAiTable`, {
       partitionKey: {
@@ -167,15 +192,12 @@ export class Api extends Construct {
         environment: {
           TABLE_NAME: generativeAiTable.tableName,
         },
+        timeout: cdk.Duration.seconds(30),
       }
     )
     generativeAiTable.grantWriteData(diaryGenerateTitleCreateFunction)
     table.grantStreamRead(diaryGenerateTitleCreateFunction)
-    diaryGenerateTitleCreateFunction.addEventSource(
-      new DynamoEventSource(table, {
-        startingPosition: lambda.StartingPosition.LATEST,
-      })
-    )
+    diaryGenerateTitleCreateFunction.addEventSource(diaryTableEventSource)
 
     const titleGetFunction = new lambda.Function(this, 'titleGetFunction', {
       runtime: lambda.Runtime.PYTHON_3_11,
@@ -185,10 +207,64 @@ export class Api extends Construct {
         TABLE_NAME: generativeAiTable.tableName,
       },
     })
-
     generativeAiTable.grantReadData(titleGetFunction)
+    const titleApi = api.root.addResource('title')
+    titleApi.addMethod('GET', new apigateway.LambdaIntegration(titleGetFunction), {
+      authorizer: cognitoAutorither,
+    })
 
-    const title = api.root.addResource('title')
-    title.addMethod('GET', new apigateway.LambdaIntegration(titleGetFunction))
+    const flowerImageBucket = new s3.Bucket(this, 'flowerImageBucket', {
+      enforceSSL: true,
+      serverAccessLogsPrefix: 'log/',
+    })
+
+    const flowerGenerateFunction = new lambda.Function(this, 'flowerGenerateFunction', {
+      runtime: lambda.Runtime.PYTHON_3_11,
+      handler: 'flower_generate.lambda_handler',
+      code: lambda.Code.fromAsset('lambda/flower_generate', {
+        bundling: {
+          image: lambda.Runtime.PYTHON_3_11.bundlingImage,
+          command: [
+            'bash',
+            '-c',
+            'pip install -r requirements.txt -t /asset-output && cp -au . /asset-output',
+          ],
+        },
+      }),
+      environment: {
+        DIARY_TABLE_NAME: table.tableName,
+        GENERATIVE_AI_TABLE_NAME: generativeAiTable.tableName,
+        FLOWER_BUCKET_NAME: flowerImageBucket.bucketName,
+      },
+      timeout: cdk.Duration.seconds(60),
+    })
+    generativeAiTable.grantWriteData(flowerGenerateFunction)
+    table.grantStreamRead(flowerGenerateFunction)
+    flowerImageBucket.grantPut(flowerGenerateFunction)
+    flowerGenerateFunction.addEventSource(diaryTableEventSource)
+    flowerGenerateFunction.addToRolePolicy(
+      new iam.PolicyStatement({
+        resources: ['arn:aws:ssm:ap-northeast-1:851725642854:parameter/OpenAI_API_KEY'],
+        actions: ['ssm:GetParameter'],
+      })
+    )
+
+    const flowerGetFunction = new lambda.Function(this, 'flowerGetFunction', {
+      runtime: lambda.Runtime.PYTHON_3_11,
+      handler: 'flower_get.lambda_handler',
+      code: lambda.Code.fromAsset('lambda'),
+      environment: {
+        BUCKET_NAME: flowerImageBucket.bucketName,
+      },
+      timeout: cdk.Duration.seconds(10),
+    })
+    flowerImageBucket.grantRead(flowerGetFunction)
+
+    const flowerApi = api.root.addResource('flower')
+    flowerApi.addMethod('GET', new apigateway.LambdaIntegration(flowerGetFunction), {
+      authorizer: cognitoAutorither,
+    })
+
+    this.api = api
   }
 }

@@ -40,7 +40,9 @@ export class BackendStack extends cdk.Stack {
     })
 
     // API機能スタックのインスタンス化
-    const api = new Api(this, 'Api')
+    const api = new Api(this, 'Api', {
+      userPool: auth.userPool,
+    })
 
     const web = new Web(this, 'Web', {
       userPool: auth.userPool,
@@ -48,6 +50,27 @@ export class BackendStack extends cdk.Stack {
       identityPool: identity.identityPool,
       certificate,
       domainNames,
+      api: api.api,
+    })
+
+    new cdk.CfnOutput(this, 'WebFrontend', {
+      value: `https://${web.distribution.distributionDomainName}`,
+    })
+
+    new cdk.CfnOutput(this, 'IdentityPoolId', {
+      value: identity.identityPool.identityPoolId,
+    })
+
+    new cdk.CfnOutput(this, 'CognitoUserPoolId', {
+      value: auth.userPool.userPoolId,
+    })
+
+    new cdk.CfnOutput(this, 'CognitoUserPoolClientId', {
+      value: auth.userPoolClient.userPoolClientId,
+    })
+
+    new cdk.CfnOutput(this, 'ApiEndpoint', {
+      value: api.api.url,
     })
   }
 }
