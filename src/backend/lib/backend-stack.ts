@@ -2,9 +2,8 @@ import * as cdk from 'aws-cdk-lib'
 import * as s3 from 'aws-cdk-lib/aws-s3'
 import { Construct } from 'constructs'
 import { Api, Auth, Identity, Web } from './constructs'
-import { Values } from 'aws-cdk-lib/aws-cloudwatch'
 
-interface BackendStackProps extends cdk.StackProps { }
+interface BackendStackProps extends cdk.StackProps {}
 
 export class BackendStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: BackendStackProps) {
@@ -25,7 +24,9 @@ export class BackendStack extends cdk.Stack {
     })
 
     // API機能スタックのインスタンス化
-    const api = new Api(this, 'Api')
+    const api = new Api(this, 'Api', {
+      userPool: auth.userPool,
+    })
 
     const web = new Web(this, 'Web', {
       userPool: auth.userPool,
@@ -48,7 +49,5 @@ export class BackendStack extends cdk.Stack {
     new cdk.CfnOutput(this, 'CognitoUserPoolClientId', {
       value: auth.userPoolClient.userPoolClientId,
     })
-
-
   }
 }

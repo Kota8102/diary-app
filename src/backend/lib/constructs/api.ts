@@ -1,5 +1,6 @@
 import * as cdk from 'aws-cdk-lib'
 import * as apigateway from 'aws-cdk-lib/aws-apigateway'
+import * as cognito from 'aws-cdk-lib/aws-cognito'
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb'
 import * as iam from 'aws-cdk-lib/aws-iam'
 import * as lambda from 'aws-cdk-lib/aws-lambda'
@@ -7,8 +8,12 @@ import { DynamoEventSource } from 'aws-cdk-lib/aws-lambda-event-sources'
 import * as s3 from 'aws-cdk-lib/aws-s3'
 import { Construct } from 'constructs'
 
+export interface ApiProps {
+  userPool: cognito.UserPool
+}
+
 export class Api extends Construct {
-  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+  constructor(scope: Construct, id: string, props: ApiProps) {
     super(scope, id)
     const table = new dynamodb.Table(this, `diaryContentsTable`, {
       partitionKey: {
@@ -129,16 +134,27 @@ export class Api extends Construct {
 
     // エンドポイントの設定
     const diary = api.root.addResource('diary')
+    const cognitoAutorither = new apigateway.CognitoUserPoolsAuthorizer(this, 'cognitoAuthorizer', {
+      cognitoUserPools: [props.userPool],
+    })
 
     // POSTエンドポイント - 日記の作成
-    diary.addMethod('POST', new apigateway.LambdaIntegration(diaryCreateFunction))
+    diary.addMethod('POST', new apigateway.LambdaIntegration(diaryCreateFunction), {
+      authorizer: cognitoAutorither,
+    })
 
     // PUTエンドポイント - 日記の編集
-    diary.addMethod('PUT', new apigateway.LambdaIntegration(diaryEditFunction))
+    diary.addMethod('PUT', new apigateway.LambdaIntegration(diaryEditFunction), {
+      authorizer: cognitoAutorither,
+    })
     // GETエンドポイント - 日記の閲覧
-    diary.addMethod('GET', new apigateway.LambdaIntegration(diaryReadFunction))
+    diary.addMethod('GET', new apigateway.LambdaIntegration(diaryReadFunction), {
+      authorizer: cognitoAutorither,
+    })
     // DELETEエンドポイント - 日記の削除
-    diary.addMethod('DELETE', new apigateway.LambdaIntegration(diaryDeleteFunction))
+    diary.addMethod('DELETE', new apigateway.LambdaIntegration(diaryDeleteFunction), {
+      authorizer: cognitoAutorither,
+    })
 
     const generativeAiTable = new dynamodb.Table(this, `generativeAiTable`, {
       partitionKey: {
@@ -190,7 +206,9 @@ export class Api extends Construct {
     })
     generativeAiTable.grantReadData(titleGetFunction)
     const titleApi = api.root.addResource('title')
-    titleApi.addMethod('GET', new apigateway.LambdaIntegration(titleGetFunction))
+    titleApi.addMethod('GET', new apigateway.LambdaIntegration(titleGetFunction), {
+      authorizer: cognitoAutorither,
+    })
 
     const flowerImageBucket = new s3.Bucket(this, 'flowerImageBucket', {
       enforceSSL: true,
@@ -240,6 +258,8 @@ export class Api extends Construct {
     flowerImageBucket.grantRead(flowerGetFunction)
 
     const flowerApi = api.root.addResource('flower')
-    flowerApi.addMethod('GET', new apigateway.LambdaIntegration(flowerGetFunction))
+    flowerApi.addMethod('GET', new apigateway.LambdaIntegration(flowerGetFunction), {
+      authorizer: cognitoAutorither,
+    })
   }
 }
