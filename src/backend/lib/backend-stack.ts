@@ -3,7 +3,7 @@ import * as s3 from 'aws-cdk-lib/aws-s3'
 import { Construct } from 'constructs'
 import { Api, Auth, Identity, Web } from './constructs'
 
-interface BackendStackProps extends cdk.StackProps {}
+interface BackendStackProps extends cdk.StackProps { }
 
 export class BackendStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: BackendStackProps) {
@@ -32,6 +32,7 @@ export class BackendStack extends cdk.Stack {
       userPool: auth.userPool,
       userPoolClient: auth.userPoolClient,
       identityPool: identity.identityPool,
+      api: api.api,
     })
 
     new cdk.CfnOutput(this, 'WebFrontend', {
@@ -48,6 +49,10 @@ export class BackendStack extends cdk.Stack {
 
     new cdk.CfnOutput(this, 'CognitoUserPoolClientId', {
       value: auth.userPoolClient.userPoolClientId,
+    })
+
+    new cdk.CfnOutput(this, 'ApiEndpoint', {
+      value: api.api.url,
     })
   }
 }

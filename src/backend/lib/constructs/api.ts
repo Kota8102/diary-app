@@ -13,6 +13,9 @@ export interface ApiProps {
 }
 
 export class Api extends Construct {
+
+  public readonly api: apigateway.RestApi
+
   constructor(scope: Construct, id: string, props: ApiProps) {
     super(scope, id)
     const table = new dynamodb.Table(this, `diaryContentsTable`, {
@@ -261,5 +264,7 @@ export class Api extends Construct {
     flowerApi.addMethod('GET', new apigateway.LambdaIntegration(flowerGetFunction), {
       authorizer: cognitoAutorither,
     })
+
+    this.api = api
   }
 }
