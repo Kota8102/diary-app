@@ -95,6 +95,12 @@ export class Api extends Construct {
     })
 
     const api = new apigateway.RestApi(this, 'DiaryApi', {
+      defaultCorsPreflightOptions: {
+        allowOrigins: apigateway.Cors.ALL_ORIGINS,
+        allowMethods: apigateway.Cors.ALL_METHODS,
+        allowHeaders: apigateway.Cors.DEFAULT_HEADERS,
+        statusCode: 200,
+      },
       cloudWatchRole: true,
       cloudWatchRoleRemovalPolicy: cdk.RemovalPolicy.DESTROY,
       deployOptions: {
