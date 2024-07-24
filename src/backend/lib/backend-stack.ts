@@ -20,6 +20,7 @@ export class BackendStack extends cdk.Stack {
     const isProd = process.env.ENVIRONMENT === 'prod'
     let certificate: acm.ICertificate | undefined
     let domainNames: string[] | undefined
+    const cognitoDomain = isProd ? "bouquet-note" : undefined
 
     if (isProd) {
       const existingCertificateArn = process.env.CERTIFICATE_ARN
@@ -32,7 +33,7 @@ export class BackendStack extends cdk.Stack {
     }
 
     // 認証機能スタックのインスタンス化
-    const auth = new Auth(this, 'Auth')
+    const auth = new Auth(this, 'Auth', { cognitoDomain })
 
     const identity = new Identity(this, 'Identity', {
       userPool: auth.userPool,
@@ -40,9 +41,7 @@ export class BackendStack extends cdk.Stack {
     })
 
     // API機能スタックのインスタンス化
-    const api = new Api(this, 'Api', {
-      userPool: auth.userPool,
-    })
+    const api = new Api(this, 'Api')
 
     const web = new Web(this, 'Web', {
       userPool: auth.userPool,
@@ -50,27 +49,6 @@ export class BackendStack extends cdk.Stack {
       identityPool: identity.identityPool,
       certificate,
       domainNames,
-      api: api.api,
-    })
-
-    new cdk.CfnOutput(this, 'WebFrontend', {
-      value: `https://${web.distribution.distributionDomainName}`,
-    })
-
-    new cdk.CfnOutput(this, 'IdentityPoolId', {
-      value: identity.identityPool.identityPoolId,
-    })
-
-    new cdk.CfnOutput(this, 'CognitoUserPoolId', {
-      value: auth.userPool.userPoolId,
-    })
-
-    new cdk.CfnOutput(this, 'CognitoUserPoolClientId', {
-      value: auth.userPoolClient.userPoolClientId,
-    })
-
-    new cdk.CfnOutput(this, 'ApiEndpoint', {
-      value: api.api.url,
     })
   }
 }
