@@ -16,10 +16,11 @@ export class BackendStack extends cdk.Stack {
       serverAccessLogsPrefix: 'log/',
     })
 
-    // 環境変数の読み込み
+    // 環境変数の読み込み 20240726cognito domain追加
     const isProd = process.env.ENVIRONMENT === 'prod'
     let certificate: acm.ICertificate | undefined
     let domainNames: string[] | undefined
+    const cognitoDomain = isProd ? "bouquet-note" : undefined
 
     if (isProd) {
       const existingCertificateArn = process.env.CERTIFICATE_ARN
@@ -32,15 +33,15 @@ export class BackendStack extends cdk.Stack {
     }
 
     // 認証機能スタックのインスタンス化
-    const auth = new Auth(this, 'Auth')
+    const auth = new Auth(this, 'Auth', { cognitoDomain })
 
     const identity = new Identity(this, 'Identity', {
       userPool: auth.userPool,
       userPoolClient: auth.userPoolClient,
     })
 
-    // API機能スタックのインスタンス化
-    const api = new Api(this, 'Api', {
+     // API機能スタックのインスタンス化
+     const api = new Api(this, 'Api', {
       userPool: auth.userPool,
     })
 

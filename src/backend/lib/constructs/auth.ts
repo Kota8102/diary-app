@@ -2,12 +2,16 @@ import * as cdk from 'aws-cdk-lib'
 import * as cognito from 'aws-cdk-lib/aws-cognito'
 import { Construct } from 'constructs'
 
+interface AuthProps {
+  cognitoDomain?: string;
+}
+
 export class Auth extends Construct {
   public readonly userPool: cognito.UserPool
   public readonly userPoolClient: cognito.UserPoolClient
   public readonly identityPool: cognito.CfnIdentityPool
 
-  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+  constructor(scope: Construct, id: string, props?: AuthProps) {
     super(scope, id)
 
     const userPool = new cognito.UserPool(this, 'UserPool', {
@@ -33,6 +37,15 @@ export class Auth extends Construct {
         otp: true,
       },
     })
+
+    // Cognitoドメインの追加（prodの場合のみ）
+    if (props?.cognitoDomain) {
+      userPool.addDomain('CognitoDomain', {
+        cognitoDomain: {
+          domainPrefix: props.cognitoDomain,
+        },
+      });
+    }
 
     const userPoolClient = new cognito.UserPoolClient(this, 'DiaryUserPoolClient', {
       userPool,
