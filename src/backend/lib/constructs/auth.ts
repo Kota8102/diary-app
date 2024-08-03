@@ -80,7 +80,7 @@ export class Auth extends Construct {
         cognito.UserPoolClientIdentityProvider.GOOGLE,
       ],
       oAuth: {
-        callbackUrls: [''], // 必要に応じて変更してください
+        callbackUrls: ['https://bouquet-note.com/'], // 必要に応じて変更してください
         logoutUrls: ['https://bouquet-note.com/auth'], // 必要に応じて変更してください
       },
     })
