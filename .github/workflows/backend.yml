@@ -52,7 +52,7 @@ jobs:
           echo aws region: ${{ secrets.AWS_REGION }}
           echo aws account: ${{ secrets.AWS_ACCOUNT }}
           echo actions role: ${{ secrets.ACTIONS_ROLE}}
-          echo certificate ARN: ${{ secrets.certificateArn }}
+          echo certificate ARN: ${{ secrets.CERTIFICATE_ARN }}
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -70,5 +70,7 @@ jobs:
         env:
           CERTIFICATE_ARN: ${{ secrets.CERTIFICATE_ARN }}
           ENVIRONMENT: ${{ needs.set-environment.outputs.environment }}
+          GOOGLE_AUTH_KEY: ${{ secrets.GOOGLE_Auth_KEY }}
+          GOOGLE_AUTH_SEACRET_KEY: ${{ secrets.GOOGLE_SEACRET_Auth_KEY}}
         run: npm run cdk deploy --all
         working-directory: src/backend
