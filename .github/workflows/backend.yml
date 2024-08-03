@@ -72,7 +72,7 @@ jobs:
         env:
           CERTIFICATE_ARN: ${{ secrets.CERTIFICATE_ARN }}
           ENVIRONMENT: ${{ needs.set-environment.outputs.environment }}
-          GOOGLE_AUTH_KEY: ${{ secrets.GOOGLE_Auth_KEY }}
-          GOOGLE_AUTH_SEACRET_KEY: ${{ secrets.GOOGLE_SEACRET_Auth_KEY}}
+          GOOGLE_AUTH_KEY: ${{ secrets.GOOGLE_AUTH_KEY }}
+          GOOGLE_AUTH_SEACRET_KEY: ${{ secrets.GOOGLE_AUTH_SEACRET_KEY}}
         run: npm run cdk deploy --all
         working-directory: src/backend
