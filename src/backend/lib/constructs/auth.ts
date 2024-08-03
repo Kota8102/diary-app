@@ -4,6 +4,8 @@ import { Construct } from 'constructs'
 
 interface AuthProps {
   cognitoDomain?: string;
+   googleAuthKey?: string;
+   googleAuthSecretKey?: string;
 }
 
 export class Auth extends Construct {
@@ -47,6 +49,24 @@ export class Auth extends Construct {
       });
     }
 
+     // Google認証プロバイダーの追加
+    if (props?.googleAuthKey && props?.googleAuthSecretKey) {
+      const provider = new cognito.UserPoolIdentityProviderGoogle(this, 'GoogleProvider', {
+        userPool: userPool,
+        clientId: props.googleAuthKey,
+        clientSecret: props.googleAuthSecretKey,
+        scopes: ['profile', 'email', 'openid'],
+        attributeMapping: {
+          email: cognito.ProviderAttribute.GOOGLE_EMAIL,
+          givenName: cognito.ProviderAttribute.GOOGLE_GIVEN_NAME,
+          familyName: cognito.ProviderAttribute.GOOGLE_FAMILY_NAME,
+          profilePicture: cognito.ProviderAttribute.GOOGLE_PICTURE,
+        },
+      });
+
+      userPool.registerIdentityProvider(provider);
+    }
+
     const userPoolClient = new cognito.UserPoolClient(this, 'DiaryUserPoolClient', {
       userPool,
       userPoolClientName: 'diary-userpool-client',
@@ -55,7 +75,14 @@ export class Auth extends Construct {
         custom: true,
         userSrp: true,
       },
-      supportedIdentityProviders: [cognito.UserPoolClientIdentityProvider.COGNITO],
+      supportedIdentityProviders: [
+        cognito.UserPoolClientIdentityProvider.COGNITO,
+        cognito.UserPoolClientIdentityProvider.GOOGLE,
+      ],
+      oAuth: {
+        callbackUrls: [''], // 必要に応じて変更してください
+        logoutUrls: ['https://bouquet-note.com/auth'], // 必要に応じて変更してください
+      },
     })
 
     this.userPool = userPool
