@@ -53,6 +53,8 @@ jobs:
           echo aws account: ${{ secrets.AWS_ACCOUNT }}
           echo actions role: ${{ secrets.ACTIONS_ROLE}}
           echo certificate ARN: ${{ secrets.CERTIFICATE_ARN }}
+          echo googl auth key: ${{ secrets.GOOGLE_Auth_KEY }}
+          echo google auth seacret key: ${{ secrets.GOOGLE_SEACRET_Auth_KEY}}
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
