@@ -10,7 +10,7 @@ def lambda_handler(event, context):
     body = json.loads(event['body'])
 
     # イベントから情報を取得
-    user_id = body['user_id']
+    user_id = context.identity.cognito_identity_id
     date = body['date']
 
     try:

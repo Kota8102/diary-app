@@ -5,7 +5,7 @@ import os
 
 def lambda_handler(event, context):
     try:
-        user_id = event['queryStringParameters']['user_id']
+        user_id = context.identity.cognito_identity_id
         date = event['queryStringParameters']['date']
         
         image = get_img_from_s3(user_id, date)

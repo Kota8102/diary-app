@@ -6,8 +6,7 @@ def lambda_handler(event, context):
     dynamodb = boto3.resource('dynamodb')
     table = dynamodb.Table(os.getenv('TABLE_NAME'))
 
-    # event['queryStringParameters'] から情報を取得
-    user_id = event['queryStringParameters']['user_id']
+    user_id = context.identity.cognito_identity_id
     date = event['queryStringParameters']['date']
 
     try:
