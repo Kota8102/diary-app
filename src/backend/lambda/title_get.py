@@ -4,8 +4,7 @@ import os
 
 def lambda_handler(event, context):
     try:
-        # Extract parameters from the API Gateway event
-        user_id = event['queryStringParameters']['user_id']
+        user_id = context.identity.cognito_identity_id
         date = event['queryStringParameters']['date']
         
         # Fetch item from DynamoDB
