@@ -35,7 +35,7 @@ def lambda_handler(event, context):
         logger.info(event)
 
         # ユーザーIDの取得（Cognitoアイデンティティ）
-        user_id = event['requestContext']['identity']['cognitoIdentityId']
+        user_id = event['requestContext']['authorizer']['claims']['sub']
         date = body['date']
         diary_id = str(uuid.uuid4())  # ユニークなID生成
         content = body['content']
