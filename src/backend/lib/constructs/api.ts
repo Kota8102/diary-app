@@ -42,9 +42,7 @@ export class Api extends Construct {
     const diaryCreateFunction = new lambda.Function(this, 'diaryCreateLambda', {
       runtime: lambda.Runtime.PYTHON_3_11,
       handler: 'diary_create.lambda_handler',
-      code: lambda.Code.fromAsset('lambda', {
-        exclude: ['*', '!diary_create.py'],
-      }),
+      code: lambda.Code.fromAsset('lambda/diary_create'),
       logRetention: 14,
       environment: {
         TABLE_NAME: table.tableName,
@@ -56,7 +54,7 @@ export class Api extends Construct {
     const diaryEditFunction = new lambda.Function(this, 'diaryEditLambda', {
       runtime: lambda.Runtime.PYTHON_3_11,
       handler: 'diary_edit.lambda_handler',
-      code: lambda.Code.fromAsset('lambda'),
+      code: lambda.Code.fromAsset('lambda/diary_edit'),
       logRetention: 14,
       environment: {
         TABLE_NAME: table.tableName,
@@ -68,7 +66,7 @@ export class Api extends Construct {
     const diaryReadFunction = new lambda.Function(this, 'diaryReadLambda', {
       runtime: lambda.Runtime.PYTHON_3_11,
       handler: 'diary_read.lambda_handler',
-      code: lambda.Code.fromAsset('lambda'),
+      code: lambda.Code.fromAsset('lambda/diary_read'),
       logRetention: 14,
       environment: {
         TABLE_NAME: table.tableName,
@@ -80,7 +78,7 @@ export class Api extends Construct {
     const diaryDeleteFunction = new lambda.Function(this, 'diaryDeleteLambda', {
       runtime: lambda.Runtime.PYTHON_3_11,
       handler: 'diary_delete.lambda_handler',
-      code: lambda.Code.fromAsset('lambda'),
+      code: lambda.Code.fromAsset('lambda/diary_delete'),
       logRetention: 14,
       environment: {
         TABLE_NAME: table.tableName,
@@ -183,7 +181,7 @@ export class Api extends Construct {
       {
         runtime: lambda.Runtime.PYTHON_3_11,
         handler: 'diary_generate_title_create.lambda_handler',
-        code: lambda.Code.fromAsset('lambda'),
+        code: lambda.Code.fromAsset('lambda/diary_generate_title_create'),
         role: generativeAiLambdaRole,
         environment: {
           TABLE_NAME: generativeAiTable.tableName,
@@ -199,7 +197,7 @@ export class Api extends Construct {
     const titleGetFunction = new lambda.Function(this, 'titleGetFunction', {
       runtime: lambda.Runtime.PYTHON_3_11,
       handler: 'title_get.lambda_handler',
-      code: lambda.Code.fromAsset('lambda'),
+      code: lambda.Code.fromAsset('lambda/title_get'),
       environment: {
         TABLE_NAME: generativeAiTable.tableName,
       },
@@ -252,7 +250,7 @@ export class Api extends Construct {
     const flowerGetFunction = new lambda.Function(this, 'flowerGetFunction', {
       runtime: lambda.Runtime.PYTHON_3_11,
       handler: 'flower_get.lambda_handler',
-      code: lambda.Code.fromAsset('lambda'),
+      code: lambda.Code.fromAsset('lambda/flower_get'),
       environment: {
         BUCKET_NAME: flowerImageBucket.bucketName,
       },
