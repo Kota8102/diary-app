@@ -12,20 +12,31 @@ def lambda_handler(event, context):
         
         if image:
             return {
-                'headers': { "Content-Type": "image/png" },
+                'headers': { 
+                    "Content-Type": "image/png",
+                    'Access-Control-Allow-Origin': '*'
+                },
                 'statusCode': 200,
                 'body': json.dumps({'Image': image}),
-                'isBase64Encoded': True
+                'isBase64Encoded': True,
             }
         else:
             return {
                 'statusCode': 404,
-                'body': json.dumps('Image not found')
+                'body': json.dumps('Image not found'),
+                'headers': {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*'
+            }
             }
     except Exception as e:
         return {
             'statusCode': 400,
-            'body': json.dumps(f'An error occurred: {str(e)}')
+            'body': json.dumps(f'An error occurred: {str(e)}'),
+            'headers': {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            }
         }
 
 def get_img_from_s3(user_id, date):

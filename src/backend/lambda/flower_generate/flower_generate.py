@@ -15,12 +15,20 @@ def lambda_handler(event, context):
                 generate_image_and_save_to_dynamodb(diary_content, record)
         return {
             'statusCode': 200,
-            'body': json.dumps('Processed DynamoDB Stream records.')
+            'body': json.dumps('Processed DynamoDB Stream records.'),
+            'headers': {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            }
         }
     except Exception as e:
         return {
             'statusCode': 400,
-            'body': json.dumps(f'An error occurred: {str(e)}')
+            'body': json.dumps(f'An error occurred: {str(e)}'),
+            'headers': {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            }
         }
 
 def generate_image_and_save_to_dynamodb(diary_content, record):
