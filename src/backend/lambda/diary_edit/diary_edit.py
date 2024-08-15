@@ -28,11 +28,19 @@ def lambda_handler(event, context):
 
         return {
             'statusCode': 200,
-            'body': json.dumps('Diary updated successfully')
+            'body': json.dumps('Diary updated successfully'),
+            'headers': {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            }
         }
     
     except Exception as e:
         return {
             'statusCode': 500,
-            'body': json.dumps(f'Error updating diary: {str(e)}')
+            'body': json.dumps(f'Error updating diary: {str(e)}'),
+            'headers': {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            }
         }

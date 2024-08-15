@@ -22,16 +22,28 @@ def lambda_handler(event, context):
         if not item:
             return {
                 'statusCode': 404,
-                'body': json.dumps('Diary entry not found')
+                'body': json.dumps('Diary entry not found'),
+                'headers': {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*'
+                }
             }
 
         return {
             'statusCode': 200,
-            'body': json.dumps(item)
+            'body': json.dumps(item),
+            'headers': {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            }
         }
 
     except Exception as e:
         return {
             'statusCode': 500,
-            'body': json.dumps(f'Error reading diary: {str(e)}')
+            'body': json.dumps(f'Error reading diary: {str(e)}'),
+            'headers': {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            }
         }

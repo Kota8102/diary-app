@@ -13,17 +13,29 @@ def lambda_handler(event, context):
         if title:
             return {
                 'statusCode': 200,
-                'body': json.dumps({'title': title})
+                'body': json.dumps({'title': title}),
+                'headers': {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*'
+                }
             }
         else:
             return {
                 'statusCode': 404,
-                'body': json.dumps('Title not found')
+                'body': json.dumps('Title not found'),
+                'headers': {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*'
+                }
             }
     except Exception as e:
         return {
             'statusCode': 400,
-            'body': json.dumps(f'An error occurred: {str(e)}')
+            'body': json.dumps(f'An error occurred: {str(e)}'),
+            'headers': {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            }
         }
 
 def get_title_from_dynamodb(user_id, date):
