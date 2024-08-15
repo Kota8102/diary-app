@@ -13,11 +13,12 @@ export interface ApiProps {
 }
 
 export class Api extends Construct {
-
   public readonly api: apigateway.RestApi
 
   constructor(scope: Construct, id: string, props: ApiProps) {
     super(scope, id)
+
+    // 日記コンテンツを保存するDynamoDBテーブルの作成
     const table = new dynamodb.Table(this, `diaryContentsTable`, {
       partitionKey: {
         name: 'user_id',
@@ -32,45 +33,42 @@ export class Api extends Construct {
       stream: dynamodb.StreamViewType.NEW_AND_OLD_IMAGES,
     })
 
+    // DynamoDBストリームイベントソースの設定
     const diaryTableEventSource = new DynamoEventSource(table, {
       startingPosition: lambda.StartingPosition.LATEST,
     })
 
-    const LambdaRole = new cdk.aws_iam.Role(this, 'Lambda Excecution Role', {
-      assumedBy: new cdk.aws_iam.ServicePrincipal('lambda.amazonaws.com'),
-    })
-
-    LambdaRole.addManagedPolicy(
-      cdk.aws_iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole')
-    )
-
+    // 日記作成用Lambda関数の定義
     const diaryCreateFunction = new lambda.Function(this, 'diaryCreateLambda', {
       runtime: lambda.Runtime.PYTHON_3_11,
       handler: 'diary_create.lambda_handler',
-      code: lambda.Code.fromAsset('lambda'),
-      role: LambdaRole,
+      code: lambda.Code.fromAsset('lambda', {
+        exclude: ['*', '!diary_create.py'],
+      }),
       logRetention: 14,
       environment: {
         TABLE_NAME: table.tableName,
       },
     })
     table.grantWriteData(diaryCreateFunction)
+
+    // 日記編集用Lambda関数の定義
     const diaryEditFunction = new lambda.Function(this, 'diaryEditLambda', {
       runtime: lambda.Runtime.PYTHON_3_11,
       handler: 'diary_edit.lambda_handler',
       code: lambda.Code.fromAsset('lambda'),
-      role: LambdaRole,
       logRetention: 14,
       environment: {
         TABLE_NAME: table.tableName,
       },
     })
     table.grantReadWriteData(diaryEditFunction)
+
+    // 日記閲覧用Lambda関数の定義
     const diaryReadFunction = new lambda.Function(this, 'diaryReadLambda', {
       runtime: lambda.Runtime.PYTHON_3_11,
       handler: 'diary_read.lambda_handler',
       code: lambda.Code.fromAsset('lambda'),
-      role: LambdaRole,
       logRetention: 14,
       environment: {
         TABLE_NAME: table.tableName,
@@ -78,11 +76,11 @@ export class Api extends Construct {
     })
     table.grantReadData(diaryReadFunction)
 
+    // 日記削除用Lambda関数の定義
     const diaryDeleteFunction = new lambda.Function(this, 'diaryDeleteLambda', {
       runtime: lambda.Runtime.PYTHON_3_11,
       handler: 'diary_delete.lambda_handler',
       code: lambda.Code.fromAsset('lambda'),
-      role: LambdaRole,
       logRetention: 14,
       environment: {
         TABLE_NAME: table.tableName,
@@ -90,7 +88,7 @@ export class Api extends Construct {
     })
     table.grant(diaryDeleteFunction, 'dynamodb:DeleteItem')
 
-    // CloudWatch Logsへのアクセスを許可するロールの作成
+    // API Gateway用のCloudWatch Logsアクセス権限を持つロールの作成
     const cloudwatchLogsRole = new cdk.aws_iam.Role(this, 'APIGatewayCloudWatchLogsRole', {
       assumedBy: new cdk.aws_iam.ServicePrincipal('apigateway.amazonaws.com'),
       managedPolicies: [
@@ -100,17 +98,17 @@ export class Api extends Construct {
       ],
     })
 
-    // API Gateway の作成
+    // API Gatewayのアクセスログ用LogGroupの作成
     const logGroup = new cdk.aws_logs.LogGroup(this, 'ApiGatewayAccessLogs', {
       retention: 14,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     })
 
+    // API Gatewayの作成
     const api = new apigateway.RestApi(this, 'DiaryApi', {
       cloudWatchRole: true,
       cloudWatchRoleRemovalPolicy: cdk.RemovalPolicy.DESTROY,
       deployOptions: {
-        // アクセスロギングの設定
         accessLogDestination: new apigateway.LogGroupLogDestination(logGroup),
         accessLogFormat: apigateway.AccessLogFormat.jsonWithStandardFields({
           caller: true,
@@ -123,42 +121,38 @@ export class Api extends Construct {
           status: true,
           user: true,
         }),
-        // CloudWatch Logsへのログ出力を有効にします。
         loggingLevel: apigateway.MethodLoggingLevel.INFO,
         dataTraceEnabled: true,
       },
     })
 
-    // Request Validatorの作成
+    // リクエストバリデーターの追加
     const requestValidator = api.addRequestValidator('RequestValidator', {
       validateRequestBody: true,
       validateRequestParameters: true,
     })
 
-    // エンドポイントの設定
+    // API Gatewayのエンドポイント設定
     const diary = api.root.addResource('diary')
     const cognitoAutorither = new apigateway.CognitoUserPoolsAuthorizer(this, 'cognitoAuthorizer', {
       cognitoUserPools: [props.userPool],
     })
 
-    // POSTエンドポイント - 日記の作成
+    // 各エンドポイントのメソッド定義
     diary.addMethod('POST', new apigateway.LambdaIntegration(diaryCreateFunction), {
       authorizer: cognitoAutorither,
     })
-
-    // PUTエンドポイント - 日記の編集
     diary.addMethod('PUT', new apigateway.LambdaIntegration(diaryEditFunction), {
       authorizer: cognitoAutorither,
     })
-    // GETエンドポイント - 日記の閲覧
     diary.addMethod('GET', new apigateway.LambdaIntegration(diaryReadFunction), {
       authorizer: cognitoAutorither,
     })
-    // DELETEエンドポイント - 日記の削除
     diary.addMethod('DELETE', new apigateway.LambdaIntegration(diaryDeleteFunction), {
       authorizer: cognitoAutorither,
     })
 
+    // 生成AI用のDynamoDBテーブルの作成
     const generativeAiTable = new dynamodb.Table(this, `generativeAiTable`, {
       partitionKey: {
         name: 'user_id',
@@ -172,6 +166,7 @@ export class Api extends Construct {
       pointInTimeRecovery: true,
     })
 
+    // 生成AI用Lambda関数のロール作成
     const generativeAiLambdaRole = new cdk.aws_iam.Role(this, 'generativeAiLambdaRole', {
       assumedBy: new cdk.aws_iam.ServicePrincipal('lambda.amazonaws.com'),
     })
@@ -181,6 +176,7 @@ export class Api extends Construct {
     })
     generativeAiLambdaRole.addToPolicy(ssmPolicy)
 
+    // タイトル生成用Lambda関数の定義
     const diaryGenerateTitleCreateFunction = new lambda.Function(
       this,
       'diaryGenerateTitleCreateLambda',
@@ -199,6 +195,7 @@ export class Api extends Construct {
     table.grantStreamRead(diaryGenerateTitleCreateFunction)
     diaryGenerateTitleCreateFunction.addEventSource(diaryTableEventSource)
 
+    // タイトル取得用Lambda関数の定義
     const titleGetFunction = new lambda.Function(this, 'titleGetFunction', {
       runtime: lambda.Runtime.PYTHON_3_11,
       handler: 'title_get.lambda_handler',
@@ -213,11 +210,13 @@ export class Api extends Construct {
       authorizer: cognitoAutorither,
     })
 
+    // 花の画像保存用S3バケットの作成
     const flowerImageBucket = new s3.Bucket(this, 'flowerImageBucket', {
       enforceSSL: true,
       serverAccessLogsPrefix: 'log/',
     })
 
+    // 花の画像生成用Lambda関数の定義
     const flowerGenerateFunction = new lambda.Function(this, 'flowerGenerateFunction', {
       runtime: lambda.Runtime.PYTHON_3_11,
       handler: 'flower_generate.lambda_handler',
@@ -249,6 +248,7 @@ export class Api extends Construct {
       })
     )
 
+    // 花の画像取得用Lambda関数の定義
     const flowerGetFunction = new lambda.Function(this, 'flowerGetFunction', {
       runtime: lambda.Runtime.PYTHON_3_11,
       handler: 'flower_get.lambda_handler',
