@@ -3,6 +3,10 @@ import boto3
 import os
 import uuid
 from datetime import datetime
+import logging
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 
 def validate_input(body):
     # 必須フィールドの存在チェック
@@ -71,6 +75,7 @@ def lambda_handler(event, context):
         }
     except Exception as e:
         # その他の予期せぬエラーの処理
+        logger.error(f"Unexpected error: {str(e)}")
         return {
             'statusCode': 500,
             'body': json.dumps({'error': 'サーバー内部エラーが発生しました'}),
