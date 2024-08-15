@@ -32,7 +32,7 @@ def lambda_handler(event, context):
 
         # 入力データのバリデーション
         validate_input(body)
-        logger.info(body)
+        logger.info(event)
 
         # ユーザーIDの取得（Cognitoアイデンティティ）
         user_id = event['requestContext']['identity']['cognitoIdentityId']
