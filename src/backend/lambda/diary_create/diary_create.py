@@ -3,6 +3,10 @@ import boto3
 import os
 import uuid
 from datetime import datetime
+import logging
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 
 def validate_input(body):
     # 必須フィールドの存在チェック
@@ -28,9 +32,10 @@ def lambda_handler(event, context):
 
         # 入力データのバリデーション
         validate_input(body)
+        logger.info(event)
 
         # ユーザーIDの取得（Cognitoアイデンティティ）
-        user_id = event['requestContext']['identity']['cognitoIdentityId']
+        user_id = event['requestContext']['authorizer']['claims']['sub']
         date = body['date']
         diary_id = str(uuid.uuid4())  # ユニークなID生成
         content = body['content']
@@ -71,6 +76,7 @@ def lambda_handler(event, context):
         }
     except Exception as e:
         # その他の予期せぬエラーの処理
+        logger.error(f"Unexpected error: {str(e)}")
         return {
             'statusCode': 500,
             'body': json.dumps({'error': 'サーバー内部エラーが発生しました'}),
