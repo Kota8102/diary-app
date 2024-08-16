@@ -4,10 +4,10 @@ import * as s3 from 'aws-cdk-lib/aws-s3'
 import type { Construct } from 'constructs'
 import { Api, Auth, Identity, Web } from './constructs'
 
-interface BackendStackProps extends cdk.StackProps {}
+interface BackendStackProps extends cdk.StackProps { }
 
 export class BackendStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props: BackendStackProps) {
+  constructor(scope: Construct, id: string, props?: BackendStackProps) {
     super(scope, id, props)
 
     const logBucket = new s3.Bucket(this, 'LogBucket', {

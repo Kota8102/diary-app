@@ -33,3 +33,17 @@ npx -w src/frontend npm run {script}
 ```bash
 npx -w src/backend npm run {script}
 ```
+
+## テスト
+
+バックエンドには、スナップショットテストを追加しています。
+
+```bash
+npx -w src/backend npm run test
+```
+
+内容を確認して以下を用いて更新してください。
+
+```bash
+npx -w src/backend npm run test -- -u
+```
