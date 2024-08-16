@@ -92,14 +92,21 @@ def save_image_url_to_dynamodb(record, s3_url):
         table_name = os.environ['GENERATIVE_AI_TABLE_NAME']
         table = dynamodb.Table(table_name)
 
-        item = {
+        key = {
             'user_id': record['dynamodb']['NewImage']['user_id']['S'],
-            'date': record['dynamodb']['NewImage']['date']['S'],
-            'image_url': s3_url
+            'date': record['dynamodb']['NewImage']['date']['S']
         }
 
-        table.put_item(Item=item)
-        print("Image URL saved to DynamoDB successfully.")
+        update_expression = "set image_url = :url"
+        expression_attribute_values = {
+            ':url': s3_url
+        }
+        response = table.update_item(
+            Key=key,
+            UpdateExpression=update_expression,
+            ExpressionAttributeValues=expression_attribute_values
+        )
+        print(f"DynamoDB Update Response: {response}")
 
     except Exception as e:
         print(f"Error saving to DynamoDB: {e}")
