@@ -1,6 +1,6 @@
 import * as cdk from 'aws-cdk-lib'
 import * as apigateway from 'aws-cdk-lib/aws-apigateway'
-import * as cognito from 'aws-cdk-lib/aws-cognito'
+import type * as cognito from 'aws-cdk-lib/aws-cognito'
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb'
 import * as iam from 'aws-cdk-lib/aws-iam'
 import * as lambda from 'aws-cdk-lib/aws-lambda'
@@ -19,7 +19,7 @@ export class Api extends Construct {
     super(scope, id)
 
     // 日記コンテンツを保存するDynamoDBテーブルの作成
-    const table = new dynamodb.Table(this, `diaryContentsTable`, {
+    const table = new dynamodb.Table(this, 'diaryContentsTable', {
       partitionKey: {
         name: 'user_id',
         type: dynamodb.AttributeType.STRING,
@@ -89,11 +89,7 @@ export class Api extends Construct {
     // API Gateway用のCloudWatch Logsアクセス権限を持つロールの作成
     const cloudwatchLogsRole = new cdk.aws_iam.Role(this, 'APIGatewayCloudWatchLogsRole', {
       assumedBy: new cdk.aws_iam.ServicePrincipal('apigateway.amazonaws.com'),
-      managedPolicies: [
-        cdk.aws_iam.ManagedPolicy.fromAwsManagedPolicyName(
-          'service-role/AmazonAPIGatewayPushToCloudWatchLogs'
-        ),
-      ],
+      managedPolicies: [cdk.aws_iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonAPIGatewayPushToCloudWatchLogs')],
     })
 
     // API Gatewayのアクセスログ用LogGroupの作成
@@ -151,7 +147,7 @@ export class Api extends Construct {
     })
 
     // 生成AI用のDynamoDBテーブルの作成
-    const generativeAiTable = new dynamodb.Table(this, `generativeAiTable`, {
+    const generativeAiTable = new dynamodb.Table(this, 'generativeAiTable', {
       partitionKey: {
         name: 'user_id',
         type: dynamodb.AttributeType.STRING,
@@ -175,20 +171,16 @@ export class Api extends Construct {
     generativeAiLambdaRole.addToPolicy(ssmPolicy)
 
     // タイトル生成用Lambda関数の定義
-    const diaryGenerateTitleCreateFunction = new lambda.Function(
-      this,
-      'diaryGenerateTitleCreateLambda',
-      {
-        runtime: lambda.Runtime.PYTHON_3_11,
-        handler: 'diary_generate_title_create.lambda_handler',
-        code: lambda.Code.fromAsset('lambda/diary_generate_title_create'),
-        role: generativeAiLambdaRole,
-        environment: {
-          TABLE_NAME: generativeAiTable.tableName,
-        },
-        timeout: cdk.Duration.seconds(30),
-      }
-    )
+    const diaryGenerateTitleCreateFunction = new lambda.Function(this, 'diaryGenerateTitleCreateLambda', {
+      runtime: lambda.Runtime.PYTHON_3_11,
+      handler: 'diary_generate_title_create.lambda_handler',
+      code: lambda.Code.fromAsset('lambda/diary_generate_title_create'),
+      role: generativeAiLambdaRole,
+      environment: {
+        TABLE_NAME: generativeAiTable.tableName,
+      },
+      timeout: cdk.Duration.seconds(30),
+    })
     generativeAiTable.grantWriteData(diaryGenerateTitleCreateFunction)
     table.grantStreamRead(diaryGenerateTitleCreateFunction)
     diaryGenerateTitleCreateFunction.addEventSource(diaryTableEventSource)
@@ -221,11 +213,7 @@ export class Api extends Construct {
       code: lambda.Code.fromAsset('lambda/flower_generate', {
         bundling: {
           image: lambda.Runtime.PYTHON_3_11.bundlingImage,
-          command: [
-            'bash',
-            '-c',
-            'pip install -r requirements.txt -t /asset-output && cp -au . /asset-output',
-          ],
+          command: ['bash', '-c', 'pip install -r requirements.txt -t /asset-output && cp -au . /asset-output'],
         },
       }),
       environment: {
@@ -243,7 +231,7 @@ export class Api extends Construct {
       new iam.PolicyStatement({
         resources: ['arn:aws:ssm:ap-northeast-1:851725642854:parameter/OpenAI_API_KEY'],
         actions: ['ssm:GetParameter'],
-      })
+      }),
     )
 
     // 花の画像取得用Lambda関数の定義

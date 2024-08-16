@@ -2,14 +2,13 @@
   "name": "diary-app",
   "version": "1.0.0",
   "private": "true",
-  "workspaces": [
-    "src/frontend",
-    "src/backend"
-  ],
-  "dependencies": {
-    "@aws-cdk/aws-cognito-identitypool-alpha": "^2.142.1-alpha.0",
-    "@aws-solutions-constructs/aws-cloudfront-s3": "^2.57.0",
-    "aws-cdk-lib": "^2.142.1",
-    "deploy-time-build": "^0.3.21"
+  "scripts": {
+    "lint": "biome lint --write .",
+    "format": "biome format --write .",
+    "check": "biome check --write ."
+  },
+  "workspaces": ["src/frontend", "src/backend"],
+  "devDependencies": {
+    "@biomejs/biome": "1.8.3"
   }
 }

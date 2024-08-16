@@ -12,26 +12,11 @@ export const AuthRoutes = () => {
   return (
     <MainLayout>
       <Routes>
-        <Route
-          path="login"
-          element={<Login />}
-        />
-        <Route
-          path="signup"
-          element={<SignUp />}
-        />
-        <Route
-          path="confirm"
-          element={<ConfirmSignUp />}
-        />
-        <Route
-          path="consent"
-          element={<ConsentForm />}
-        />
-        <Route
-          path="/"
-          element={<AuthChoice />}
-        />
+        <Route path="login" element={<Login />} />
+        <Route path="signup" element={<SignUp />} />
+        <Route path="confirm" element={<ConfirmSignUp />} />
+        <Route path="consent" element={<ConsentForm />} />
+        <Route path="/" element={<AuthChoice />} />
       </Routes>
     </MainLayout>
   )

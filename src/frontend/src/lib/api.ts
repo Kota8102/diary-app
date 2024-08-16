@@ -1,4 +1,4 @@
-import Axios, { InternalAxiosRequestConfig } from 'axios'
+import Axios, { type InternalAxiosRequestConfig } from 'axios'
 import { getJwtToken } from '../utils/apiToken'
 
 const API_URL = process.env.VITE_API_ENDPOINT
