@@ -2,10 +2,7 @@
   "name": "diary-app",
   "version": "1.0.0",
   "private": "true",
-  "workspaces": [
-    "src/frontend",
-    "src/backend"
-  ],
+  "workspaces": ["src/frontend", "src/backend"],
   "devDependencies": {
     "@biomejs/biome": "1.8.3"
   }
