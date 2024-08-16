@@ -6,14 +6,8 @@ import { WriteDiaryInput } from './WriteDiaryInput'
 export const WriteDiaryRoutes = () => {
   return (
     <Routes>
-      <Route
-        path="/"
-        element={<WriteDiary />}
-      />
-      <Route
-        path="/:date"
-        element={<WriteDiaryInput />}
-      />
+      <Route path="/" element={<WriteDiary />} />
+      <Route path="/:date" element={<WriteDiaryInput />} />
     </Routes>
   )
 }

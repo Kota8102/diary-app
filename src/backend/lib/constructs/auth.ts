@@ -3,7 +3,7 @@ import * as cognito from 'aws-cdk-lib/aws-cognito'
 import { Construct } from 'constructs'
 
 interface AuthProps {
-  cognitoDomain?: string;
+  cognitoDomain?: string
 }
 
 export class Auth extends Construct {
@@ -44,7 +44,7 @@ export class Auth extends Construct {
         cognitoDomain: {
           domainPrefix: props.cognitoDomain,
         },
-      });
+      })
     }
 
     const userPoolClient = new cognito.UserPoolClient(this, 'DiaryUserPoolClient', {

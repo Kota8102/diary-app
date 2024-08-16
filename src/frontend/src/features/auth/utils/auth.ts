@@ -1,28 +1,28 @@
-import { Auth } from 'aws-amplify';
+import { Auth } from 'aws-amplify'
 
 export const setAuthData = (user: unknown) => {
-  localStorage.setItem('authData', JSON.stringify(user));
-};
+  localStorage.setItem('authData', JSON.stringify(user))
+}
 
 export const getAuthData = () => {
-  const authData = localStorage.getItem('authData');
+  const authData = localStorage.getItem('authData')
 
-  return authData ? JSON.parse(authData) : null;
-};
+  return authData ? JSON.parse(authData) : null
+}
 
 export const removeAuthData = () => {
-  localStorage.removeItem('authData');
-};
+  localStorage.removeItem('authData')
+}
 
 export const signIn = async (username: string, password: string) => {
   try {
-    const user = await Auth.signIn(username, password);
-    setAuthData(user);
+    const user = await Auth.signIn(username, password)
+    setAuthData(user)
 
-    return true;
+    return true
   } catch (error) {
-    console.error('Error signing in', error);
+    console.error('Error signing in', error)
 
-    return false;
+    return false
   }
-};
+}

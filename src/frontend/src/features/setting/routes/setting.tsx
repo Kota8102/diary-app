@@ -19,24 +19,16 @@ export const Setting = () => {
   return (
     <ContentLayout pagetitle="各種設定">
       <div className="flex flex-col w-full divide-y divide-gray-400">
-        <a
-          href="#"
-          className="block p-4 w-full">
+        <a href="#" className="block p-4 w-full">
           ダークモード
         </a>
-        <a
-          href="#"
-          className="block p-4 w-full">
+        <a href="#" className="block p-4 w-full">
           パスワードの変更
         </a>
-        <a
-          href="#"
-          className="block p-4 w-full">
+        <a href="#" className="block p-4 w-full">
           通知設定
         </a>
-        <button
-          onClick={handleLogout}
-          className="block p-4 w-full text-left">
+        <button onClick={handleLogout} className="block p-4 w-full text-left">
           ログアウト
         </button>
         <div className="border-t border-gray-400" />

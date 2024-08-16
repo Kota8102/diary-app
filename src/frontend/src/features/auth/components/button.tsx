@@ -17,7 +17,8 @@ export const Button = ({ text, path }: ButtonProps) => {
   return (
     <button
       className="w-full bg-light-buttonPrimaryDefault p-2 text-base font-normal rounded-lg text-black hover:bg-light-buttonPrimaryHover"
-      onClick={handleClick}>
+      onClick={handleClick}
+    >
       {text}
     </button>
   )
@@ -32,7 +33,8 @@ export const SendButton = ({ text, onClick }: SendButtonProps) => {
   return (
     <button
       className="w-full bg-light-buttonPrimaryDefault p-2 text-base font-normal rounded-lg text-black hover:bg-light-buttonPrimaryHover"
-      onClick={onClick}>
+      onClick={onClick}
+    >
       {text}
     </button>
   )
