@@ -10,7 +10,7 @@
     }
   },
   "files": {
-    "ignore": ["**/node_modules/**", "**/dist/**", "**/cdk.out/**"]
+    "ignore": ["**/node_modules/**", "**/dist/**", "**/cdk.out/**", "**/package.json/**", "**/package-lock.json/**", "**/*.snap/**"]
   },
   "formatter": {
     "enabled": true,
