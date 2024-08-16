@@ -19,7 +19,7 @@ export class Api extends Construct {
     super(scope, id)
 
     // 日記コンテンツを保存するDynamoDBテーブルの作成
-    const table = new dynamodb.Table(this, `diaryContentsTable`, {
+    const table = new dynamodb.Table(this, 'diaryContentsTable', {
       partitionKey: {
         name: 'user_id',
         type: dynamodb.AttributeType.STRING,
@@ -147,7 +147,7 @@ export class Api extends Construct {
     })
 
     // 生成AI用のDynamoDBテーブルの作成
-    const generativeAiTable = new dynamodb.Table(this, `generativeAiTable`, {
+    const generativeAiTable = new dynamodb.Table(this, 'generativeAiTable', {
       partitionKey: {
         name: 'user_id',
         type: dynamodb.AttributeType.STRING,
