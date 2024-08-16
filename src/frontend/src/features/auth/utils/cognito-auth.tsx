@@ -22,19 +22,9 @@ interface UseAuth {
   signIn: (username: string, password: string) => Promise<Result>
   signInComplete: (username: string, oldPassword: string, newPassword: string) => Promise<Result>
   signOut: () => void
-  changePassword: (
-    user: unknown,
-    oldPassword: string,
-    newPassword: string,
-    newPasswordConfirm: string
-  ) => Promise<Result>
+  changePassword: (user: unknown, oldPassword: string, newPassword: string, newPasswordConfirm: string) => Promise<Result>
   forgetPassword: (email: string) => Promise<Result>
-  resetPassword: (
-    username: string,
-    code: string,
-    newPassword: string,
-    newPasswordConfirm: string
-  ) => Promise<Result>
+  resetPassword: (username: string, code: string, newPassword: string, newPasswordConfirm: string) => Promise<Result>
 }
 
 interface Result {
@@ -142,10 +132,7 @@ const useProvideAuth = (): UseAuth => {
       }
     } catch (error) {
       if (error instanceof Error) {
-        if (
-          error.name === 'InvalidParameterException' ||
-          error.name === 'InvalidPasswordException'
-        ) {
+        if (error.name === 'InvalidParameterException' || error.name === 'InvalidPasswordException') {
           return {
             success: false,
             message: 'パスワードは英字/数字組み合わせの8桁以上で入力してください。',
@@ -199,12 +186,7 @@ const useProvideAuth = (): UseAuth => {
     }
   }
 
-  const changePassword = async (
-    user: unknown,
-    oldPassword: string,
-    newPassword: string,
-    newPasswordConfirm: string
-  ) => {
+  const changePassword = async (user: unknown, oldPassword: string, newPassword: string, newPasswordConfirm: string) => {
     try {
       if (newPassword === newPasswordConfirm) {
         await Auth.changePassword(user, oldPassword, newPassword)
@@ -280,12 +262,7 @@ const useProvideAuth = (): UseAuth => {
     }
   }
 
-  const resetPassword = async (
-    username: string,
-    code: string,
-    newPassword: string,
-    newPasswordConfirm: string
-  ) => {
+  const resetPassword = async (username: string, code: string, newPassword: string, newPasswordConfirm: string) => {
     if (newPassword !== newPasswordConfirm) {
       return {
         success: false,
@@ -301,20 +278,13 @@ const useProvideAuth = (): UseAuth => {
       }
     } catch (error) {
       if (error instanceof Error) {
-        if (
-          error.name === 'InvalidParameterException' ||
-          error.name === 'InvalidPasswordException'
-        ) {
+        if (error.name === 'InvalidParameterException' || error.name === 'InvalidPasswordException') {
           return {
             success: false,
             message: 'パスワードは英字（小文字必須）/数字組み合わせの8桁以上で入力してください。',
           }
           // biome-ignore lint/style/noUselessElse: <explanation>
-        } else if (
-          error.name === 'AuthError' ||
-          error.name === 'ExpiredCodeException' ||
-          error.name === 'LimitExceededException'
-        ) {
+        } else if (error.name === 'AuthError' || error.name === 'ExpiredCodeException' || error.name === 'LimitExceededException') {
           if (error.message === 'Confirmation code cannot be empty') {
             return {
               success: false,
@@ -324,8 +294,7 @@ const useProvideAuth = (): UseAuth => {
           } else {
             return {
               success: false,
-              message:
-                'コードの有効期限が切れています。再度プロフィール画面から「編集」をクリックしてください。',
+              message: 'コードの有効期限が切れています。再度プロフィール画面から「編集」をクリックしてください。',
             }
           }
           // biome-ignore lint/style/noUselessElse: <explanation>
