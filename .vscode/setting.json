@@ -3,5 +3,13 @@
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
     "source.organizeImports.biome": "explicit"
+  },
+  "[python]": {
+    "editor.tabSize": 4,
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.codeActionsOnSave": {
+      "source.fixAll.ruff": true,
+      "source.organizeImports.ruff": true
+    }
   }
 }
