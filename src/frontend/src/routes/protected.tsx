@@ -4,10 +4,7 @@ import { Diary } from '@/features/diary'
 import { Flower } from '@/features/flower'
 import { NotFound } from '@/features/notfound'
 import { WriteDiaryRoutes } from '@/features/writeDiary'
-
-import { lazyImport } from '@/utils/lazyImport'
-
-const { Setting } = lazyImport(() => import('@/features/setting'), 'Setting')
+import { Setting } from '@/features/setting'
 
 export const protectedRoutes = [
   {
