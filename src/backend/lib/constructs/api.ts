@@ -169,13 +169,7 @@ export class Api extends Construct {
       resources: ['*'],
     })
     const cloudwatchPolicy = new cdk.aws_iam.PolicyStatement({
-      actions: [
-        'logs:DeleteRetentionPolicy',
-        'logs:PutRetentionPolicy',
-        'logs:CreateLogGroup',
-        'logs:CreateLogStream',
-        'logs:PutLogEvents',
-      ],
+      actions: ['logs:DeleteRetentionPolicy', 'logs:PutRetentionPolicy', 'logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
       resources: ['*'],
     })
     generativeAiLambdaRole.addToPolicy(ssmPolicy)

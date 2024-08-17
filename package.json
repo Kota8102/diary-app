@@ -7,10 +7,7 @@
     "format": "biome format --write .",
     "check": "biome check --write ."
   },
-  "workspaces": [
-    "src/frontend",
-    "src/backend"
-  ],
+  "workspaces": ["src/frontend", "src/backend"],
   "devDependencies": {
     "@biomejs/biome": "1.8.3",
     "lefthook": "^1.7.13",
