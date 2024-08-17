@@ -1,20 +1,20 @@
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from "react-router-dom";
 
-import { ContentLayout } from '../../../components/layout'
-import { useAuth } from '../../auth/utils/cognito-auth'
+import { ContentLayout } from "../../../components/layout";
+import { useAuth } from "../../../lib/cognito-auth";
 
 export const Setting = () => {
-  const { signOut } = useAuth()
-  const navigate = useNavigate()
+  const { signOut } = useAuth();
+  const navigate = useNavigate();
 
   const handleLogout = async () => {
     try {
-      await signOut()
-      navigate('/')
+      await signOut();
+      navigate("/");
     } catch (error) {
-      console.error('ログアウト中にエラーが発生しました:', error)
+      console.error("ログアウト中にエラーが発生しました:", error);
     }
-  }
+  };
 
   return (
     <ContentLayout pagetitle="各種設定">
@@ -28,11 +28,15 @@ export const Setting = () => {
         <a href="/" className="block p-4 w-full">
           通知設定
         </a>
-        <button onClick={handleLogout} className="block p-4 w-full text-left" type="button">
+        <button
+          onClick={handleLogout}
+          className="block p-4 w-full text-left"
+          type="button"
+        >
           ログアウト
         </button>
         <div className="border-t border-gray-400" />
       </div>
     </ContentLayout>
-  )
-}
+  );
+};

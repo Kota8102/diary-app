@@ -1,10 +1,10 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import type React from 'react'
-import { ProvideAuth } from './features/auth/utils/cognito-auth'
-import { AppRoutes } from './routes'
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import type React from "react";
+import { ProvideAuth } from "./lib/cognito-auth";
+import { AppRoutes } from "./routes";
 
 // QueryClient のインスタンスを作成
-const queryClient = new QueryClient()
+const queryClient = new QueryClient();
 
 const App: React.FC = () => {
   return (
@@ -13,7 +13,7 @@ const App: React.FC = () => {
         <AppRoutes />
       </ProvideAuth>
     </QueryClientProvider>
-  )
-}
+  );
+};
 
-export default App
+export default App;
