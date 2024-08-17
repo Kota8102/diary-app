@@ -1,2 +1,2 @@
 # requirements.txt
-openai
+openai == 1.41.0
