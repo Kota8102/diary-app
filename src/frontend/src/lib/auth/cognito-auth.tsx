@@ -94,7 +94,7 @@ const useProvideAuth = (): UseAuth => {
     } catch (error) {
       return {
         success: false,
-        message: '認証に失敗しました。',
+        message: 'メールアドレスまたはパスワードが違います',
       }
     }
   }
