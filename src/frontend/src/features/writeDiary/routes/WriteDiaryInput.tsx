@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
 import moment from 'moment'
+import { useEffect, useState } from 'react'
 import Datetime from 'react-datetime'
+import { useNavigate, useParams } from 'react-router-dom'
 
-import { ContentLayout } from '../../../components/layout/ContentLayout'
 import { DisabledButton } from '../../../components/Elements/Button'
+import { ContentLayout } from '../../../components/layout/ContentLayout'
 import { useCreateDiary } from '../api/create-diary'
 
 import '../styles/react-datetime.css'
@@ -44,19 +44,14 @@ export const WriteDiaryInput = () => {
           console.error('日記の作成に失敗しました:', error)
           alert('日記の作成に失敗しました。もう一度お試しください。')
         },
-      }
+      },
     )
   }
 
   return (
     <ContentLayout pagetitle="Diary">
       <div className="flex flex-col w-full h-full gap-5">
-        <Datetime
-          value={moment(currentDate, 'YYYY-MM-DD')}
-          dateFormat={'YYYY / MM / DD'}
-          timeFormat={false}
-          onChange={handleDateChange}
-        />
+        <Datetime value={moment(currentDate, 'YYYY-MM-DD')} dateFormat={'YYYY / MM / DD'} timeFormat={false} onChange={handleDateChange} />
         <textarea
           className="flex-grow w-full p-4 rounded-md bg-light-bgText resize-none"
           placeholder="ここに日記を入力してください。"

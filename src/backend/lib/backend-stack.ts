@@ -1,13 +1,13 @@
 import * as cdk from 'aws-cdk-lib'
-import * as s3 from 'aws-cdk-lib/aws-s3'
 import * as acm from 'aws-cdk-lib/aws-certificatemanager'
-import { Construct } from 'constructs'
+import * as s3 from 'aws-cdk-lib/aws-s3'
+import type { Construct } from 'constructs'
 import { Api, Auth, Identity, Web } from './constructs'
 
 interface BackendStackProps extends cdk.StackProps { }
 
 export class BackendStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props: BackendStackProps) {
+  constructor(scope: Construct, id: string, props?: BackendStackProps) {
     super(scope, id, props)
 
     const logBucket = new s3.Bucket(this, 'LogBucket', {
@@ -20,7 +20,7 @@ export class BackendStack extends cdk.Stack {
     const isProd = process.env.ENVIRONMENT === 'prod'
     let certificate: acm.ICertificate | undefined
     let domainNames: string[] | undefined
-    const cognitoDomain = isProd ? "bouquet-note" : undefined
+    const cognitoDomain = isProd ? 'bouquet-note' : undefined
 
     if (isProd) {
       const existingCertificateArn = process.env.CERTIFICATE_ARN
@@ -40,8 +40,8 @@ export class BackendStack extends cdk.Stack {
       userPoolClient: auth.userPoolClient,
     })
 
-     // API機能スタックのインスタンス化
-     const api = new Api(this, 'Api', {
+    // API機能スタックのインスタンス化
+    const api = new Api(this, 'Api', {
       userPool: auth.userPool,
     })
 

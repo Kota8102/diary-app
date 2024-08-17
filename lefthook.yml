@@ -1,0 +1,10 @@
+pre-commit:
+  commands:
+    check:
+      glob: "*.{js,ts,jsx,tsx}"
+      run: npx @biomejs/biome check --write --no-errors-on-unmatched --files-ignore-unknown=true --colors=off .
+pre-push:
+  commands:
+    check:
+      glob: "*.{js,ts,jsx,tsx}"
+      run: npx @biomejs/biome check --write --no-errors-on-unmatched --files-ignore-unknown=true --colors=off .

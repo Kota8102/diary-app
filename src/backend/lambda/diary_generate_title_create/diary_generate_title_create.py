@@ -1,8 +1,10 @@
 import json
-import boto3
 import os
-import urllib.request
 import urllib.parse
+import urllib.request
+
+import boto3
+
 
 def lambda_handler(event, context):
     print("title generate lambda start")
@@ -23,14 +25,15 @@ def lambda_handler(event, context):
                 }
         }
     except Exception as e:
-      return {
-          'statusCode': 400,
-          'body': json.dumps(f'An error occurred: {str(e)}'),
-          'headers': {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*'
-            }
-      }
+        return {
+            "statusCode": 400,
+            "body": json.dumps(f"An error occurred: {str(e)}"),
+            "headers": {
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Origin": "*",
+            },
+        }
+
 
 def generate_title_and_save_to_dynamodb(diary_content, record):
     """Generate a title from diary contents using ChatGPT and save it to DynamoDB
@@ -52,9 +55,9 @@ def generate_title_and_save_to_dynamodb(diary_content, record):
     request_data = {
         "model": "gpt-3.5-turbo",
         "messages": [{"role": "user", "content": diary_content}],
-        "temperature": 0.7
+        "temperature": 0.7,
     }
-    
+
     response = send_request_to_openai_api(api_endpoint, api_key, request_data)
     generated_title = json.loads(response)['choices'][0]['message']['content']
     print(f"title: {generated_title}")
@@ -105,8 +108,8 @@ def send_request_to_openai_api(api_endpoint, api_key, request_data):
         'Authorization': 'Bearer ' + api_key
     }
 
-    data = json.dumps(request_data).encode('utf-8')
+    data = json.dumps(request_data).encode("utf-8")
     req = urllib.request.Request(api_endpoint, data=data, headers=headers)
-    response = urllib.request.urlopen(req).read().decode('utf-8')
-    
+    response = urllib.request.urlopen(req).read().decode("utf-8")
+
     return response

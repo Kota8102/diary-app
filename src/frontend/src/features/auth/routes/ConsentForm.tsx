@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import type React from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import ReactMarkdown from 'react-markdown'
@@ -27,24 +28,12 @@ export const ConsentForm: React.FC = () => {
         <ReactMarkdown className="prose prose-sm max-w-none">{termsOfService}</ReactMarkdown>
       </div>
       <div className="flex items-center justify-center gap-2">
-        <input
-          type="checkbox"
-          id="consent-checkbox"
-          checked={isChecked}
-          onChange={handleCheckboxChange}
-          className="w-4 h-4"
-        />
-        <label
-          htmlFor="consent-checkbox"
-          className="text-sm">
+        <input type="checkbox" id="consent-checkbox" checked={isChecked} onChange={handleCheckboxChange} className="w-4 h-4" />
+        <label htmlFor="consent-checkbox" className="text-sm">
           利用規約に同意する
         </label>
       </div>
-      <DisabledButton
-        text="同意する"
-        onClick={handleSubmit}
-        disabled={!isChecked}
-      />
+      <DisabledButton text="同意する" onClick={handleSubmit} disabled={!isChecked} />
     </div>
   )
 }

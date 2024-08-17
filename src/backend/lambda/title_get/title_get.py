@@ -1,58 +1,56 @@
 import json
-import boto3
 import os
+
+import boto3
+
 
 def lambda_handler(event, context):
     try:
         user_id = context.identity.cognito_identity_id
-        date = event['queryStringParameters']['date']
-        
+        date = event["queryStringParameters"]["date"]
+
         # Fetch item from DynamoDB
         title = get_title_from_dynamodb(user_id, date)
-        
+
         if title:
             return {
-                'statusCode': 200,
-                'body': json.dumps({'title': title}),
-                'headers': {
-                    'Content-Type': 'application/json',
-                    'Access-Control-Allow-Origin': '*'
-                }
+                "statusCode": 200,
+                "body": json.dumps({"title": title}),
+                "headers": {
+                    "Content-Type": "application/json",
+                    "Access-Control-Allow-Origin": "*",
+                },
             }
         else:
             return {
-                'statusCode': 404,
-                'body': json.dumps('Title not found'),
-                'headers': {
-                    'Content-Type': 'application/json',
-                    'Access-Control-Allow-Origin': '*'
-                }
+                "statusCode": 404,
+                "body": json.dumps("Title not found"),
+                "headers": {
+                    "Content-Type": "application/json",
+                    "Access-Control-Allow-Origin": "*",
+                },
             }
     except Exception as e:
         return {
-            'statusCode': 400,
-            'body': json.dumps(f'An error occurred: {str(e)}'),
-            'headers': {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*'
-            }
+            "statusCode": 400,
+            "body": json.dumps(f"An error occurred: {str(e)}"),
+            "headers": {
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Origin": "*",
+            },
         }
 
+
 def get_title_from_dynamodb(user_id, date):
-    dynamodb = boto3.resource('dynamodb')
-    table_name = os.environ['TABLE_NAME']
+    dynamodb = boto3.resource("dynamodb")
+    table_name = os.environ["TABLE_NAME"]
     table = dynamodb.Table(table_name)
-    
+
     try:
-        response = table.get_item(
-            Key={
-                'user_id': user_id,
-                'date': date
-            }
-        )
-        
-        if 'Item' in response:
-            return response['Item'].get('title')
+        response = table.get_item(Key={"user_id": user_id, "date": date})
+
+        if "Item" in response:
+            return response["Item"].get("title")
         else:
             return None
     except Exception as e:

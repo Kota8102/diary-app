@@ -5,10 +5,7 @@ import { Calendar } from './calendar'
 export const Diary = () => {
   return (
     <Routes>
-      <Route
-        path="/"
-        element={<Calendar />}
-      />
+      <Route path="/" element={<Calendar />} />
     </Routes>
   )
 }

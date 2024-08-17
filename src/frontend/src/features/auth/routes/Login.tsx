@@ -25,26 +25,13 @@ export const Login = () => {
   return (
     <div className="flex flex-col h-full p-5 gap-5">
       <h2 className="flex items-center justify-center p-20">ログイン</h2>
-      <form
-        onSubmit={handleLogin}
-        className="space-y-7">
-        <Input
-          id="username"
-          label="メールアドレス"
-          type="text"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <Input
-          id="password"
-          label="パスワード"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+      <form onSubmit={handleLogin} className="space-y-7">
+        <Input id="username" label="メールアドレス" type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
+        <Input id="password" label="パスワード" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
         <button
           type="submit"
-          className="w-full bg-light-buttonPrimaryDefault p-2 rounded hover:bg-light-buttonPrimaryHover transition-colors duration-200">
+          className="w-full bg-light-buttonPrimaryDefault p-2 rounded hover:bg-light-buttonPrimaryHover transition-colors duration-200"
+        >
           ログイン
         </button>
       </form>

@@ -9,14 +9,7 @@ interface InputProps {
 export const Input = ({ id, label, type, value, onChange }: InputProps) => {
   return (
     <div className="relative">
-      <input
-        id={id}
-        type={type}
-        value={value}
-        onChange={onChange}
-        className="w-full bg-light-bgText rounded p-2"
-        placeholder={value ? '' : label}
-      />
+      <input id={id} type={type} value={value} onChange={onChange} className="w-full bg-light-bgText rounded p-2" placeholder={value ? '' : label} />
     </div>
   )
 }

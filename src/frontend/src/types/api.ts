@@ -1,3 +1,3 @@
-import { AxiosResponse } from 'axios'
+import type { AxiosResponse } from 'axios'
 
-export type ApiResponse<T = any> = AxiosResponse<T>
+export type ApiResponse<T = unknown> = AxiosResponse<T>

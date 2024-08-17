@@ -1,5 +1,5 @@
-import React from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import type React from 'react'
 import { ProvideAuth } from './features/auth/utils/cognito-auth'
 import { AppRoutes } from './routes'
 

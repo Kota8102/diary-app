@@ -1,4 +1,4 @@
-import { MouseEventHandler } from 'react'
+import type { MouseEventHandler } from 'react'
 
 type ButtonProps = {
   text: string
@@ -8,9 +8,7 @@ type ButtonProps = {
 
 export const Button = ({ text, onClick, css = 'bg-light-buttonPrimaryDefault' }: ButtonProps) => {
   return (
-    <button
-      className={`rounded-lg ${css} p-3 w-full text-center text-base`}
-      onClick={onClick}>
+    <button type="button" className={`rounded-lg ${css} p-3 w-full text-center text-base`} onClick={onClick}>
       {text}
     </button>
   )
@@ -35,11 +33,11 @@ export const DisabledButton = ({
 }: DisabledButtonProps) => {
   return (
     <button
-      className={`rounded-lg ${css} p-3 w-full text-center text-base ${
-        disabled ? disabledCss : enabledCss
-      }`}
+      className={`rounded-lg ${css} p-3 w-full text-center text-base ${disabled ? disabledCss : enabledCss}`}
       onClick={onClick}
-      disabled={disabled}>
+      disabled={disabled}
+      type="button"
+    >
       {text}
     </button>
   )
