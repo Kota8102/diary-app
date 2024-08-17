@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 
 import { ContentLayout } from '../../../components/layout'
-import { useAuth } from '../../auth/utils/cognito-auth'
+import { useAuth } from '../../../lib/auth/cognito-auth'
 
 export const Setting = () => {
   const { signOut } = useAuth()

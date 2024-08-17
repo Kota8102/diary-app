@@ -1,6 +1,6 @@
 import { useRoutes } from 'react-router-dom'
 
-import { useAuth } from '../features/auth/utils/cognito-auth'
+import { useAuth } from '../lib/auth/cognito-auth'
 
 import { protectedRoutes } from './protected'
 import { publicRoutes } from './public'

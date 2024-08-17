@@ -3,8 +3,8 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { AuthLayout } from '../../../components/layout'
+import { useAuth } from '../../../lib/auth/cognito-auth'
 import { Input } from '../components'
-import { useAuth } from '../utils/cognito-auth'
 
 export const ConfirmSignUp = () => {
   const { confirmSignUp, signIn } = useAuth()

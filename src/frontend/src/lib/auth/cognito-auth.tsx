@@ -1,40 +1,13 @@
+import { Auth } from 'aws-amplify'
 import type React from 'react'
 import { createContext, useContext, useEffect, useState } from 'react'
-
-import { Amplify, Auth } from 'aws-amplify'
-
-const AwsConfigAuth = {
-  region: import.meta.env.VITE_COGNITO_REGION,
-  userPoolId: import.meta.env.VITE_COGNITO_USER_POOL_ID,
-  userPoolWebClientId: import.meta.env.VITE_COGNITO_APP_USER_POOL_CLIENT_ID,
-  authenticationFlowType: 'USER_SRP_AUTH',
-}
-
-Amplify.configure({ Auth: AwsConfigAuth })
-
-interface UseAuth {
-  isLoading: boolean
-  isAuthenticated: boolean
-  username: string
-  currentAuthenticatedUser: () => Promise<unknown>
-  signUp: (username: string, password: string) => Promise<Result>
-  confirmSignUp: (sername: string, password: string, verificationCode: string) => Promise<Result>
-  signIn: (username: string, password: string) => Promise<Result>
-  signInComplete: (username: string, oldPassword: string, newPassword: string) => Promise<Result>
-  signOut: () => void
-  changePassword: (user: unknown, oldPassword: string, newPassword: string, newPasswordConfirm: string) => Promise<Result>
-  forgetPassword: (email: string) => Promise<Result>
-  resetPassword: (username: string, code: string, newPassword: string, newPasswordConfirm: string) => Promise<Result>
-}
-
-interface Result {
-  success: boolean
-  message: string
-  hasChallenge?: boolean
-  challengeName?: string
-}
+import type { Result, UseAuth } from '../../types/auth'
+import { configureAuth } from './authConfig'
 
 const authContext = createContext({} as UseAuth)
+
+// Amplifyの設定を読み込む
+configureAuth()
 
 export const ProvideAuth: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const auth = useProvideAuth()
@@ -109,14 +82,19 @@ const useProvideAuth = (): UseAuth => {
       if (hasChallenge) {
         const challengeName = result.challengeName
 
-        return { success: true, message: '', hasChallenge: true, challengeName }
+        return {
+          success: true,
+          message: '',
+          hasChallenge: true,
+          challengeName,
+        }
       }
 
       return { success: true, message: '', hasChallenge: false }
     } catch (error) {
       return {
         success: false,
-        message: '認証に失敗しました。',
+        message: 'メールアドレスまたはパスワードが違います',
       }
     }
   }
