@@ -2,7 +2,7 @@ import type React from 'react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { useAuth } from '../../../lib/cognito-auth'
+import { useAuth } from '../../../lib/auth/cognito-auth'
 import { Input } from '../components'
 
 export const SignUp = () => {
