@@ -1,6 +1,6 @@
 import { Route, Routes } from 'react-router-dom'
 
-import { MainLayout } from '../../../components/layout'
+import { MainLayout } from '@/components/layout'
 
 import { AuthChoice } from './AuthChoice'
 import { ConfirmSignUp } from './ConfirmSignUp'

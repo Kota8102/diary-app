@@ -1,7 +1,7 @@
 import { Auth } from 'aws-amplify'
 import type React from 'react'
 import { createContext, useContext, useEffect, useState } from 'react'
-import type { Result, UseAuth } from '../../types/auth'
+import type { Result, UseAuth } from '@/types/auth'
 import { configureAuth } from './authConfig'
 
 const authContext = createContext({} as UseAuth)

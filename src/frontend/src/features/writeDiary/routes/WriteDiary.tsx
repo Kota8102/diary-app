@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from 'react-router-dom'
-import { vase1, vase2, vase3 } from '../../../assets/icons'
-import { Button } from '../../../components/Elements/Button'
-import { ContentLayout } from '../../../components/layout/ContentLayout'
+import { vase1, vase2, vase3 } from '@/assets/icons'
+import { Button } from '@/components/Elements/Button'
+import { ContentLayout } from '@/components/layout/ContentLayout'
 
 export const WriteDiary = () => {
   // 今日の日付を取得

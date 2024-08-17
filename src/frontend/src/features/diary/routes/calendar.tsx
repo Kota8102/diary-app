@@ -3,7 +3,7 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import FullCalendar from '@fullcalendar/react'
 
-import { ContentLayout } from '../../../components/layout'
+import { ContentLayout } from '@/components/layout'
 
 import '../styles/calendar.css'
 
