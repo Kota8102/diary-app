@@ -11,7 +11,7 @@ export const TabItem = ({ linkPath, label: text, activeIcon, inactiveIcon }: Tab
   const { pathname } = useLocation()
 
   return (
-    <Link to={linkPath} className="flex flex-col items-center pt-1 pb-3 gap-1 w-1/5">
+    <Link to={linkPath} className="flex flex-col items-center py-2 gap-1 w-1/5">
       {pathname === linkPath ? (
         <img src={activeIcon} alt="Active Icon" width="32" height="32" />
       ) : (

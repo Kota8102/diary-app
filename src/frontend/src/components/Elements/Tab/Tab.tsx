@@ -9,7 +9,7 @@ import {
   outlinedFlower,
   outlinedSetting,
   setting,
-} from '../../../assets/icons'
+} from '@/assets/icons'
 
 import { TabItem } from './TabItem'
 
