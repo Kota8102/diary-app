@@ -2,9 +2,11 @@ pre-commit:
   commands:
     check:
       glob: "*.{js,ts,jsx,tsx}"
-      run: npx @biomejs/biome check --write --no-errors-on-unmatched --files-ignore-unknown=true --colors=off .
+      run: npx biome check --write --no-errors-on-unmatched --files-ignore-unknown=true --colors=off {staged_files}
+      stage_fiexed: true
 pre-push:
   commands:
     check:
       glob: "*.{js,ts,jsx,tsx}"
-      run: npx @biomejs/biome check --write --no-errors-on-unmatched --files-ignore-unknown=true --colors=off .
+      run: npx biome check --write --no-errors-on-unmatched --files-ignore-unknown=true --colors=off {staged_files}
+      stage_fiexed: true
