@@ -1,4 +1,4 @@
-import { ContentLayout } from '../../../components/layout'
+import { ContentLayout } from '@/components/layout'
 
 export const Bouquet = () => {
   return (

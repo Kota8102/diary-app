@@ -1,10 +1,10 @@
-import { MainLayout } from '../components/layout'
-import { Bouquet } from '../features/bouquet'
-import { Diary } from '../features/diary'
-import { Flower } from '../features/flower'
-import { NotFound } from '../features/notfound'
-import { Setting } from '../features/setting'
-import { WriteDiaryRoutes } from '../features/writeDiary'
+import { MainLayout } from '@/components/layout'
+import { Bouquet } from '@/features/bouquet'
+import { Diary } from '@/features/diary'
+import { Flower } from '@/features/flower'
+import { NotFound } from '@/features/notfound'
+import { Setting } from '@/features/setting'
+import { WriteDiaryRoutes } from '@/features/writeDiary'
 
 export const protectedRoutes = [
   {

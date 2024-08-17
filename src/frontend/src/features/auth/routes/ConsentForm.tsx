@@ -4,8 +4,8 @@ import { useNavigate } from 'react-router-dom'
 
 import ReactMarkdown from 'react-markdown'
 
-import { termsOfService } from '../../../assets/termsOfService.ts'
-import { DisabledButton } from '../../../components/Elements/Button'
+import { termsOfService } from '@/assets/termsOfService.ts'
+import { DisabledButton } from '@/components/Elements/Button'
 
 export const ConsentForm: React.FC = () => {
   const [isChecked, setIsChecked] = useState(false)

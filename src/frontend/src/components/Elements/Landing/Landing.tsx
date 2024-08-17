@@ -1,6 +1,6 @@
 import type React from 'react'
 
-import logo from '../../../assets/logo.svg'
+import logo from '@/assets/logo.svg'
 
 export const Landing: React.FC = () => {
   return (

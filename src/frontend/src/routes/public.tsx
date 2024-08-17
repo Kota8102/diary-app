@@ -1,9 +1,9 @@
 import { Navigate } from 'react-router-dom'
 
-import { Landing } from '../components/Elements/Landing'
-import { lazyImport } from '../utils/lazyImport'
+import { Landing } from '@/components/Elements/Landing'
+import { lazyImport } from '@/utils/lazyImport'
 
-const { AuthRoutes } = lazyImport(() => import('../features/auth'), 'AuthRoutes')
+const { AuthRoutes } = lazyImport(() => import('@/features/auth'), 'AuthRoutes')
 
 export const publicRoutes = [
   {

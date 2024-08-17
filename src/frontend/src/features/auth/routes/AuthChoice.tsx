@@ -1,6 +1,6 @@
 import type React from 'react'
 
-import logo from '../../../assets/logo.svg'
+import logo from '@/assets/logo.svg'
 import { Button } from '../components/button'
 
 export const AuthChoice: React.FC = () => {

@@ -17,6 +17,7 @@ export default defineConfig({
     alias: {
       // Node.js の buffer モジュールのポリフィル設定
       buffer: 'buffer',
+      '@/src': '/src',
     },
   },
 })
