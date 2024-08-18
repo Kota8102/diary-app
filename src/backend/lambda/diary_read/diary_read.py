@@ -8,7 +8,7 @@ def lambda_handler(event, context):
     dynamodb = boto3.resource("dynamodb")
     table = dynamodb.Table(os.getenv("TABLE_NAME"))
 
-    user_id = context.identity.cognito_identity_id
+    user_id = event["requestContext"]["authorizer"]["claims"]["sub"]
     date = event["queryStringParameters"]["date"]
 
     try:
@@ -23,8 +23,8 @@ def lambda_handler(event, context):
 
         if not item:
             return {
-                "statusCode": 404,
-                "body": json.dumps("Diary entry not found"),
+                "statusCode": 200,
+                "body": json.dumps(""),
                 "headers": {
                     "Content-Type": "application/json",
                     "Access-Control-Allow-Origin": "*",
