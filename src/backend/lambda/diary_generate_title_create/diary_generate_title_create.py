@@ -36,9 +36,14 @@ def generate_title_and_save_to_dynamodb(diary_content, record):
     api_endpoint = "https://api.openai.com/v1/chat/completions"
     api_key = get_parameter_from_parameter_store("OpenAI_API_KEY")
 
+    system_content = "Generate a short title from the diary content."
+
     request_data = {
         "model": "gpt-3.5-turbo",
-        "messages": [{"role": "user", "content": diary_content}],
+        "messages": [
+            {"role": "user", "content": diary_content},
+            {"role": "system", "content": system_content},
+        ],
         "temperature": 0.7,
     }
 
@@ -64,7 +69,8 @@ def get_parameter_from_parameter_store(parameter_name):
 
 
 def send_request_to_openai_api(api_endpoint, api_key, request_data):
-    headers = {"Content-Type": "application/json", "Authorization": "Bearer " + api_key}
+    headers = {"Content-Type": "application/json",
+               "Authorization": "Bearer " + api_key}
 
     data = json.dumps(request_data).encode("utf-8")
     req = urllib.request.Request(api_endpoint, data=data, headers=headers)
