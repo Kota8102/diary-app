@@ -1,31 +1,31 @@
 import { useEffect, useRef, useState } from 'react'
-import Slider from 'react-slick'
 import 'slick-carousel/slick/slick.css'
 import 'slick-carousel/slick/slick-theme.css'
 import { ContentLayout } from '@/components/layout'
 
-// APIがまだできていないため、暫定的な処理
-import { flower1, flower2 } from '@/example'
+import { useTitle } from '../api/get-title'
+import { useNote } from '../api/get-note'
 
 export const Flower = () => {
-  const [title] = useState<string>('カフェと店員さんとケーキ')
-  const [note] = useState<string>(
-    '今日はカフェで勉強した。勉強していたら、カフェの店員さんが話しかけてくれて、今頑張っている試験について話した。そしたら、頑張ってるねって言ってケーキをプレゼントしてもらった。嬉しい！めっちゃ美味しかったし、また行こうと思った！',
-  )
+  const [date] = useState('2024-08-18')
+  const { data: titleData } = useTitle({
+    date,
+    queryConfig: {},
+  })
 
-  const exampleImages = [flower1, flower2]
-  const [images] = useState<string[]>(exampleImages)
+  const { data: noteData, error: noteError } = useNote({
+    date,
+    queryConfig: {},
+  })
 
-  const settings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    centeredSlides: true,
-  }
-
+  const [note, setNote] = useState('')
   const noteRef = useRef<HTMLTextAreaElement>(null)
+
+  useEffect(() => {
+    if (noteData?.title.content) {
+      setNote(noteData.title.content)
+    }
+  }, [noteData])
 
   useEffect(() => {
     if (noteRef.current) {
@@ -34,25 +34,28 @@ export const Flower = () => {
     }
   }, [])
 
+  // ノートの変更を処理する関数
+  const handleNoteChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setNote(e.target.value)
+  }
+
+  // エラー処理
+  // if (titleError && !(titleError instanceof Error && titleError.message.includes('404'))) {
+  //   return <div>Error loading title: {titleError instanceof Error ? titleError.message : 'Unknown error occurred'}</div>
+  // }
+
+  if (noteError && !(noteError instanceof Error && noteError.message.includes('404'))) {
+    return <div>Error loading note: {noteError instanceof Error ? noteError.message : 'Unknown error occurred'}</div>
+  }
+
   return (
     <ContentLayout pagetitle="Diary">
       <div className="flex flex-col w-full h-full gap-5 justify-between overflow-hidden">
-        <p>2024/06/11</p>
-        <Slider {...settings}>
-          {images.map((image) => (
-            <div
-              key={image} // ここで画像URLをキーとして使用
-              className="flex justify-center items-center h-2/5"
-            >
-              <img src={image} alt={'Slide'} className="max-w-full max-h-full" />
-            </div>
-          ))}
-        </Slider>
+        <p>{date}</p>
         <div className="flex justify-end">
           <button
             type="button"
             className={'rounded-2xl p-1 text-base bg-light-buttonSecondaryDefault text-white w-2/5'}
-            // onClick={onClick}
             disabled={note.trim() === ''}
           >
             Make Bouquet
@@ -61,11 +64,13 @@ export const Flower = () => {
         <div className="flex flex-col gap-1 h-2/5 text-xs">
           <div className="flex flex-col gap-1">
             <p>Title</p>
-            <p className="bg-light-bgText rounded-md px-3 py-2">{title}</p>
+            <p className="bg-light-bgText rounded-md px-3 py-2">
+              {titleData?.title.title || ''} {/* 404の場合は空文字列を表示 */}
+            </p>
           </div>
           <div className="flex flex-col gap-1">
             <p>Note</p>
-            <textarea ref={noteRef} className="bg-light-bgText rounded-md px-3 py-2 tracking-widest" value={note} />
+            <textarea ref={noteRef} className="bg-light-bgText rounded-md px-3 py-2 tracking-widest" value={note} onChange={handleNoteChange} />
           </div>
         </div>
       </div>
