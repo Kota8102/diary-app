@@ -23,8 +23,8 @@ def lambda_handler(event, context):
             }
         else:
             return {
-                "statusCode": 404,
-                "body": json.dumps("Title not found"),
+                "statusCode": 200,
+                "body": json.dumps({"title": ""}),
                 "headers": {
                     "Content-Type": "application/json",
                     "Access-Control-Allow-Origin": "*",
