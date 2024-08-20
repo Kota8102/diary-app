@@ -5,6 +5,24 @@ import boto3
 
 
 def lambda_handler(event, context):
+    """AWS Lambda handler function to retrieve a diary title from DynamoDB based on 
+    the user ID and date provided in the request.
+
+    This function:
+    - Extracts the user ID from the context (using Cognito identity).
+    - Extracts the date from the query parameters in the incoming event.
+    - Retrieves the diary title from DynamoDB using the user ID and date.
+    - Returns the title in a JSON response with an HTTP 200 status code.
+    - Returns an empty title if no title is found.
+    - Handles any exceptions and returns an HTTP 400 status code with an error message.
+
+    Args:
+        event (dict): Incoming request details, including query parameters and other data.
+        context (object): The context object providing runtime information.
+
+    Returns:
+        dict: HTTP response with a status code, headers, JSON body.
+    """
     try:
         user_id = context.identity.cognito_identity_id
         date = event["queryStringParameters"]["date"]
