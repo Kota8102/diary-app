@@ -79,7 +79,7 @@ def test_lambda_handler_no_title(mock_boto_resource):
 
 @patch.object(title_get.boto3, 'resource')
 def test_lambda_handler_table_not_found(mock_boto_resource):
-    # Set up mock DynamoDB resource with table not found
+    # Set up mock DynamoDB resource with table not found!
     mock_dynamodb = MagicMock()
     mock_dynamodb.Table.side_effect = Exception("Table not found")
     mock_boto_resource.return_value = mock_dynamodb
