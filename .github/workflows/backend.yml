@@ -37,6 +37,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v1
 
+      - name: Pytest
+        run: pytest
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
