@@ -2092,6 +2092,17 @@ exports[`Snapshot test 1`] = `
             },
             {
               "Action": [
+                "logs:DeleteRetentionPolicy",
+                "logs:PutRetentionPolicy",
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            {
+              "Action": [
                 "dynamodb:BatchWriteItem",
                 "dynamodb:PutItem",
                 "dynamodb:UpdateItem",

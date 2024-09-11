@@ -168,7 +168,12 @@ export class Api extends Construct {
       actions: ['ssm:GetParameter'],
       resources: ['*'],
     })
+    const cloudwatchPolicy = new cdk.aws_iam.PolicyStatement({
+      actions: ['logs:DeleteRetentionPolicy', 'logs:PutRetentionPolicy', 'logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
+      resources: ['*'],
+    })
     generativeAiLambdaRole.addToPolicy(ssmPolicy)
+    generativeAiLambdaRole.addToPolicy(cloudwatchPolicy)
 
     // タイトル生成用Lambda関数の定義
     const diaryGenerateTitleCreateFunction = new lambda.Function(this, 'diaryGenerateTitleCreateLambda', {
