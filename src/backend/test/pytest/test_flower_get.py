@@ -1,3 +1,4 @@
+import base64
 import importlib.util
 import json
 import os
@@ -33,26 +34,29 @@ def test_lambda_handler_success(mock_boto_client, mock_boto_resource):
     }
     mock_boto_client.return_value = mock_s3
 
-    # Mock context
-    class Context:
-        def __init__(self):
-            self.identity = MagicMock(cognito_identity_id='mock-user-id')
-
+    # Mock event with authorizer claims
     event = {
+        "requestContext": {
+            "authorizer": {
+                "claims": {
+                    "sub": "mock-user-id"
+                }
+            },
+        },
         "queryStringParameters": {
             "date": "2024-08-21"
         }
     }
-    context = Context()
 
     # Call the Lambda function
-    response = flower_get.lambda_handler(event, context)
+    response = flower_get.lambda_handler(event, None)
 
     # Check the response
     assert response['statusCode'] == 200
     body = json.loads(response['body'])
-    # Base64 encoded mock-image-data
-    assert body['Image'] == 'bW9jay1pbWFnZS1kYXRh'
+    # Base64 encode the mock image data
+    assert body['Image'] == base64.b64encode(
+        b'mock-image-data').decode('utf-8')
 
 
 @patch.object(flower_get.boto3, 'resource')
@@ -69,21 +73,24 @@ def test_lambda_handler_failure(mock_boto_client, mock_boto_resource):
     mock_dynamodb.Table.return_value = mock_table
     mock_boto_resource.return_value = mock_dynamodb
 
-    # Mock context
-    class Context:
-        def __init__(self):
-            self.identity = MagicMock(cognito_identity_id='mock-user-id')
-
+    # Mock event with authorizer claims
     event = {
+        "requestContext": {
+            "authorizer": {
+                "claims": {
+                    "sub": "mock-user-id"
+                }
+            },
+        },
         "queryStringParameters": {
             "date": "2024-08-21"
         }
     }
-    context = Context()
 
     # Call the Lambda function
-    response = flower_get.lambda_handler(event, context)
+    response = flower_get.lambda_handler(event, None)
 
     # Check the response
-    assert response['statusCode'] == 404
-    assert json.loads(response['body']) == "Image not found"
+    assert response['statusCode'] == 200
+    body = json.loads(response['body'])
+    assert body['Image'] == ""

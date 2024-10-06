@@ -25,12 +25,13 @@ def lambda_handler(event, context):
             }
         else:
             return {
-                "statusCode": 404,
-                "body": json.dumps("Image not found"),
                 "headers": {
-                    "Content-Type": "application/json",
+                    "Content-Type": "image/png",
                     "Access-Control-Allow-Origin": "*",
                 },
+                "statusCode": 200,
+                "body": json.dumps({"Image": ""}),
+                "isBase64Encoded": True,
             }
     except Exception as e:
         return {

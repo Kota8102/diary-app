@@ -1925,6 +1925,9 @@ exports[`Snapshot test 1`] = `
             "BUCKET_NAME": {
               "Ref": "ApiflowerImageBucket5AC81E41",
             },
+            "GENERATIVE_AI_TABLE_NAME": {
+              "Ref": "ApigenerativeAiTableB5975AA2",
+            },
           },
         },
         "Handler": "flower_get.lambda_handler",
@@ -2001,6 +2004,30 @@ exports[`Snapshot test 1`] = `
                       "/*",
                     ],
                   ],
+                },
+              ],
+            },
+            {
+              "Action": [
+                "dynamodb:BatchGetItem",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+                "dynamodb:Query",
+                "dynamodb:GetItem",
+                "dynamodb:Scan",
+                "dynamodb:ConditionCheckItem",
+                "dynamodb:DescribeTable",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "ApigenerativeAiTableB5975AA2",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Ref": "AWS::NoValue",
                 },
               ],
             },
