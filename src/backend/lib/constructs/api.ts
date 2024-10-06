@@ -212,10 +212,10 @@ export class Api extends Construct {
     })
 
     // 花の画像生成用Lambda関数の定義
-    const flowerGenerateFunction = new lambda.Function(this, 'flowerGenerateFunction', {
+    const flowerSelectFunction = new lambda.Function(this, 'flowerSelectFunction', {
       runtime: lambda.Runtime.PYTHON_3_11,
-      handler: 'flower_generate.lambda_handler',
-      code: lambda.Code.fromAsset('lambda/flower_generate', {
+      handler: 'flower_select.lambda_handler',
+      code: lambda.Code.fromAsset('lambda/flower_select', {
         bundling: {
           image: lambda.Runtime.PYTHON_3_11.bundlingImage,
           command: ['bash', '-c', 'pip install -r requirements.txt -t /asset-output && cp -au . /asset-output'],
@@ -228,11 +228,11 @@ export class Api extends Construct {
       },
       timeout: cdk.Duration.seconds(60),
     })
-    generativeAiTable.grantWriteData(flowerGenerateFunction)
-    table.grantStreamRead(flowerGenerateFunction)
-    flowerImageBucket.grantPut(flowerGenerateFunction)
-    flowerGenerateFunction.addEventSource(diaryTableEventSource)
-    flowerGenerateFunction.addToRolePolicy(
+    generativeAiTable.grantWriteData(flowerSelectFunction)
+    table.grantStreamRead(flowerSelectFunction)
+    flowerImageBucket.grantPut(flowerSelectFunction)
+    flowerSelectFunction.addEventSource(diaryTableEventSource)
+    flowerSelectFunction.addToRolePolicy(
       new iam.PolicyStatement({
         resources: ['arn:aws:ssm:ap-northeast-1:851725642854:parameter/OpenAI_API_KEY'],
         actions: ['ssm:GetParameter'],
