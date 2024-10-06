@@ -24,7 +24,7 @@ def lambda_handler(event, context):
         dict: HTTP response with a status code, headers, JSON body.
     """
     try:
-        user_id = context.identity.cognito_identity_id
+        user_id = event['requestContext']['authorizer']['claims']['sub']
         date = event["queryStringParameters"]["date"]
 
         # Fetch item from DynamoDB

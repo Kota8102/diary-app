@@ -1,20 +1,38 @@
 import json
 import os
-import urllib.request
 
 import boto3
-from openai import OpenAI
+import requests
 
 
 def lambda_handler(event, context):
+    """AWS Lambda handler function to process DynamoDB stream records.
+
+    This function:
+    - Iterates over the incoming DynamoDB stream records.
+    - Checks if the event name is "INSERT".
+    - Extracts the diary content from the new image in the DynamoDB record.
+    - Calls the function to select a flower based on the diary content and saves the flower ID to DynamoDB.
+
+    Args:
+        event (dict): Incoming DynamoDB stream event, containing records to be processed.
+        context (object): The context object providing runtime information for the Lambda function.
+
+    Returns:
+        dict: HTTP response with a status code, headers, and a JSON body.
+            - On success (200), returns a message indicating that the records were processed.
+            - On failure (400), returns an error message indicating what went wrong.
+    """
     print("Flower Generate Function Start")
+    user_id = event['requestContext']['authorizer']['claims']['sub']
     try:
-        for record in event["Records"]:
-            print(f"record{record}")
-            if record["eventName"] == "INSERT":
-                diary_content = record["dynamodb"]["NewImage"]["content"]["S"]
-                print(f"content: {diary_content}")
-                generate_image_and_save_to_dynamodb(diary_content, record)
+        record = event["Records"][0]
+        print(f"record: {record}")
+        if record["eventName"] == "INSERT":
+            diary_content = record["dynamodb"]["NewImage"]["content"]["S"]
+            date = record["dynamodb"]["NewImage"]["date"]["S"]
+            print(f"content: {diary_content}")
+            select_flower_and_save_to_dynamodb(user_id, date, diary_content)
         return {
             "statusCode": 200,
             "body": json.dumps("Processed DynamoDB Stream records."),
@@ -34,18 +52,35 @@ def lambda_handler(event, context):
         }
 
 
-def generate_image_and_save_to_dynamodb(diary_content, record):
-    api_key = get_parameter_from_parameter_store("OpenAI_API_KEY")
-    img_url = generate_image_dalle(api_key, diary_content)
+def select_flower_and_save_to_dynamodb(user_id, date, diary_content):
+    """Selects a flower based on the diary content and saves the flower ID to DynamoDB.
 
-    s3_bucket = os.environ["FLOWER_BUCKET_NAME"]
-    s3_key = f"generated_images/{record['dynamodb']['NewImage']['user_id']['S']}-{record['dynamodb']['NewImage']['date']['S']}.png"
-    s3_url = upload_image_to_s3(img_url, s3_bucket, s3_key)
+    This function:
+    - Retrieves the API key from the parameter store.
+    - Calls the API to select a flower using the diary content.
+    - Saves the selected flower ID to DynamoDB.
 
-    save_image_url_to_dynamodb(record, s3_url)
+    Args:
+        diary_content (str): The content of the diary entry.
+        date (str): Date to choose the flower.
+    """
+    api_key = get_parameter_from_parameter_store("DIFY_API_KEY")
+    flower_id = select_flower_using_api(api_key, diary_content)
+    save_flower_id_to_dynamodb(user_id, date, flower_id)
 
 
 def get_parameter_from_parameter_store(parameter_name):
+    """Retrieves a parameter value from the AWS Systems Manager Parameter Store.
+
+    Args:
+        parameter_name (str): The name of the parameter to retrieve.
+
+    Returns:
+        str: The value of the specified parameter.
+
+    Raises:
+        Exception: If the parameter retrieval fails.
+    """
     print("get_parameter_from_parameter_store")
     try:
         ssm = boto3.client("ssm")
@@ -55,59 +90,76 @@ def get_parameter_from_parameter_store(parameter_name):
         raise Exception(f"Failed to get parameter from parameter store: {e}")
 
 
-def generate_image_dalle(api_key, prompt):
-    print("generate_image_dalle")
-    client = OpenAI(api_key=api_key)
-    print("created openai client")
+def select_flower_using_api(api_key, query):
+    """Selects a flower based on the provided query by calling an external API.
+
+    Args:
+        api_key (str): The API key for authentication.
+        query (str): The query string to select a flower.
+
+    Returns:
+        str: The selected flower ID.
+
+    Raises:
+        Exception: If the API call fails or returns an error.
+    """
+    BASE_URL = 'https://api.dify.ai/v1'
+
+    headers = {
+        'Authorization': f'Bearer {api_key}',
+        'Content-Type': 'application/json'
+    }
+    url = f'{BASE_URL}/chat-messages'
+
+    data = {
+        'query': query,
+        'inputs': {},
+        'response_mode': 'blocking',
+        'user': "user",
+        'auto_generate_name': True
+    }
+
     try:
-        response = client.images.generate(
-            model="dall-e-3", prompt=prompt, size="1024x1024", quality="standard", n=1
-        )
-        print(f"Response: {response}")
-        img_url = response.data[0].url
-        return img_url
+        response = requests.post(url, headers=headers, json=data)
     except Exception as e:
-        print(f"Error generating image: {e}")
-        raise
+        raise Exception(f"Failed to select flower: {e}")
+
+    flower_id = response.get('answer')
+    print("Answer: ", flower_id)
+    return flower_id
 
 
-def upload_image_to_s3(img_url, bucket_name, s3_key):
+def save_flower_id_to_dynamodb(user_id, date, flower_id):
+    """Saves the selected flower ID to DynamoDB.
+
+    Args:
+        user_id (str): The ID of the user.
+        date (str): Date to choose the flower.
+        flower_id (str): The ID of the selected flower to save.
+
+    Raises:
+        Exception: If saving to DynamoDB fails.
+    """
+    print("save_flower_id_to_dynamodb")
+
+    dynamodb = boto3.resource("dynamodb")
+    table_name = os.environ["GENERATIVE_AI_TABLE_NAME"]
+    table = dynamodb.Table(table_name)
+
+    item = {
+        "user_id": user_id,
+        "date": date,
+        "flower_id": flower_id,
+    }
+
+    update_expression = "set image_url = :url"
+    expression_attribute_values = {
+        ':url': flower_id
+    }
+
     try:
-        with urllib.request.urlopen(img_url) as response:
-            if response.status == 200:
-                s3 = boto3.client("s3")
-                s3.put_object(Bucket=bucket_name, Key=s3_key, Body=response.read())
-                s3_url = f"https://{bucket_name}.s3.amazonaws.com/{s3_key}"
-                return s3_url
-            else:
-                raise Exception(
-                    f"Error downloading image, status code: {response.status}"
-                )
-    except Exception as e:
-        print(f"Error: {e}")
-        raise
-
-
-def save_image_url_to_dynamodb(record, s3_url):
-    print("save_image_url_to_dynamodb")
-
-    try:
-        dynamodb = boto3.resource("dynamodb")
-        table_name = os.environ["GENERATIVE_AI_TABLE_NAME"]
-        table = dynamodb.Table(table_name)
-
-        item = {
-            "user_id": record["dynamodb"]["NewImage"]["user_id"]["S"],
-            "date": record["dynamodb"]["NewImage"]["date"]["S"],
-            "image_url": s3_url,
-        }
-
-        update_expression = "set image_url = :url"
-        expression_attribute_values = {
-            ':url': s3_url
-        }
         response = table.update_item(
-            Key=key,
+            Key=item,
             UpdateExpression=update_expression,
             ExpressionAttributeValues=expression_attribute_values
         )
