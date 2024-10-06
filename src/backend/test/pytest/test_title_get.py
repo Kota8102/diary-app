@@ -27,11 +27,18 @@ def test_lambda_handler_success(mock_boto_resource):
     class Context:
         def __init__(self):
             self.identity = MagicMock()
-            self.identity.cognito_identity_id = '123'
 
     event = {
         "queryStringParameters": {
             "date": "2024-08-21"
+        },
+        "requestContext": {
+            "authorizer": {
+                "claims":
+                {
+                    "sub": "mock-user-id"
+                }
+            }
         }
     }
     context = Context()
@@ -59,11 +66,18 @@ def test_lambda_handler_no_title(mock_boto_resource):
     class Context:
         def __init__(self):
             self.identity = MagicMock()
-            self.identity.cognito_identity_id = '123'
 
     event = {
         "queryStringParameters": {
             "date": "2024-08-21"
+        },
+        "requestContext": {
+            "authorizer": {
+                "claims":
+                {
+                    "sub": "mock-user-id"
+                }
+            }
         }
     }
     context = Context()
@@ -88,11 +102,18 @@ def test_lambda_handler_table_not_found(mock_boto_resource):
     class Context:
         def __init__(self):
             self.identity = MagicMock()
-            self.identity.cognito_identity_id = '123'
 
     event = {
         "queryStringParameters": {
             "date": "2024-08-21"
+        },
+        "requestContext": {
+            "authorizer": {
+                "claims":
+                {
+                    "sub": "mock-user-id"
+                }
+            }
         }
     }
     context = Context()
