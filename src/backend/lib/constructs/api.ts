@@ -246,10 +246,12 @@ export class Api extends Construct {
       code: lambda.Code.fromAsset('lambda/flower_get'),
       environment: {
         BUCKET_NAME: flowerImageBucket.bucketName,
+        GENERATIVE_AI_TABLE_NAME: generativeAiTable.tableName,
       },
       timeout: cdk.Duration.seconds(10),
     })
     flowerImageBucket.grantRead(flowerGetFunction)
+    generativeAiTable.grantReadData(flowerGetFunction)
 
     const flowerApi = api.root.addResource('flower')
     flowerApi.addMethod('GET', new apigateway.LambdaIntegration(flowerGetFunction), {
