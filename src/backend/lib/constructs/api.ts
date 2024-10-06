@@ -234,7 +234,7 @@ export class Api extends Construct {
     flowerSelectFunction.addEventSource(diaryTableEventSource)
     flowerSelectFunction.addToRolePolicy(
       new iam.PolicyStatement({
-        resources: ['arn:aws:ssm:ap-northeast-1:851725642854:parameter/OpenAI_API_KEY'],
+        resources: ['arn:aws:ssm:ap-northeast-1:851725642854:parameter/DIFY_API_KEY'],
         actions: ['ssm:GetParameter'],
       }),
     )
