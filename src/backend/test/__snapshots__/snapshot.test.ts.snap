@@ -2067,7 +2067,7 @@ exports[`Snapshot test 1`] = `
             {
               "Action": "ssm:GetParameter",
               "Effect": "Allow",
-              "Resource": "arn:aws:ssm:ap-northeast-1:851725642854:parameter/OpenAI_API_KEY",
+              "Resource": "arn:aws:ssm:ap-northeast-1:851725642854:parameter/DIFY_API_KEY",
             },
           ],
           "Version": "2012-10-17",
