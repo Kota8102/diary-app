@@ -24,12 +24,12 @@ def lambda_handler(event, context):
             - On failure (400), returns an error message indicating what went wrong.
     """
     print("Flower Generate Function Start")
-    user_id = event['requestContext']['authorizer']['claims']['sub']
     try:
         record = event["Records"][0]
         print(f"record: {record}")
         if record["eventName"] == "INSERT":
             diary_content = record["dynamodb"]["NewImage"]["content"]["S"]
+            user_id = record["dynamodb"]["NewImage"]["user_id"]["S"]
             date = record["dynamodb"]["NewImage"]["date"]["S"]
             print(f"content: {diary_content}")
             select_flower_and_save_to_dynamodb(user_id, date, diary_content)
@@ -149,12 +149,11 @@ def save_flower_id_to_dynamodb(user_id, date, flower_id):
     item = {
         "user_id": user_id,
         "date": date,
-        "flower_id": flower_id,
     }
 
-    update_expression = "set image_url = :url"
+    update_expression = "set flower_id = :flower"
     expression_attribute_values = {
-        ':url': flower_id
+        ':flower': flower_id
     }
 
     try:
