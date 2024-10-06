@@ -85,6 +85,7 @@ def get_parameter_from_parameter_store(parameter_name):
     try:
         ssm = boto3.client("ssm")
         response = ssm.get_parameter(Name=parameter_name, WithDecryption=True)
+        print("Successfully get the parameter")
         return response["Parameter"]["Value"]
     except Exception as e:
         raise Exception(f"Failed to get parameter from parameter store: {e}")
@@ -103,6 +104,7 @@ def select_flower_using_api(api_key, query):
     Raises:
         Exception: If the API call fails or returns an error.
     """
+    print("select flower using api")
     BASE_URL = 'https://api.dify.ai/v1'
 
     headers = {
@@ -125,6 +127,7 @@ def select_flower_using_api(api_key, query):
         raise Exception(f"Failed to select flower: {e}")
 
     flower_id = response.get('answer')
+    print("successfully get flower_id")
     print("Answer: ", flower_id)
     return flower_id
 
