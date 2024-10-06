@@ -65,12 +65,8 @@ def select_flower_and_save_to_dynamodb(user_id, date, diary_content):
         date (str): Date to choose the flower.
     """
     api_key = get_parameter_from_parameter_store("DIFY_API_KEY")
-    print("aaaaa")
-    print(api_key)
     flower_id = select_flower_using_api(api_key, diary_content)
-    print("bbbbb")
     save_flower_id_to_dynamodb(user_id, date, flower_id)
-    print("ccccc")
 
 def get_parameter_from_parameter_store(parameter_name):
     """Retrieves a parameter value from the AWS Systems Manager Parameter Store.
@@ -86,13 +82,10 @@ def get_parameter_from_parameter_store(parameter_name):
     """
     print("get_parameter_from_parameter_store")
     try:
-        print("try")
         ssm = boto3.client("ssm")
         response = ssm.get_parameter(Name=parameter_name, WithDecryption=True)
-        print("Successfully get the parameter")
         return response["Parameter"]["Value"]
     except Exception as e:
-        print("error")
         raise Exception(f"Failed to get parameter from parameter store: {e}")
 
 
@@ -125,18 +118,13 @@ def select_flower_using_api(api_key, query):
         'user': "user",
         'auto_generate_name': True
     }
-    print("data set")
     try:
-        print("aa")
         response = requests.post(url, headers=headers, json=data)
-        print("bb")
     except Exception as e:
-        print("error a")
         raise Exception(f"Failed to select flower: {e}")
     
     flower_id = response.json()["answer"]
     
-    print("successfully get flower_id")
     print("Answer: ", flower_id)
     return flower_id
 
