@@ -97,8 +97,7 @@ def lambda_handler(event, context):
         dict: A response containing the status code and whether the user can create a bouquet (boolean).
     """
     try:
-        # user_id = event["requestContext"]["authorizer"]["claims"]["sub"]
-        user_id = "22348a88-d011-7046-cb45-f010763d1997"
+        user_id = event["requestContext"]["authorizer"]["claims"]["sub"]
         current_year, current_week = get_current_week()
 
         if check_bouquet_created(user_id, current_year, current_week):
