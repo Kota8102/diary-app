@@ -6,9 +6,9 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 # Load the module containing the lambda function
-module_name = 'can_creat_bouquet'
+module_name = 'can_create_bouquet'
 module_path = os.path.abspath(os.path.join(
-    os.path.dirname(__file__), '../..', 'lambda', 'can_creat_bouquet', 'can_creat_bouquet.py'))
+    os.path.dirname(__file__), '../..', 'lambda', 'can_create_bouquet', 'can_create_bouquet.py'))
 spec = importlib.util.spec_from_file_location(module_name, module_path)
 bouquet_handler = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(bouquet_handler)
