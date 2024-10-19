@@ -1147,6 +1147,53 @@ exports[`Snapshot test 1`] = `
       },
       "Type": "AWS::Lambda::Permission",
     },
+    "ApiTitleGenerateLambda5B3AF128": {
+      "DependsOn": [
+        "ApigenerativeAiLambdaRoleDefaultPolicyF9D416C8",
+        "ApigenerativeAiLambdaRoleEE46A380",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "S3Key": "HASH_REPLACED.zip",
+        },
+        "Environment": {
+          "Variables": {
+            "TABLE_NAME": {
+              "Ref": "ApigenerativeAiTableB5975AA2",
+            },
+          },
+        },
+        "Handler": "title_generate.lambda_handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "ApigenerativeAiLambdaRoleEE46A380",
+            "Arn",
+          ],
+        },
+        "Runtime": "python3.11",
+        "Timeout": 30,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "ApiTitleGenerateLambdaDynamoDBEventSourceCdkSampleStackApidiaryContentsTable227606F16C9623E3": {
+      "Properties": {
+        "BatchSize": 100,
+        "EventSourceArn": {
+          "Fn::GetAtt": [
+            "ApidiaryContentsTable7C5DA356",
+            "StreamArn",
+          ],
+        },
+        "FunctionName": {
+          "Ref": "ApiTitleGenerateLambda5B3AF128",
+        },
+        "StartingPosition": "LATEST",
+      },
+      "Type": "AWS::Lambda::EventSourceMapping",
+    },
     "ApicognitoAuthorizer96AE9311": {
       "Properties": {
         "IdentitySource": "method.request.header.Authorization",
@@ -1566,53 +1613,6 @@ exports[`Snapshot test 1`] = `
         ],
       },
       "Type": "AWS::IAM::Policy",
-    },
-    "ApidiaryGenerateTitleCreateLambda6D20C0C6": {
-      "DependsOn": [
-        "ApigenerativeAiLambdaRoleDefaultPolicyF9D416C8",
-        "ApigenerativeAiLambdaRoleEE46A380",
-      ],
-      "Properties": {
-        "Code": {
-          "S3Bucket": {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
-          },
-          "S3Key": "HASH_REPLACED.zip",
-        },
-        "Environment": {
-          "Variables": {
-            "TABLE_NAME": {
-              "Ref": "ApigenerativeAiTableB5975AA2",
-            },
-          },
-        },
-        "Handler": "diary_generate_title_create.lambda_handler",
-        "Role": {
-          "Fn::GetAtt": [
-            "ApigenerativeAiLambdaRoleEE46A380",
-            "Arn",
-          ],
-        },
-        "Runtime": "python3.11",
-        "Timeout": 30,
-      },
-      "Type": "AWS::Lambda::Function",
-    },
-    "ApidiaryGenerateTitleCreateLambdaDynamoDBEventSourceCdkSampleStackApidiaryContentsTable227606F1223C5CD2": {
-      "Properties": {
-        "BatchSize": 100,
-        "EventSourceArn": {
-          "Fn::GetAtt": [
-            "ApidiaryContentsTable7C5DA356",
-            "StreamArn",
-          ],
-        },
-        "FunctionName": {
-          "Ref": "ApidiaryGenerateTitleCreateLambda6D20C0C6",
-        },
-        "StartingPosition": "LATEST",
-      },
-      "Type": "AWS::Lambda::EventSourceMapping",
     },
     "ApidiaryReadLambda4CD9146E": {
       "DependsOn": [
