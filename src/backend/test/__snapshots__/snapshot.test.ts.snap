@@ -1344,7 +1344,7 @@ exports[`Snapshot test 1`] = `
             },
           },
         },
-        "Handler": "can_create_bouquete.lambda_handler",
+        "Handler": "can_create_bouquet.lambda_handler",
         "Role": {
           "Fn::GetAtt": [
             "ApicanCreateBouquetServiceRole41A227B4",

@@ -274,7 +274,7 @@ export class Api extends Construct {
     // 花束の存在確認用Lambda関数の定義
     const canCreateBouquet = new lambda.Function(this, 'canCreateBouquet', {
       runtime: lambda.Runtime.PYTHON_3_11,
-      handler: 'can_create_bouquete.lambda_handler',
+      handler: 'can_create_bouquet.lambda_handler',
       code: lambda.Code.fromAsset('lambda/can_create_bouquet'),
       environment: {
         GENERATIVE_AI_TABLE_NAME: generativeAiTable.tableName,
