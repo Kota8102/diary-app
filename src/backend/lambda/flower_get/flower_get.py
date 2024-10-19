@@ -6,6 +6,26 @@ import boto3
 
 
 def lambda_handler(event, context):
+    """
+    AWS Lambda handler function to retrieve a flower image based on the user ID and date.
+
+    This function:
+    - Extracts the user ID from the request context using the Cognito identity.
+    - Extracts the date from the query parameters in the incoming event.
+    - Retrieves the flower ID from DynamoDB using the user ID and date.
+    - Fetches the corresponding flower image from an S3 bucket using the flower ID.
+    - Returns the image in a base64-encoded format in a JSON response with an HTTP 200 status code.
+    - If no image is found, it returns an empty image string with an HTTP 200 status code.
+    - If any exceptions occur, it returns an HTTP 400 status code with an error message.
+
+    Args:
+        event (dict): Incoming request details, including query parameters, headers, and other data.
+        context (object): The context object providing runtime information, including the user identity.
+
+    Returns:
+        dict: HTTP response with a status code, headers, and JSON body containing the base64-encoded image or an empty string.
+    """
+    print("Flower get lambda start")
     try:
         user_id = event["requestContext"]["authorizer"]["claims"]["sub"]
         date = event["queryStringParameters"]["date"]
@@ -45,6 +65,16 @@ def lambda_handler(event, context):
 
 
 def get_flower_id_from_db(user_id, date):
+    """
+    Retrieves the flower ID from DynamoDB for a given user ID and date.
+
+    Args:
+        user_id (str): The ID of the user.
+        date (str): The date for which the flower image is requested.
+
+    Returns:
+        str or None: The flower ID if found, otherwise None.
+    """
     try:
         dynamodb = boto3.resource("dynamodb")
         table_name = os.environ["GENERATIVE_AI_TABLE_NAME"]
@@ -68,6 +98,15 @@ def get_flower_id_from_db(user_id, date):
 
 
 def get_img_from_s3(flower_id):
+    """
+    Retrieves the base64-encoded flower image from S3 using the flower ID.
+
+    Args:
+        flower_id (str): The ID of the flower.
+
+    Returns:
+        str or None: The base64-encoded image data if found, otherwise None.
+    """
     try:
         s3 = boto3.client("s3")
         bucket_name = os.environ["BUCKET_NAME"]
