@@ -256,6 +256,39 @@ export class Api extends Construct {
       authorizer: cognitoAutorither,
     })
 
+    // 日記コンテンツを保存するDynamoDBテーブルの作成
+    const bouquetTable = new dynamodb.Table(this, 'BouquetTable', {
+      partitionKey: {
+        name: 'user_id',
+        type: dynamodb.AttributeType.STRING,
+      },
+      sortKey: {
+        name: 'year_week',
+        type: dynamodb.AttributeType.STRING,
+      },
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      pointInTimeRecovery: true,
+      stream: dynamodb.StreamViewType.NEW_AND_OLD_IMAGES,
+    })
+
+    // 花束の存在確認用Lambda関数の定義
+    const isBouquetExist = new lambda.Function(this, 'isBouquetExist', {
+      runtime: lambda.Runtime.PYTHON_3_11,
+      handler: 'is_bouquet_exist.lambda_handler',
+      code: lambda.Code.fromAsset('lambda/is_bouquet_exist'),
+      environment: {
+        GENERATIVE_AI_TABLE_NAME: generativeAiTable.tableName,
+        BOUQUET_TABLE_NAME: bouquetTable.tableName,
+      },
+    })
+    generativeAiTable.grantReadData(isBouquetExist)
+    bouquetTable.grantReadData(isBouquetExist)
+
+    const bouquetApi = api.root.addResource('bouquet')
+    bouquetApi.addMethod('GET', new apigateway.LambdaIntegration(isBouquetExist), {
+      authorizer: cognitoAutorither,
+    })
+
     this.api = api
   }
 }
