@@ -272,20 +272,20 @@ export class Api extends Construct {
     })
 
     // 花束の存在確認用Lambda関数の定義
-    const isBouquetExist = new lambda.Function(this, 'isBouquetExist', {
+    const canCreateBouquet = new lambda.Function(this, 'canCreateBouquet', {
       runtime: lambda.Runtime.PYTHON_3_11,
-      handler: 'is_bouquet_exist.lambda_handler',
-      code: lambda.Code.fromAsset('lambda/is_bouquet_exist'),
+      handler: 'can_create_bouquete.lambda_handler',
+      code: lambda.Code.fromAsset('lambda/can_create_bouquet'),
       environment: {
         GENERATIVE_AI_TABLE_NAME: generativeAiTable.tableName,
         BOUQUET_TABLE_NAME: bouquetTable.tableName,
       },
     })
-    generativeAiTable.grantReadData(isBouquetExist)
-    bouquetTable.grantReadData(isBouquetExist)
+    generativeAiTable.grantReadData(canCreateBouquet)
+    bouquetTable.grantReadData(canCreateBouquet)
 
     const bouquetApi = api.root.addResource('bouquet')
-    bouquetApi.addMethod('GET', new apigateway.LambdaIntegration(isBouquetExist), {
+    bouquetApi.addMethod('GET', new apigateway.LambdaIntegration(canCreateBouquet), {
       authorizer: cognitoAutorither,
     })
 
