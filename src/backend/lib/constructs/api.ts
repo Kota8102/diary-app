@@ -176,10 +176,10 @@ export class Api extends Construct {
     generativeAiLambdaRole.addToPolicy(cloudwatchPolicy)
 
     // タイトル生成用Lambda関数の定義
-    const diaryGenerateTitleCreateFunction = new lambda.Function(this, 'diaryGenerateTitleCreateLambda', {
+    const diaryGenerateTitleCreateFunction = new lambda.Function(this, 'TitleGenerateLambda', {
       runtime: lambda.Runtime.PYTHON_3_11,
-      handler: 'diary_generate_title_create.lambda_handler',
-      code: lambda.Code.fromAsset('lambda/diary_generate_title_create'),
+      handler: 'title_generate.lambda_handler',
+      code: lambda.Code.fromAsset('lambda/title_generate'),
       role: generativeAiLambdaRole,
       environment: {
         TABLE_NAME: generativeAiTable.tableName,
