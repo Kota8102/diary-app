@@ -128,22 +128,22 @@ export class Api extends Construct {
 
     // API Gatewayのエンドポイント設定
     const diary = api.root.addResource('diary')
-    const cognitoAutorither = new apigateway.CognitoUserPoolsAuthorizer(this, 'cognitoAuthorizer', {
+    const cognitoAuthorizer = new apigateway.CognitoUserPoolsAuthorizer(this, 'cognitoAuthorizer', {
       cognitoUserPools: [props.userPool],
     })
 
     // 各エンドポイントのメソッド定義
     diary.addMethod('POST', new apigateway.LambdaIntegration(diaryCreateFunction), {
-      authorizer: cognitoAutorither,
+      authorizer: cognitoAuthorizer,
     })
     diary.addMethod('PUT', new apigateway.LambdaIntegration(diaryEditFunction), {
-      authorizer: cognitoAutorither,
+      authorizer: cognitoAuthorizer,
     })
     diary.addMethod('GET', new apigateway.LambdaIntegration(diaryReadFunction), {
-      authorizer: cognitoAutorither,
+      authorizer: cognitoAuthorizer,
     })
     diary.addMethod('DELETE', new apigateway.LambdaIntegration(diaryDeleteFunction), {
-      authorizer: cognitoAutorither,
+      authorizer: cognitoAuthorizer,
     })
 
     // 生成AI用のDynamoDBテーブルの作成
@@ -215,7 +215,7 @@ export class Api extends Construct {
     generativeAiTable.grantReadData(titleGetFunction)
     const titleApi = api.root.addResource('title')
     titleApi.addMethod('GET', new apigateway.LambdaIntegration(titleGetFunction), {
-      authorizer: cognitoAutorither,
+      authorizer: cognitoAuthorizer,
     })
 
     // 花の画像保存用S3バケットの作成
@@ -266,12 +266,11 @@ export class Api extends Construct {
 
     const flowerApi = api.root.addResource('flower')
     flowerApi.addMethod('GET', new apigateway.LambdaIntegration(flowerGetFunction), {
-      authorizer: cognitoAutorither,
+      authorizer: cognitoAuthorizer,
     })
 
-    
-     // 花束画像保存用のS3バケットの作成
-     const bouquetBucket = new s3.Bucket(this, 'bouquetBucket', {
+    // 花束画像保存用のS3バケットの作成
+    const bouquetBucket = new s3.Bucket(this, 'bouquetBucket', {
       enforceSSL: true,
       serverAccessLogsPrefix: 'log/',
     })
@@ -289,10 +288,7 @@ export class Api extends Construct {
     bouquetBucket.grantRead(bouquetGetFunction)
 
     // /bouquet APIの設定
-    const bouquetApi = this.api.root.addResource('bouquet')
-    const cognitoAuthorizer = new apigateway.CognitoUserPoolsAuthorizer(this, 'cognitoAuthorizer', {
-      cognitoUserPools: [props.userPool],
-    })
+    const bouquetApi = api.root.addResource('bouquet')
 
     bouquetApi.addMethod('GET', new apigateway.LambdaIntegration(bouquetGetFunction), {
       authorizer: cognitoAuthorizer,
