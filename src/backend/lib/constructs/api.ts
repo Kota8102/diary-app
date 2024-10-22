@@ -269,6 +269,42 @@ export class Api extends Construct {
       authorizer: cognitoAutorither,
     })
 
+    
+     // 花束画像保存用のS3バケットの作成
+     const bouquetBucket = new s3.Bucket(this, 'bouquetBucket', {
+      enforceSSL: true,
+      serverAccessLogsPrefix: 'log/',
+    })
+
+    // 花束取得用Lambda関数の定義
+    const bouquetGetFunction = new lambda.Function(this, 'bouquetGetFunction', {
+      runtime: lambda.Runtime.PYTHON_3_11,
+      handler: 'bouquet_get.lambda_handler',
+      code: lambda.Code.fromAsset('lambda/bouquet_get'),
+      environment: {
+        BUCKET_NAME: bouquetBucket.bucketName,
+      },
+      timeout: cdk.Duration.seconds(10),
+    })
+    bouquetBucket.grantRead(bouquetGetFunction)
+
+    // /bouquet APIの設定
+    const bouquetApi = this.api.root.addResource('bouquet')
+    const cognitoAuthorizer = new apigateway.CognitoUserPoolsAuthorizer(this, 'cognitoAuthorizer', {
+      cognitoUserPools: [props.userPool],
+    })
+
+    bouquetApi.addMethod('GET', new apigateway.LambdaIntegration(bouquetGetFunction), {
+      authorizer: cognitoAuthorizer,
+      requestParameters: {
+        'method.request.querystring.date': true,
+      },
+      requestValidatorOptions: {
+        requestValidatorName: 'ValidateQueryString',
+        validateRequestParameters: true,
+      },
+    })
+
     this.api = api
   }
 }
