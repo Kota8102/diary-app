@@ -37,7 +37,7 @@ def lambda_handler(event, context):
 
     s3 = boto3.client('s3')
     bucket_name = os.environ['BUCKET_NAME']
-    key = f"{user_id}/{user_id}-{year}-{week}.png"
+    key = f"{user_id}/{year}-{week}.png"
 
     try:
         response = s3.get_object(Bucket=bucket_name, Key=key)
