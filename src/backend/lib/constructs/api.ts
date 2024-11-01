@@ -160,6 +160,19 @@ export class Api extends Construct {
       pointInTimeRecovery: true,
     })
 
+    const bouquetTable = new dynamodb.Table(this, 'bouquetTable', {
+      partitionKey: {
+        name: 'user_id',
+        type: dynamodb.AttributeType.STRING,
+      },
+      sortKey: {
+        name: 'week',
+        type: dynamodb.AttributeType.STRING,
+      },
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      pointInTimeRecovery: true,
+    })
+
     // 生成AI用Lambda関数のロール作成
     const generativeAiLambdaRole = new cdk.aws_iam.Role(this, 'generativeAiLambdaRole', {
       assumedBy: new cdk.aws_iam.ServicePrincipal('lambda.amazonaws.com'),
