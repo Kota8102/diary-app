@@ -1,15 +1,16 @@
 import boto3
 from PIL import Image
 import io
+import os
 from datetime import datetime, timedelta
 
 # AWS clients
 s3_client = boto3.client('s3')
 dynamodb = boto3.resource('dynamodb')
-FLOWER_BUCKET_NAME = "backendstack-apiflowerimagebucket5ac81e41-qv2hl0feinwb"
-BOUQUET_BUCKET_NAME = ""
-GENERATIVE_AI_TABLE = "BackendStack-ApigenerativeAiTableB5975AA2-5LG6W354RO5A"
-BOUQUET_TABLE = ""
+FLOWER_BUCKET_NAME = os.environ["FLOWER_BUCKET_NAME"]
+BOUQUET_BUCKET_NAME = os.environ["BOUQUET_BUCKET_NAME"]
+GENERATIVE_AI_TABLE_NAME = os.environ["GENERATIVE_AI_TABLE_NAME"]
+BOUQUET_TABLE_NAME = os.environ["BOUQUET_TABLE_NAME"]
 
 class BouquetImageCreator:
     def __init__(self, flowers):
@@ -131,7 +132,7 @@ class BouquetImageCreator:
 def get_flower_ids(user_id, date):
     week_start = date - timedelta(days=date.weekday())  # Get Monday of the week
     flower_ids = []
-    table = dynamodb.Table(GENERATIVE_AI_TABLE)
+    table = dynamodb.Table(GENERATIVE_AI_TABLE_NAME)
     
     # Retrieve flower IDs for each day from Monday to the given date
     for i in range(7):  # Look back for the last 7 days
