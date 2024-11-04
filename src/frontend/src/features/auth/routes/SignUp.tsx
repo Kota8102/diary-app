@@ -6,7 +6,7 @@ import { useAuth } from '@/lib/auth/cognito-auth'
 import { Input } from '../components'
 
 export const SignUp = () => {
-  const { signUp } = useAuth() // useAuth フックから signUp 関数を取得
+  const { signUp } = useAuth()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -23,7 +23,7 @@ export const SignUp = () => {
     } else {
       setError('')
       alert('登録成功！確認コードを入力してアカウントを有効化してください。')
-      navigate('/auth/confirm')
+      navigate('/auth/confirm', { state: { username, password } }) // ここで状態を渡す
     }
   }
 
