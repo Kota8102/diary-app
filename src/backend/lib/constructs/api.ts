@@ -118,11 +118,6 @@ export class Api extends Construct {
         loggingLevel: apigateway.MethodLoggingLevel.INFO,
         dataTraceEnabled: true,
       },
-      defaultCorsPreflightOptions: {
-        allowOrigins: apigateway.Cors.ALL_ORIGINS,
-        allowMethods: ['OPTIONS', 'GET', 'POST', 'PUT', 'DELETE'],
-        allowHeaders: ['Content-Type', 'X-Amz-Date', 'Authorization', 'X-Api-Key', 'X-Amz-Security-Token'],
-      },
     })
 
     // リクエストバリデーターの追加
