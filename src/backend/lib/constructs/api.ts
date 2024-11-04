@@ -160,19 +160,6 @@ export class Api extends Construct {
       pointInTimeRecovery: true,
     })
 
-    const bouquetTable = new dynamodb.Table(this, 'bouquetTable', {
-      partitionKey: {
-        name: 'user_id',
-        type: dynamodb.AttributeType.STRING,
-      },
-      sortKey: {
-        name: 'week',
-        type: dynamodb.AttributeType.STRING,
-      },
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
-      pointInTimeRecovery: true,
-    })
-
     // 生成AI用Lambda関数のロール作成
     const generativeAiLambdaRole = new cdk.aws_iam.Role(this, 'generativeAiLambdaRole', {
       assumedBy: new cdk.aws_iam.ServicePrincipal('lambda.amazonaws.com'),
@@ -266,6 +253,65 @@ export class Api extends Construct {
 
     const flowerApi = api.root.addResource('flower')
     flowerApi.addMethod('GET', new apigateway.LambdaIntegration(flowerGetFunction), {
+      authorizer: cognitoAutorither,
+    })
+
+    // 日記コンテンツを保存するDynamoDBテーブルの作成
+    const bouquetTable = new dynamodb.Table(this, 'BouquetTable', {
+      partitionKey: {
+        name: 'user_id',
+        type: dynamodb.AttributeType.STRING,
+      },
+      sortKey: {
+        name: 'year_week',
+        type: dynamodb.AttributeType.STRING,
+      },
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      pointInTimeRecovery: true,
+      stream: dynamodb.StreamViewType.NEW_AND_OLD_IMAGES,
+    })
+
+    //花束の画像保存用バケット
+    const bouquetBucket = new s3.Bucket(this, 'bouquetBucket', {
+      enforceSSL: true,
+      serverAccessLogsPrefix: 'log/',
+    })
+
+    // 花束の存在確認用Lambda関数の定義
+    const canCreateBouquet = new lambda.Function(this, 'canCreateBouquet', {
+      runtime: lambda.Runtime.PYTHON_3_11,
+      handler: 'can_create_bouquet.lambda_handler',
+      code: lambda.Code.fromAsset('lambda/can_create_bouquet'),
+      environment: {
+        GENERATIVE_AI_TABLE_NAME: generativeAiTable.tableName,
+        BOUQUET_TABLE_NAME: bouquetTable.tableName,
+      },
+    })
+    generativeAiTable.grantReadData(canCreateBouquet)
+    bouquetTable.grantReadData(canCreateBouquet)
+
+    const bouquetApi = api.root.addResource('bouquet')
+    bouquetApi.addMethod('GET', new apigateway.LambdaIntegration(canCreateBouquet), {
+      authorizer: cognitoAutorither,
+    })
+
+    //花束作成用Lambda関数の定義
+    const BouquetCreate = new lambda.Function(this, 'BouquetCreate', {
+      runtime: lambda.Runtime.PYTHON_3_11,
+      handler: 'bouquet_create.lambda_handler',
+      code: lambda.Code.fromAsset('lambda/bouquet_create'),
+      environment: {
+        GENERATIVE_AI_TABLE_NAME: generativeAiTable.tableName,
+        BOUQUET_TABLE_NAME: bouquetTable.tableName,
+        BOUQUET_BUCKET: bouquetBucket.bucketName,
+      },
+    })
+    generativeAiTable.grantReadData(BouquetCreate)
+    bouquetTable.grantWriteData(BouquetCreate)
+    flowerImageBucket.grantRead(BouquetCreate)
+    bouquetBucket.grantPut(BouquetCreate)
+
+    bouquetApi.addMethod('POST', new apigateway.LambdaIntegration(BouquetCreate), {
       authorizer: cognitoAutorither,
     })
 
