@@ -313,18 +313,22 @@ exports[`Snapshot test 1`] = `
       "Type": "AWS::IAM::Role",
       "UpdateReplacePolicy": "Delete",
     },
-    "ApiDiaryApiDeploymentCA0DCBF5b7e4c5a4bbfd1ee3dd1dbd67d9d1c0a5": {
+
+    "ApiDiaryApiDeploymentCA0DCBF58f371befc63a0cdfb03ea0f02a044439": {
       "DependsOn": [
         "ApiDiaryApibouquetGET7AC93032",
         "ApiDiaryApibouquet8BAEBF58",
         "ApiDiaryApidiaryDELETE81EA9C37",
         "ApiDiaryApidiaryGET9A212B54",
+        "ApiDiaryApidiaryOPTIONS118FD5D0",
         "ApiDiaryApidiaryPOST0B03467C",
         "ApiDiaryApidiaryPUT140468F7",
         "ApiDiaryApidiary4B91FACA",
         "ApiDiaryApiflowerGETEAC01B09",
+        "ApiDiaryApiflowerOPTIONS2A81112B",
         "ApiDiaryApiflower7C61878D",
         "ApiDiaryApititleGET40FCE039",
+        "ApiDiaryApititleOPTIONSCB7538FB",
         "ApiDiaryApititle5FEB75D0",
         "ApiDiaryApiRequestValidator4DFB42AA",
         "ApiDiaryApivalidator04323B87",
@@ -352,7 +356,7 @@ exports[`Snapshot test 1`] = `
           "Format": "{"requestId":"$context.requestId","ip":"$context.identity.sourceIp","user":"$context.identity.user","caller":"$context.identity.caller","requestTime":"$context.requestTime","httpMethod":"$context.httpMethod","resourcePath":"$context.resourcePath","status":"$context.status","protocol":"$context.protocol","responseLength":"$context.responseLength"}",
         },
         "DeploymentId": {
-          "Ref": "ApiDiaryApiDeploymentCA0DCBF5b7e4c5a4bbfd1ee3dd1dbd67d9d1c0a5",
+          "Ref": "ApiDiaryApiDeploymentCA0DCBF58f371befc63a0cdfb03ea0f02a044439",
         },
         "MethodSettings": [
           {
@@ -778,6 +782,46 @@ exports[`Snapshot test 1`] = `
       },
       "Type": "AWS::Lambda::Permission",
     },
+    "ApiDiaryApidiaryOPTIONS118FD5D0": {
+      "Properties": {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "Integration": {
+          "IntegrationResponses": [
+            {
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,DELETE'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+              },
+              "StatusCode": "200",
+            },
+          ],
+          "PassthroughBehavior": "NEVER",
+          "RequestTemplates": {
+            "application/json": "{"statusCode": 200}",
+          },
+          "Type": "MOCK",
+        },
+        "MethodResponses": [
+          {
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Allow-Origin": true,
+            },
+            "StatusCode": "200",
+          },
+        ],
+        "ResourceId": {
+          "Ref": "ApiDiaryApidiary4B91FACA",
+        },
+        "RestApiId": {
+          "Ref": "ApiDiaryApi1E03348A",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
     "ApiDiaryApidiaryPOST0B03467C": {
       "Properties": {
         "AuthorizationType": "COGNITO_USER_POOLS",
@@ -1156,6 +1200,46 @@ exports[`Snapshot test 1`] = `
       },
       "Type": "AWS::ApiGateway::Method",
     },
+    "ApiDiaryApiflowerOPTIONS2A81112B": {
+      "Properties": {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "Integration": {
+          "IntegrationResponses": [
+            {
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,DELETE'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+              },
+              "StatusCode": "200",
+            },
+          ],
+          "PassthroughBehavior": "NEVER",
+          "RequestTemplates": {
+            "application/json": "{"statusCode": 200}",
+          },
+          "Type": "MOCK",
+        },
+        "MethodResponses": [
+          {
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Allow-Origin": true,
+            },
+            "StatusCode": "200",
+          },
+        ],
+        "ResourceId": {
+          "Ref": "ApiDiaryApiflower7C61878D",
+        },
+        "RestApiId": {
+          "Ref": "ApiDiaryApi1E03348A",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
     "ApiDiaryApititle5FEB75D0": {
       "Properties": {
         "ParentId": {
@@ -1292,6 +1376,7 @@ exports[`Snapshot test 1`] = `
       },
       "Type": "AWS::Lambda::Permission",
     },
+
     "ApiDiaryApivalidator04323B87": {
       "Properties": {
         "Name": "ValidateQueryString",
