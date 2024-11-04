@@ -282,6 +282,7 @@ export class Api extends Construct {
       runtime: lambda.Runtime.PYTHON_3_11,
       handler: 'bouquet_create.lambda_handler',
       code: lambda.Code.fromAsset('lambda/bouquet_create'),
+      timeout: cdk.Duration.seconds(15),
       environment: {
         GENERATIVE_AI_TABLE_NAME: generativeAiTable.tableName,
         BOUQUET_TABLE_NAME: bouquetTable.tableName,
