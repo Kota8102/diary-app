@@ -277,24 +277,6 @@ export class Api extends Construct {
       serverAccessLogsPrefix: 'log/',
     })
 
-    // 花束の存在確認用Lambda関数の定義
-    const canCreateBouquet = new lambda.Function(this, 'canCreateBouquet', {
-      runtime: lambda.Runtime.PYTHON_3_11,
-      handler: 'can_create_bouquet.lambda_handler',
-      code: lambda.Code.fromAsset('lambda/can_create_bouquet'),
-      environment: {
-        GENERATIVE_AI_TABLE_NAME: generativeAiTable.tableName,
-        BOUQUET_TABLE_NAME: bouquetTable.tableName,
-      },
-    })
-    generativeAiTable.grantReadData(canCreateBouquet)
-    bouquetTable.grantReadData(canCreateBouquet)
-
-    const bouquetApi = api.root.addResource('bouquet')
-    bouquetApi.addMethod('GET', new apigateway.LambdaIntegration(canCreateBouquet), {
-      authorizer: cognitoAutorither,
-    })
-
     //花束作成用Lambda関数の定義
     const BouquetCreate = new lambda.Function(this, 'BouquetCreate', {
       runtime: lambda.Runtime.PYTHON_3_11,
@@ -311,6 +293,7 @@ export class Api extends Construct {
     flowerImageBucket.grantRead(BouquetCreate)
     bouquetBucket.grantPut(BouquetCreate)
 
+    const bouquetApi = api.root.addResource('bouquet')
     bouquetApi.addMethod('POST', new apigateway.LambdaIntegration(BouquetCreate), {
       authorizer: cognitoAutorither,
     })
