@@ -272,7 +272,7 @@ exports[`Snapshot test 1`] = `
         },
         "Environment": {
           "Variables": {
-            "BOUQUET_BUCKET": {
+            "BOUQUET_BUCKET_NAME": {
               "Ref": "ApibouquetBucketD88D6FCA",
             },
             "BOUQUET_TABLE_NAME": {
