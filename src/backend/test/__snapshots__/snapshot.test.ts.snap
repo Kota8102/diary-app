@@ -291,6 +291,7 @@ exports[`Snapshot test 1`] = `
           ],
         },
         "Runtime": "python3.11",
+        "Timeout": 15,
       },
       "Type": "AWS::Lambda::Function",
     },
