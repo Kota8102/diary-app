@@ -118,6 +118,11 @@ export class Api extends Construct {
         loggingLevel: apigateway.MethodLoggingLevel.INFO,
         dataTraceEnabled: true,
       },
+      defaultCorsPreflightOptions: {
+        allowOrigins: apigateway.Cors.ALL_ORIGINS,
+        allowMethods: ['OPTIONS', 'GET', 'POST', 'PUT', 'DELETE'],
+        allowHeaders: ['Content-Type', 'X-Amz-Date', 'Authorization', 'X-Api-Key', 'X-Amz-Security-Token'],
+      },
     })
 
     // リクエストバリデーターの追加
@@ -131,6 +136,38 @@ export class Api extends Construct {
     const cognitoAutorither = new apigateway.CognitoUserPoolsAuthorizer(this, 'cognitoAuthorizer', {
       cognitoUserPools: [props.userPool],
     })
+
+    diary.addMethod(
+      'OPTIONS',
+      new apigateway.MockIntegration({
+        integrationResponses: [
+          {
+            statusCode: '200',
+            responseParameters: {
+              'method.response.header.Access-Control-Allow-Headers': "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+              'method.response.header.Access-Control-Allow-Origin': "'*'",
+              'method.response.header.Access-Control-Allow-Methods': "'OPTIONS,GET,POST,PUT,DELETE'",
+            },
+          },
+        ],
+        passthroughBehavior: apigateway.PassthroughBehavior.NEVER,
+        requestTemplates: {
+          'application/json': '{"statusCode": 200}',
+        },
+      }),
+      {
+        methodResponses: [
+          {
+            statusCode: '200',
+            responseParameters: {
+              'method.response.header.Access-Control-Allow-Headers': true,
+              'method.response.header.Access-Control-Allow-Origin': true,
+              'method.response.header.Access-Control-Allow-Methods': true,
+            },
+          },
+        ],
+      },
+    )
 
     // 各エンドポイントのメソッド定義
     diary.addMethod('POST', new apigateway.LambdaIntegration(diaryCreateFunction), {
@@ -214,6 +251,37 @@ export class Api extends Construct {
     })
     generativeAiTable.grantReadData(titleGetFunction)
     const titleApi = api.root.addResource('title')
+    titleApi.addMethod(
+      'OPTIONS',
+      new apigateway.MockIntegration({
+        integrationResponses: [
+          {
+            statusCode: '200',
+            responseParameters: {
+              'method.response.header.Access-Control-Allow-Headers': "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+              'method.response.header.Access-Control-Allow-Origin': "'*'",
+              'method.response.header.Access-Control-Allow-Methods': "'OPTIONS,GET,POST,PUT,DELETE'",
+            },
+          },
+        ],
+        passthroughBehavior: apigateway.PassthroughBehavior.NEVER,
+        requestTemplates: {
+          'application/json': '{"statusCode": 200}',
+        },
+      }),
+      {
+        methodResponses: [
+          {
+            statusCode: '200',
+            responseParameters: {
+              'method.response.header.Access-Control-Allow-Headers': true,
+              'method.response.header.Access-Control-Allow-Origin': true,
+              'method.response.header.Access-Control-Allow-Methods': true,
+            },
+          },
+        ],
+      },
+    )
     titleApi.addMethod('GET', new apigateway.LambdaIntegration(titleGetFunction), {
       authorizer: cognitoAutorither,
     })
@@ -265,6 +333,37 @@ export class Api extends Construct {
     flowerImageBucket.grantRead(flowerGetFunction)
 
     const flowerApi = api.root.addResource('flower')
+    flowerApi.addMethod(
+      'OPTIONS',
+      new apigateway.MockIntegration({
+        integrationResponses: [
+          {
+            statusCode: '200',
+            responseParameters: {
+              'method.response.header.Access-Control-Allow-Headers': "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+              'method.response.header.Access-Control-Allow-Origin': "'*'",
+              'method.response.header.Access-Control-Allow-Methods': "'OPTIONS,GET,POST,PUT,DELETE'",
+            },
+          },
+        ],
+        passthroughBehavior: apigateway.PassthroughBehavior.NEVER,
+        requestTemplates: {
+          'application/json': '{"statusCode": 200}',
+        },
+      }),
+      {
+        methodResponses: [
+          {
+            statusCode: '200',
+            responseParameters: {
+              'method.response.header.Access-Control-Allow-Headers': true,
+              'method.response.header.Access-Control-Allow-Origin': true,
+              'method.response.header.Access-Control-Allow-Methods': true,
+            },
+          },
+        ],
+      },
+    )
     flowerApi.addMethod('GET', new apigateway.LambdaIntegration(flowerGetFunction), {
       authorizer: cognitoAutorither,
     })
