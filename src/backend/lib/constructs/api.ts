@@ -291,6 +291,7 @@ export class Api extends Construct {
       environment: {
         GENERATIVE_AI_TABLE_NAME: generativeAiTable.tableName,
         BOUQUET_TABLE_NAME: bouquetTable.tableName,
+        FLOWER_BUCKET_NAME: flowerImageBucket.bucketName,
         BOUQUET_BUCKET: bouquetBucket.bucketName,
       },
     })
