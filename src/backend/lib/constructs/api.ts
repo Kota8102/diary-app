@@ -281,8 +281,13 @@ export class Api extends Construct {
     const BouquetCreate = new lambda.Function(this, 'BouquetCreate', {
       runtime: lambda.Runtime.PYTHON_3_11,
       handler: 'bouquet_create.lambda_handler',
-      code: lambda.Code.fromAsset('lambda/bouquet_create'),
       timeout: cdk.Duration.seconds(15),
+      code: lambda.Code.fromAsset('lambda/bouquet_create', {
+        bundling: {
+          image: lambda.Runtime.PYTHON_3_11.bundlingImage,
+          command: ['bash', '-c', 'pip install -r requirements.txt -t /asset-output && cp -au . /asset-output'],
+        },
+      }),
       environment: {
         GENERATIVE_AI_TABLE_NAME: generativeAiTable.tableName,
         BOUQUET_TABLE_NAME: bouquetTable.tableName,
