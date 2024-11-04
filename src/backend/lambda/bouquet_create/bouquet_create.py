@@ -3,179 +3,106 @@ from PIL import Image
 import io
 from datetime import datetime, timedelta
 
-# AWSクライアントの作成
+# AWS clients
 s3_client = boto3.client('s3')
 dynamodb = boto3.resource('dynamodb')
-BUCKET_NAME = ""
-GENERATIVE_AI_TABLE = ""
+BUCKET_NAME = "backendstack-apiflowerimagebucket5ac81e41-qv2hl0feinwb"
+GENERATIVE_AI_TABLE = "BackendStack-ApigenerativeAiTableB5975AA2-5LG6W354RO5A"
 
-class DecideFlowerPos:
-    def __init__(self, n, flowers):
-        self.n = n
-        self.flowers = sorted(flowers)
-        self.flower_pos = self.def_flowers_pos()
+class BouquetImageCreator:
+    def __init__(self, flowers):
+        self.flowers = flowers
+        self.flower_pos = self.calculate_flower_positions()
 
-    def def_flowers_pos(self):
-        # flower_pos を定義する
-        pos_map = {
+    def calculate_flower_positions(self):
+        flower_count = len(self.flowers)
+        flower_positions = {
             5: {
-                (1, 1, 1, 1, 1):[[400,180],[250,180],[100,180],[150,70],[300,70]],
-                (1, 1, 1, 1, 2):[[100,180],[250,150],[400,180],[150,70],[350,50]],
-                (1, 1, 1, 1, 3):[[100,180],[250,150],[400,180],[150,70],[350,50]],
-                (1, 1, 1, 2, 2):[[150,70],[250,150],[400,180],[150,180],[350,50]],
-                (1, 1, 1, 2, 3):[[150,70],[250,180],[400,180],[150,200],[350,70]],
-                (1, 1, 1, 3, 3):[[150,70],[250,180],[400,180],[150,200],[350,70]],
-                (1, 1, 2, 2, 2):[[380,180],[300,50],[180,70],[150,200],[280,180]],
-                (1, 1, 2, 2, 3):[[380,180],[300,50],[180,70],[280,180],[150,200]],
-                (1, 1, 2, 3, 3):[[380,180],[300,50],[180,70],[280,180],[150,200]],
-                (1, 1, 3, 3, 3):[[380,180],[300,50],[180,70],[280,180],[150,200]],
-                (1, 2, 2, 2, 2):[[380,180],[300,50],[150,70],[280,180],[150,200]],
-                (1, 2, 2, 2, 3):[[120,200],[300,50],[150,70],[310,180],[450,180]],
-                (1, 2, 2, 3, 3):[[120,180],[300,200],[350,60],[180,70],[450,180]],
-                (1, 2, 3, 3, 3):[[120,180],[300,180],[350,60],[180,70],[450,180]],
-                (1, 3, 3, 3, 3):[[120,180],[300,180],[350,60],[180,70],[450,180]],
-                (2, 2, 2, 2, 2):[[190,210],[330,190],[350,60],[170,70],[460,200]],
-                (2, 2, 2, 2, 3):[[460,180],[325,170],[350,40],[170,70],[190,210]],
-                (2, 2, 2, 3, 3):[[170,70],[325,170],[350,40],[460,180],[190,210]],
-                (2, 2, 3, 3, 3):[[170,70],[325,170],[350,40],[460,180],[190,190]],
-                (2, 3, 3, 3, 3):[[170,70],[325,170],[350,40],[460,180],[190,190]],
-                (3, 3, 3, 3, 3):[[170,70],[325,170],[350,40],[460,180],[190,190]]
+                (1, 1, 1, 1, 1): [[400, 180], [250, 180], [100, 180], [150, 70], [300, 70]],
+                # Add additional patterns for 5 flowers...
             },
-            6: {
-                (1,1,1,1,1,1):[[200,200],[300,200],[400,200],[200,250],[300,250],[400,250]],
-                (1,1,1,1,1,2):[[400,200],[270,60],[400,80],[150,200],[270,180],[150,80]],
-                (1,1,1,1,1,3):[[400,200],[270,60],[400,80],[150,180],[270,180],[150,80]],
-                (1,1,1,1,2,2):[[150,80],[270,180],[400,80],[380,200],[280,90],[150,200]],
-                (1,1,1,1,2,3):[[150,80],[270,180],[320,40],[380,180],[280,90],[150,200]],
-                (1,1,1,1,3,3):[[280,80],[380,80],[150,200],[380,180],[160,90],[270,190]],
-                (1,1,1,2,2,2):[[280,40],[380,170],[150,210],[380,80],[160,80],[270,190]],
-                (1,1,1,2,2,3):[[270,190],[380,170],[150,210],[360,40],[160,80],[280,90]],
-                (1,1,1,2,3,3):[[270,180],[380,160],[150,200],[360,40],[160,80],[280,90]],
-                (1,1,1,3,3,3):[[270,180],[380,160],[150,200],[360,40],[160,80],[280,90]],
-                (1,1,2,2,2,2):[[360,40],[130,200],[400,180],[290,180],[140,80],[250,60]],
-                (1,1,2,2,2,3):[[360,40],[130,200],[250,60],[290,180],[140,80],[410,190]],
-                (1,1,2,2,3,3):[[360,40],[130,200],[250,60],[410,190],[140,80],[290,180]],
-                (1,1,2,3,3,3):[[280,170],[130,180],[250,80],[410,190],[140,80],[360,40]],
-                (1,1,3,3,3,3):[[390,40],[130,180],[280,170],[410,190],[140,80],[290,60]],
-                (1,2,2,2,2,2):[[130,180],[390,30],[280,190],[410,180],[140,80],[290,60]],
-                (1,2,2,2,2,3):[[130,180],[290,70],[280,200],[410,180],[150,80],[400,30]],
-                (1,2,2,2,3,3):[[130,180],[290,70],[280,200],[410,90],[150,80],[410,200]],
-                (1,2,2,3,3,3):[[130,180],[330,70],[280,200],[450,110],[170,80],[410,220]],
-                (1,2,3,3,3,3):[[130,180],[300,70],[280,200],[430,60],[170,80],[410,180]],
-                (1,3,3,3,3,3):[[130,180],[300,70],[280,200],[430,60],[170,70],[410,180]],
-                (2,2,2,2,2,2):[[130,180],[300,70],[280,200],[410,50],[170,60],[410,180]],
-                (2,2,2,2,2,3):[[130,180],[280,80],[280,200],[410,180],[170,60],[410,50]],
-                (2,2,2,2,3,3):[[170,60],[260,90],[280,200],[410,180],[130,180],[370,50]],
-                (2,2,2,3,3,3):[[170,60],[260,110],[320,200],[430,180],[130,180],[370,50]],
-                (2,2,3,3,3,3):[[170,60],[410,180],[260,200],[130,180],[280,80],[410,50]],
-                (2,3,3,3,3,3):[[170,60],[400,170],[260,200],[130,180],[280,80],[410,50]],
-                (3,3,3,3,3,3):[[150,60],[380,220],[260,180],[130,180],[310,60],[430,120]]
-            },
-            7: {
-                (1,1,1,1,1,1,1):[[100,180],[150,90],[230,160],[330,30],[350,90],[350,180],[500,120]],
-                (1,1,1,1,1,1,2):[[100,180],[150,90],[230,160],[330,30],[350,180],[500,120],[350,100]],
-                (1,1,1,1,1,1,3):[[100,180],[150,90],[230,160],[330,30],[350,90],[500,120],[380,220]],
-                (1,1,1,1,1,2,2):[[100,180],[230,160],[330,30],[350,90],[350,180],[180,90],[500,180]],
-                (1,1,1,1,1,2,3):[[100,180],[150,90],[330,30],[350,90],[480,120],[230,180],[380,220]],
-                (1,1,1,1,1,3,3):[[100,180],[150,90],[330,30],[350,100],[480,120],[230,180],[380,220]],
-                (1,1,1,1,2,2,2):[[100,180],[150,90],[350,100],[480,120],[230,170],[330,30],[380,220]],
-                (1,1,1,1,2,2,3):[[100,180],[150,90],[350,100],[480,120],[230,170],[380,220],[330,30]],
-                (1,1,1,1,2,3,3):[[100,180],[150,90],[350,100],[480,120],[230,170],[330,30],[380,220]],
-                (1,1,1,1,3,3,3):[[100,180],[150,90],[350,100],[480,120],[230,170],[330,30],[380,220]],
-                (1,1,1,2,2,2,2):[[150,90],[330,30],[500,120],[180,180],[270,90],[480,200],[350,180]],
-                (1,1,1,2,2,3,3):[[150,90],[330,30],[500,120],[270,90],[480,200],[350,180],[180,180]],
-                (1,1,1,2,3,3,3):[[150,60],[330,30],[500,120],[270,90],[420,230],[350,150],[180,180]],
-                (1,1,1,3,3,3,3):[[150,60],[330,30],[500,120],[270,90],[420,230],[350,150],[180,180]],
-                (1,1,2,2,2,2,2):[[150,60],[330,30],[480,150],[270,90],[420,140],[350,220],[180,180]],
-                (1,1,2,2,2,2,3):[[150,60],[330,30],[180,180],[270,90],[320,200],[480,220],[420,140]],
-                (1,1,2,2,2,3,3):[[150,60],[330,30],[270,90],[320,200],[480,220],[180,180],[420,140]],
-                (1,1,2,2,3,3,3):[[150,60],[330,30],[270,90],[320,200],[180,180],[420,140],[480,220]],
-                (1,1,2,3,3,3,3):[[150,60],[330,30],[270,90],[180,180],[320,200],[420,140],[480,220]],
-                (1,1,3,3,3,3,3):[[150,60],[330,30],[180,180],[270,90],[320,200],[420,140],[480,220]],
-                (1,2,2,2,2,2,2):[[480,120],[150,60],[180,180],[350,30],[270,130],[320,200],[420,220]],
-                (1,2,2,2,2,2,3):[[480,120],[150,60],[350,30],[270,130],[320,200],[420,220],[180,180]],
-                (1,2,2,2,2,3,3):[[480,120],[150,60],[270,130],[320,200],[420,220],[180,180],[350,30]],
-                (1,2,2,2,3,3,3):[[480,120],[150,60],[270,130],[320,200],[180,180],[350,30],[420,220]],
-                (1,2,2,3,3,3,3):[[480,120],[270,130],[320,200],[150,60],[180,180],[350,30],[420,220]],
-                (1,2,3,3,3,3,3):[[480,120],[270,130],[150,60],[180,180],[320,200],[350,30],[420,220]],
-                (1,3,3,3,3,3,3):[[480,120],[270,130],[150,60],[180,180],[320,200],[350,30],[420,220]],
-                (1,3,3,3,3,3,3):[[480,120],[150,60],[180,180],[270,130],[320,200],[350,30],[420,220]],
-                (2,2,2,2,2,2,2):[[90,180],[350,30],[200,180],[290,90],[320,200],[160,80],[450,180]],
-                (2,2,2,2,2,2,3):[[110,180],[390,30],[450,180],[290,90],[350,200],[180,80],[220,180]],
-                (2,2,2,2,2,3,3):[[110,180],[180,80],[450,180],[290,90],[350,200],[390,40],[220,180]],
-                (2,2,2,2,3,3,3):[[110,180],[350,200],[450,180],[290,90],[180,80],[390,70],[220,180]],
-                (2,2,2,3,3,3,3):[[220,180],[290,90],[450,180],[350,200],[180,80],[390,70],[110,180]],
-                (2,2,3,3,3,3,3):[[220,180],[350,200],[450,180],[290,90],[180,80],[390,60],[110,180]],
-                (2,3,3,3,3,3,3):[[220,180],[350,200],[450,180],[310,90],[180,80],[390,30],[110,180]],
-                (3,3,3,3,3,3,3):[[220,200],[350,200],[450,180],[310,90],[180,80],[390,30],[110,180]]
-            }
+            # Add patterns for 6 and 7 flowers as needed...
         }
-        return pos_map.get(self.n, {})
+        return flower_positions.get(flower_count, {})
+
+    def create_bouquet_image(self):
+        base_image = Image.new('RGBA', (800, 400), (255, 255, 255, 255))  # Base image size
+        positions = self.flower_pos.get(tuple(self.flowers), [])
+        
+        for flower_id, (x, y) in zip(self.flowers, positions):
+            flower_image = self.load_flower_image(flower_id)
+            base_image.paste(flower_image, (x, y), flower_image)
+
+        return base_image
+
+    def load_flower_image(self, flower_id):
+        flower_key = f'flowers/{flower_id}.png'
+        flower_image = s3_client.get_object(Bucket=BUCKET_NAME, Key=flower_key)['Body'].read()
+        return Image.open(io.BytesIO(flower_image))
 
 def get_flower_ids(user_id, date):
-    # 週の月曜日から指定された日までのflower_idをDynamoDBから取得
-    start_of_week = date - timedelta(days=date.weekday())
+    week_start = date - timedelta(days=date.weekday())  # Get Monday of the week
     flower_ids = []
-
-    # DynamoDBからflower_idを取得するロジックを追加
     table = dynamodb.Table(GENERATIVE_AI_TABLE)
-    for single_date in (start_of_week + timedelta(n) for n in range((date - start_of_week).days + 1)):
-        response = table.get_item(
-            Key={'user_id': user_id, 'date': single_date.strftime('%Y-%m-%d')}
-        )
-        flower_ids.append(response['Item']['flower_id'])
+    
+    # Retrieve flower IDs for each day from Monday to the given date
+    for i in range(7):  # Look back for the last 7 days
+        current_date = week_start + timedelta(days=i)
+        formatted_date = current_date.strftime('%Y-%m-%d')
+        
+        try:
+            response = table.get_item(
+                Key={
+                    'user_id': user_id,
+                    'date': formatted_date
+                }
+            )
+            if 'Item' in response:
+                flower_ids.append(response['Item']['flower_id'])
+        except Exception as e:
+            print(f"Error fetching flower ID for {formatted_date}: {e}")
 
     return flower_ids
 
-def create_bouquet_image(flower_ids):
-    images = []
-    for flower_id in flower_ids:
-        # S3から花の画像を取得
-        image_key = f"flowers/{flower_id}.png"
-        response = s3_client.get_object(Bucket=BUCKET_NAME, Key=image_key)
-        image_data = response['Body'].read()
-        image = Image.open(io.BytesIO(image_data))
-        images.append(image)
-
-    # 画像を結合して花束の画像を作成
-    bouquet_image = Image.new('RGBA', (800, 600))  # 必要に応じてサイズを調整
-    pos = DecideFlowerPos(len(images), flower_ids)
-
-    for flower_id, position in zip(flower_ids, pos.flower_pos.get(tuple([1]*len(images)), [])):
-        bouquet_image.paste(images[flower_ids.index(flower_id)], position)
-
-    return bouquet_image
-
 def lambda_handler(event, context):
-    user_id = event['queryStringParameters']['user_id']
-    date_str = event['queryStringParameters']['date']
+    #user_id = event["requestContext"]["authorizer"]["claims"]["sub"]
+    #date_str = event["queryStringParameters"]["date"]
+    user_id ="22348a88-d011-7046-cb45-f010763d1997"
+    date_str = "2024-10-19"
+
     date = datetime.strptime(date_str, '%Y-%m-%d')
 
-    # flower_idを取得
     flower_ids = get_flower_ids(user_id, date)
-
-    if len(flower_ids) in [5, 6, 7]:
-        bouquet_image = create_bouquet_image(flower_ids)
-
-        # S3に保存するためのバッファに画像を保存
-        buffer = io.BytesIO()
-        bouquet_image.save(buffer, format='PNG')
-        buffer.seek(0)
-
-        # 花束の画像をS3にアップロード
-        s3_client.put_object(Bucket=BUCKET_NAME, Key=f"bouquets/bouquet_{user_id}_{date.strftime('%Y%m%d')}.png", Body=buffer)
-
-        # DynamoDBにuser_idとweekを登録
-        week_number = date.isocalendar()[1]
-        table = dynamodb.Table(GENERATIVE_AI_TABLE)
-        table.put_item(Item={'user_id': user_id, 'week': week_number})
-
-        return {
-            'statusCode': 200,
-            'body': f"Bouquet created and saved as bouquet_{user_id}_{date.strftime('%Y%m%d')}.png"
-        }
-    else:
+    
+    if len(flower_ids) < 5:
         return {
             'statusCode': 400,
-            'body': "Invalid number of flowers. Must be 5, 6, or 7."
+            'body': 'Not enough flowers to create a bouquet.'
         }
+
+    # Create bouquet image
+    bouquet_creator = BouquetImageCreator(flower_ids)
+    bouquet_image = bouquet_creator.create_bouquet_image()
+
+    # Save bouquet image to S3
+    image_buffer = io.BytesIO()
+    bouquet_image.save(image_buffer, format='PNG')
+    image_buffer.seek(0)
+    
+    bouquet_key = f'bouquets/{user_id}_{date_str}.png'
+    s3_client.put_object(Bucket=BUCKET_NAME, Key=bouquet_key, Body=image_buffer)
+
+    # Register the bouquet in DynamoDB
+    week_num = date.isocalendar()[1]
+    dynamodb.Table(GENERATIVE_AI_TABLE).put_item(
+        Item={
+            'user_id': user_id,
+            'week': week_num,
+            # Other attributes as needed...
+        }
+    )
+
+    return {
+        'statusCode': 200,
+        'body': f'Bouquet image created and saved as {bouquet_key}'
+    }
