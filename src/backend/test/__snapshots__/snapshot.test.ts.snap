@@ -278,6 +278,9 @@ exports[`Snapshot test 1`] = `
             "BOUQUET_TABLE_NAME": {
               "Ref": "ApiBouquetTable92B8B9AD",
             },
+            "FLOWER_BUCKET_NAME": {
+              "Ref": "ApiflowerImageBucket5AC81E41",
+            },
             "GENERATIVE_AI_TABLE_NAME": {
               "Ref": "ApigenerativeAiTableB5975AA2",
             },
