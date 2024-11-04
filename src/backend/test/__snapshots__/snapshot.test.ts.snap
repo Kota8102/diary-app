@@ -313,8 +313,11 @@ exports[`Snapshot test 1`] = `
       "Type": "AWS::IAM::Role",
       "UpdateReplacePolicy": "Delete",
     },
+
     "ApiDiaryApiDeploymentCA0DCBF58f371befc63a0cdfb03ea0f02a044439": {
       "DependsOn": [
+        "ApiDiaryApibouquetGET7AC93032",
+        "ApiDiaryApibouquet8BAEBF58",
         "ApiDiaryApidiaryDELETE81EA9C37",
         "ApiDiaryApidiaryGET9A212B54",
         "ApiDiaryApidiaryOPTIONS118FD5D0",
@@ -328,6 +331,7 @@ exports[`Snapshot test 1`] = `
         "ApiDiaryApititleOPTIONSCB7538FB",
         "ApiDiaryApititle5FEB75D0",
         "ApiDiaryApiRequestValidator4DFB42AA",
+        "ApiDiaryApivalidator04323B87",
       ],
       "Properties": {
         "Description": "Automatically created by the RestApi construct",
@@ -378,6 +382,148 @@ exports[`Snapshot test 1`] = `
         "ValidateRequestParameters": true,
       },
       "Type": "AWS::ApiGateway::RequestValidator",
+    },
+    "ApiDiaryApibouquet8BAEBF58": {
+      "Properties": {
+        "ParentId": {
+          "Fn::GetAtt": [
+            "ApiDiaryApi1E03348A",
+            "RootResourceId",
+          ],
+        },
+        "PathPart": "bouquet",
+        "RestApiId": {
+          "Ref": "ApiDiaryApi1E03348A",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "ApiDiaryApibouquetGET7AC93032": {
+      "Properties": {
+        "AuthorizationType": "COGNITO_USER_POOLS",
+        "AuthorizerId": {
+          "Ref": "ApicognitoAuthorizer96AE9311",
+        },
+        "HttpMethod": "GET",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region",
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "ApibouquetGetFunction8161E364",
+                    "Arn",
+                  ],
+                },
+                "/invocations",
+              ],
+            ],
+          },
+        },
+        "RequestParameters": {
+          "method.request.querystring.date": true,
+        },
+        "RequestValidatorId": {
+          "Ref": "ApiDiaryApivalidator04323B87",
+        },
+        "ResourceId": {
+          "Ref": "ApiDiaryApibouquet8BAEBF58",
+        },
+        "RestApiId": {
+          "Ref": "ApiDiaryApi1E03348A",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "ApiDiaryApibouquetGETApiPermissionCdkSampleStackApiDiaryApi4AB3EF3AGETbouquetBD41F27D": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ApibouquetGetFunction8161E364",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId",
+              },
+              ":",
+              {
+                "Ref": "ApiDiaryApi1E03348A",
+              },
+              "/",
+              {
+                "Ref": "ApiDiaryApiDeploymentStageprodD9912276",
+              },
+              "/GET/bouquet",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "ApiDiaryApibouquetGETApiPermissionTestCdkSampleStackApiDiaryApi4AB3EF3AGETbouquet2E881FDA": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ApibouquetGetFunction8161E364",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId",
+              },
+              ":",
+              {
+                "Ref": "ApiDiaryApi1E03348A",
+              },
+              "/test-invoke-stage/GET/bouquet",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
     },
     "ApiDiaryApidiary4B91FACA": {
       "Properties": {
@@ -1230,45 +1376,189 @@ exports[`Snapshot test 1`] = `
       },
       "Type": "AWS::Lambda::Permission",
     },
-    "ApiDiaryApititleOPTIONSCB7538FB": {
+
+    "ApiDiaryApivalidator04323B87": {
       "Properties": {
-        "AuthorizationType": "NONE",
-        "HttpMethod": "OPTIONS",
-        "Integration": {
-          "IntegrationResponses": [
-            {
-              "ResponseParameters": {
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
-                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,DELETE'",
-                "method.response.header.Access-Control-Allow-Origin": "'*'",
-              },
-              "StatusCode": "200",
-            },
-          ],
-          "PassthroughBehavior": "NEVER",
-          "RequestTemplates": {
-            "application/json": "{"statusCode": 200}",
-          },
-          "Type": "MOCK",
-        },
-        "MethodResponses": [
-          {
-            "ResponseParameters": {
-              "method.response.header.Access-Control-Allow-Headers": true,
-              "method.response.header.Access-Control-Allow-Methods": true,
-              "method.response.header.Access-Control-Allow-Origin": true,
-            },
-            "StatusCode": "200",
-          },
-        ],
-        "ResourceId": {
-          "Ref": "ApiDiaryApititle5FEB75D0",
-        },
+        "Name": "ValidateQueryString",
         "RestApiId": {
           "Ref": "ApiDiaryApi1E03348A",
         },
+        "ValidateRequestParameters": true,
       },
-      "Type": "AWS::ApiGateway::Method",
+      "Type": "AWS::ApiGateway::RequestValidator",
+    },
+    "ApibouquetBucketD88D6FCA": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "AccessControl": "LogDeliveryWrite",
+        "LoggingConfiguration": {
+          "LogFilePrefix": "log/",
+        },
+        "OwnershipControls": {
+          "Rules": [
+            {
+              "ObjectOwnership": "ObjectWriter",
+            },
+          ],
+        },
+      },
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "ApibouquetBucketPolicy78EAE5A5": {
+      "Properties": {
+        "Bucket": {
+          "Ref": "ApibouquetBucketD88D6FCA",
+        },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:*",
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false",
+                },
+              },
+              "Effect": "Deny",
+              "Principal": {
+                "AWS": "*",
+              },
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "ApibouquetBucketD88D6FCA",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "ApibouquetBucketD88D6FCA",
+                          "Arn",
+                        ],
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::S3::BucketPolicy",
+    },
+    "ApibouquetGetFunction8161E364": {
+      "DependsOn": [
+        "ApibouquetGetFunctionServiceRoleDefaultPolicyC97BC5D0",
+        "ApibouquetGetFunctionServiceRoleFBF79C19",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "S3Key": "HASH_REPLACED.zip",
+        },
+        "Environment": {
+          "Variables": {
+            "BUCKET_NAME": {
+              "Ref": "ApibouquetBucketD88D6FCA",
+            },
+          },
+        },
+        "Handler": "bouquet_get.lambda_handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "ApibouquetGetFunctionServiceRoleFBF79C19",
+            "Arn",
+          ],
+        },
+        "Runtime": "python3.11",
+        "Timeout": 10,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "ApibouquetGetFunctionServiceRoleDefaultPolicyC97BC5D0": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "ApibouquetBucketD88D6FCA",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "ApibouquetBucketD88D6FCA",
+                          "Arn",
+                        ],
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "ApibouquetGetFunctionServiceRoleDefaultPolicyC97BC5D0",
+        "Roles": [
+          {
+            "Ref": "ApibouquetGetFunctionServiceRoleFBF79C19",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "ApibouquetGetFunctionServiceRoleFBF79C19": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
     },
     "ApibouquetTable5FD7E967": {
       "DeletionPolicy": "Delete",
