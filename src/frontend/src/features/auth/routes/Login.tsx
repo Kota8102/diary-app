@@ -18,7 +18,7 @@ export const Login = () => {
     const result = await signIn(username, password)
 
     if (result.success) {
-      navigate('/') // ログイン成功後のリダイレクト先
+      navigate('/calender') // ログイン成功後のリダイレクト先
     } else {
       setErrorMessage(result.message)
     }
