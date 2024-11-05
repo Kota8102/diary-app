@@ -15,13 +15,31 @@ BOUQUET_TABLE_NAME = os.environ["BOUQUET_TABLE_NAME"]
 bouquet_table = dynamodb.Table(BOUQUET_TABLE_NAME)
 
 class DecideFlowerPos:
+    """
+    花束の配置位置を決定するクラス
+
+    Attributes:
+        n (int): 花の数
+        flowers (list): 花の種類リスト
+    """
     def __init__(self, n, flowers):
+        """
+        DecideFlowerPosの初期化メソッド。花の数と種類を受け取り、配置位置を決定する。
+
+        Args:
+            n (int): 花の数
+            flowers (list): 花の種類リスト
+        """
         self.n = n
         self.flowers = sorted(flowers)
         self.def_flowers_pos()
         print(f"self.flowers: {self.flowers}")
 
     def def_flowers_pos(self):
+        """
+        花束の配置パターンを定義する。
+        花の数（n）に応じて適切な位置を設定する。
+        """
         if self.n==5:
             self.flower_pos={(1, 1, 1, 1, 1):[[400,180],[250,180],[100,180],[150,70],[300,70]],
                        (1, 1, 1, 1, 2):[[100,180],[250,150],[400,180],[150,70],[350,50]],
@@ -119,10 +137,30 @@ class DecideFlowerPos:
         return 0
 
     def flowers_pattern_matching(self):
+        """
+        花の配置パターンを取得する。
+
+        Returns:
+            list: 花の配置位置のリスト
+        """
         return self.flower_pos.get(tuple(self.flowers), [])
 
 class MkBouquet(DecideFlowerPos):
+    """
+    花束を作成するクラス
+
+    Attributes:
+        flower_images (list): 花の画像リスト
+        original_flowers (list): オリジナルの花の種類リスト
+    """
     def __init__(self, n, flowers):
+        """
+        MkBouquetの初期化メソッド。花の数と種類を受け取り、花束作成に必要な設定を行う。
+
+        Args:
+            n (int): 花の数
+            flowers (list): 花の種類リスト
+        """
         # flowersリストからタイプ数値を抽出して、DecideFlowerPosの初期化に渡す
         flower_types = [self.extract_flower_type(flower_id) for flower_id in flowers]
         super().__init__(n, flower_types)  # 抽出した数値のリストを使用
@@ -130,12 +168,27 @@ class MkBouquet(DecideFlowerPos):
         self.original_flowers = flowers  # 元のflower_idリストを保持
 
     def extract_flower_type(self, flower_id):
-        """flower_id（例: 'lily1'）から花のタイプ数値を取得"""
+        """
+        flower_idから花のタイプを抽出する。
+
+        Args:
+            flower_id (str): 花のID（例: 'lily1'）
+
+        Returns:
+            int: 花のタイプ（1: lily, 2: tulip, 3: sunflower）
+        """
         flower_name = ''.join([c for c in flower_id if c.isalpha()])
         flower_type_dic = {"lily": 1, "tulip": 2, "sunflower": 3}
         return flower_type_dic.get(flower_name, 0) 
 
     def mk_bouquet(self):
+        """
+        花束の画像を作成する。
+
+        Returns:
+            Image: 作成された花束の画像
+        """
+
         self.set_bouquet_parts()
         bouquet = self.flower_images[0]
         flower_position = self.flowers_pattern_matching()
@@ -152,31 +205,68 @@ class MkBouquet(DecideFlowerPos):
         return bouquet
 
     def set_bouquet_parts(self):
+        """
+        花束を構成する包み紙と花の画像を設定する。
+        """
         self.set_wrapping_paper()
         self.set_flowers()
 
     def set_wrapping_paper(self):
+        """
+        包み紙の画像を設定する。
+        """
         wrapping_image = self.load_image(f"wrapping/wrapping1.png")
         self.flower_images.append(wrapping_image)
 
     def set_flowers(self):
+        """
+        花の画像を設定する。
+        """
         for flower_id in self.original_flowers:
             print(f"flower_id: {flower_id}")
             flower_image = self.load_image(f"flowers/{flower_id}.png")
             self.flower_images.append(flower_image)
 
     def load_image(self, key):
+        """
+        S3から指定された画像をロードする。
+
+        Args:
+            key (str): S3バケット内の画像キー
+
+        Returns:
+            Image: ロードされた画像
+        """
         print(f"key: {key}")
         obj = s3.get_object(Bucket=FLOWER_BUCKET_NAME, Key=key)
         img = Image.open(obj['Body']).convert("RGBA")
         return img
 
 def get_week_dates(date):
+    """
+    指定された日付からその週の全日付を取得する。
+
+    Args:
+        date (str): 基準となる日付（例: '2024-10-19'）
+
+    Returns:
+        tuple: 週の全日付リストと週の開始日
+    """
     date_obj = datetime.strptime(date, "%Y-%m-%d")
     start_of_week = date_obj - timedelta(days=date_obj.weekday())
     return [(start_of_week + timedelta(days=i)).strftime("%Y-%m-%d") for i in range((date_obj - start_of_week).days + 1)], start_of_week
 
 def get_flowers(user_id, dates):
+    """
+    DynamoDBから指定された日付リストに対応する花のIDを取得する。
+
+    Args:
+        user_id (str): ユーザーID
+        dates (list): 日付リスト
+
+    Returns:
+        list: 花のIDリスト
+    """
     table = dynamodb.Table(GENERATIVE_AI_TABLE_NAME)
     flowers = []
     for date in dates:
@@ -189,7 +279,13 @@ def get_flowers(user_id, dates):
     return flowers
 
 def save_bouquet_record(user_id, start_of_week):
-    """bouquet_tableにuser_idとyear-week形式の週を保存する"""
+    """
+    bouquet_tableにuser_idとyear-week形式の週を保存する。
+
+    Args:
+        user_id (str): ユーザーID
+        start_of_week (datetime): 週の開始日
+    """
     year_week = f"{start_of_week.year}-{start_of_week.strftime('%U')}"
     bouquet_table.put_item(
         Item={
@@ -200,10 +296,19 @@ def save_bouquet_record(user_id, start_of_week):
 
 
 def lambda_handler(event, context):
-    #date_str = event["queryStringParameters"].get("date")
-    #user_id = event["requestContext"]["authorizer"]["claims"]["sub"]
-    user_id ="22348a88-d011-7046-cb45-f010763d1997"
-    date = "2024-10-19"
+    """
+    Lambda関数のメインハンドラー。
+    指定された日付に基づき花束を作成し、S3に保存した後、DynamoDBに記録を残す。
+
+    Args:
+        event (dict): Lambda関数のイベント情報
+        context (LambdaContext): ランタイム情報
+
+    Returns:
+        dict: HTTPレスポンス
+    """
+    date = event["queryStringParameters"].get("date")
+    user_id = event["requestContext"]["authorizer"]["claims"]["sub"]
 
     if not date:
         return {"statusCode": 400, "body": json.dumps({"error": "date parameter is required"})}
@@ -231,6 +336,13 @@ def lambda_handler(event, context):
     }
 
 def save_bouquet_to_s3(bouquet_image, key):
+    """
+    花束の画像を一時保存し、S3バケットにアップロードする。
+
+    Args:
+        bouquet_image (Image): 作成された花束の画像
+        key (str): S3バケット内の保存キー
+    """
     temp_file_path = f"/tmp/{key.split('/')[-1]}"
     bouquet_image.save(temp_file_path, format="PNG")
     s3.upload_file(temp_file_path, BOUQUET_BUCKET_NAME, key)
