@@ -313,8 +313,7 @@ exports[`Snapshot test 1`] = `
       "Type": "AWS::IAM::Role",
       "UpdateReplacePolicy": "Delete",
     },
-
-    "ApiDiaryApiDeploymentCA0DCBF58f371befc63a0cdfb03ea0f02a044439": {
+    "ApiDiaryApiDeploymentCA0DCBF5956716ca5633216b3423fc72b0cb864b": {
       "DependsOn": [
         "ApiDiaryApibouquetGET7AC93032",
         "ApiDiaryApibouquet8BAEBF58",
@@ -356,7 +355,7 @@ exports[`Snapshot test 1`] = `
           "Format": "{"requestId":"$context.requestId","ip":"$context.identity.sourceIp","user":"$context.identity.user","caller":"$context.identity.caller","requestTime":"$context.requestTime","httpMethod":"$context.httpMethod","resourcePath":"$context.resourcePath","status":"$context.status","protocol":"$context.protocol","responseLength":"$context.responseLength"}",
         },
         "DeploymentId": {
-          "Ref": "ApiDiaryApiDeploymentCA0DCBF58f371befc63a0cdfb03ea0f02a044439",
+          "Ref": "ApiDiaryApiDeploymentCA0DCBF5956716ca5633216b3423fc72b0cb864b",
         },
         "MethodSettings": [
           {
@@ -1376,7 +1375,46 @@ exports[`Snapshot test 1`] = `
       },
       "Type": "AWS::Lambda::Permission",
     },
-
+    "ApiDiaryApititleOPTIONSCB7538FB": {
+      "Properties": {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "Integration": {
+          "IntegrationResponses": [
+            {
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,DELETE'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+              },
+              "StatusCode": "200",
+            },
+          ],
+          "PassthroughBehavior": "NEVER",
+          "RequestTemplates": {
+            "application/json": "{"statusCode": 200}",
+          },
+          "Type": "MOCK",
+        },
+        "MethodResponses": [
+          {
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Allow-Origin": true,
+            },
+            "StatusCode": "200",
+          },
+        ],
+        "ResourceId": {
+          "Ref": "ApiDiaryApititle5FEB75D0",
+        },
+        "RestApiId": {
+          "Ref": "ApiDiaryApi1E03348A",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
     "ApiDiaryApivalidator04323B87": {
       "Properties": {
         "Name": "ValidateQueryString",
