@@ -1,12 +1,10 @@
 import json
 import os
 from datetime import datetime, timedelta
-from logging import getLogger
 
 import boto3
+import logger
 from PIL import Image
-
-logger = getLogger(__name__)
 
 dynamodb = boto3.resource("dynamodb")
 s3 = boto3.client("s3")
@@ -39,7 +37,6 @@ class DecideFlowerPos:
         self.n = n
         self.flowers = sorted(flowers)
         self.def_flowers_pos()
-        logger.info(f"self.flowers: {self.flowers}")
 
     def def_flowers_pos(self):
         """
@@ -138,7 +135,7 @@ class DecideFlowerPos:
                                (3, 3, 3, 3, 3, 3, 3): [[220, 200], [350, 200], [450, 180], [310, 90], [180, 80], [390, 30], [110, 180]]
                                }
         else:
-            logger.info("Error: n is not expected value")
+            logger.error("Error: n is not expected value")
         return 0
 
     def flowers_pattern_matching(self):
@@ -168,12 +165,13 @@ class MkBouquet(DecideFlowerPos):
             n (int): 花の数
             flowers (list): 花の種類リスト
         """
-        # flowersリストからタイプ数値を抽出して、DecideFlowerPosの初期化に渡す
         flower_types = [self.extract_flower_type(
             flower_id) for flower_id in flowers]
         super().__init__(n, flower_types)  # 抽出した数値のリストを使用
+
+        # flower type の昇順で original_flowers をソートして保持
+        self.original_flowers = sorted(flowers, key=self.extract_flower_type)
         self.flower_images = []
-        self.original_flowers = flowers  # 元のflower_idリストを保持
 
     def extract_flower_type(self, flower_id):
         """
@@ -277,7 +275,6 @@ def get_flowers(user_id, dates):
     """
     table = dynamodb.Table(GENERATIVE_AI_TABLE_NAME)
     flowers = []
-
     for date in dates:
         try:
             response = table.get_item(Key={"user_id": user_id, "date": date})
@@ -317,8 +314,6 @@ def lambda_handler(event, context):
     Returns:
         dict: HTTPレスポンス
     """
-    logger.info("Bouquet create lambda start")
-
     date = event["queryStringParameters"].get("date")
     user_id = event["requestContext"]["authorizer"]["claims"]["sub"]
 
