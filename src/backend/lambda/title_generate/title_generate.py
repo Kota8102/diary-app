@@ -2,32 +2,36 @@ import json
 import os
 import urllib.parse
 import urllib.request
+from logging import getLogger
 
 import boto3
+
+logger = getLogger(__name__)
 
 
 def lambda_handler(event, context):
     """
-    AWS Lambda handler function to process DynamoDB stream records and generate diary titles.
+    AWS Lambdaハンドラ関数。DynamoDBストリームのレコードを処理し、日記のタイトルを生成します。
 
-    This function:
-    - Processes an event triggered by an 'INSERT' operation in DynamoDB.
-    - Extracts the diary content from the event.
-    - Generates a title for the diary content using the OpenAI API (ChatGPT).
-    - Saves the generated title back to the same DynamoDB record.
+    この関数は以下を行います:
+    - DynamoDBでの 'INSERT' 操作によってトリガーされたイベントを処理。
+    - イベントから日記の内容を抽出。
+    - OpenAI API（ChatGPT）を使用して日記内容からタイトルを生成。
+    - 生成したタイトルを同じDynamoDBレコードに保存。
 
     Args:
-        event (dict): DynamoDB stream event details, including the modified records.
-        context (object): The context object providing runtime information.
+        event (dict): DynamoDBストリームイベントの詳細情報、変更されたレコードを含む。
+        context (object): 実行時情報を提供するコンテキストオブジェクト。
 
     Returns:
-        dict: HTTP response with a status code, headers, and body.
+        dict: ステータスコード、ヘッダー、および本文を含むHTTPレスポンス。
     """
-    print("title generate lambda start")
+    logger.info("title generate lambda start")
     try:
         record = event['Records'][0]
         if record['eventName'] == 'INSERT':
-            print(f"content: {record['dynamodb']['NewImage']['content']['S']}")
+            logger.info(
+                f"content: {record['dynamodb']['NewImage']['content']['S']}")
             diary_content = record['dynamodb']['NewImage']['content']['S']
             generate_title_and_save_to_dynamodb(diary_content, record)
 
@@ -51,11 +55,11 @@ def lambda_handler(event, context):
 
 
 def generate_title_and_save_to_dynamodb(diary_content, record):
-    """Generate a title from diary contents using ChatGPT and save it to DynamoDB
+    """ChatGPTを使用して日記の内容からタイトルを生成し、DynamoDBに保存します。
 
     Args:
-        diary_content (string): content of diary
-        record (dict): event record of lambda function
+        diary_content (string): 日記の内容
+        record (dict): Lambda関数のイベントレコード
 
     Returns:
         none
@@ -65,7 +69,7 @@ def generate_title_and_save_to_dynamodb(diary_content, record):
     try:
         api_key = get_parameter_from_parameter_store('OpenAI_API_KEY')
     except Exception as e:
-        print(
+        logger.error(
             f"An error occurred during getting parameter from parameter store: {str(e)}")
         raise
 
@@ -84,10 +88,10 @@ def generate_title_and_save_to_dynamodb(diary_content, record):
         generated_title = json.loads(
             response)['choices'][0]['message']['content']
     except Exception as e:
-        print(f"An error occurred during OpenAI API call: {str(e)}")
+        logger.error(f"An error occurred during OpenAI API call: {str(e)}")
         raise
 
-    print(f"title: {generated_title}")
+    logger.info(f"title: {generated_title}")
 
     dynamodb = boto3.resource('dynamodb')
     table_name = os.environ['TABLE_NAME']
@@ -103,20 +107,20 @@ def generate_title_and_save_to_dynamodb(diary_content, record):
                 ':t': generated_title
             }
         )
-        print(f"DynamoDB update response: {dynamodb_response}")
+        logger.info(f"DynamoDB update response: {dynamodb_response}")
     except Exception as e:
-        print(f"An error occurred during DynamoDB update: {str(e)}")
+        logger.error(f"An error occurred during DynamoDB update: {str(e)}")
         raise
 
 
 def get_parameter_from_parameter_store(parameter_name):
-    """Get OpenAI API Token
+    """OpenAI APIトークンを取得
 
     Args:
-        parameter_name (_type_): Parameter name of OpenAI token
+        parameter_name (string): OpenAIトークンのパラメータ名
 
     Returns:
-        string: OpenAI API token
+        string: OpenAI APIトークン
     """
 
     ssm = boto3.client('ssm', region_name=os.environ.get(
@@ -129,15 +133,15 @@ def get_parameter_from_parameter_store(parameter_name):
 
 
 def send_request_to_openai_api(api_endpoint, api_key, request_data):
-    """Call OpenAI API
+    """OpenAI APIを呼び出します
 
     Args:
-        api_endpoint (string): OpenAI API endpoint
-        api_key (string): OpenAI API Key 
-        request_data (string): request data to chatGPT 
+        api_endpoint (string): OpenAI APIエンドポイント
+        api_key (string): OpenAI APIキー 
+        request_data (string): ChatGPTへのリクエストデータ
 
     Returns:
-        dict: Response data of API request to ChatGPT
+        dict: ChatGPTへのAPIリクエストのレスポンスデータ
     """
     headers = {
         'Content-Type': 'application/json',
@@ -151,7 +155,6 @@ def send_request_to_openai_api(api_endpoint, api_key, request_data):
         response = urllib.request.urlopen(req).read().decode("utf-8")
     except Exception as e:
         error_message = f"An unexpected error occurred: {str(e)}"
-        print(error_message)
-        print(json.dumps({"error": error_message}))
+        logger.error(json.dumps({"error": error_message}))
         raise
     return response
