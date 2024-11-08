@@ -25,7 +25,7 @@ src/frontend/*.sln
 src/frontend/*.sw?
 
 # Pytest cache files
-src/backend/lambda/**/__pycache__/
+src/backend/lambda/**/__pycache__/**
 
 .DS_Store
 node_modules
