@@ -159,7 +159,7 @@ class MkBouquet(DecideFlowerPos):
 
     def __init__(self, n, flowers):
         """
-        MkBouquetの初期化メソッド。花の数と種類を受け取り、花束作成に必要な設定を行う。
+        MkBouquetの初期化メソッド。花の数と種類を受け取り、花のタイプ順にソートしてから花束作成に必要な設定を行う。
 
         Args:
             n (int): 花の数
