@@ -95,7 +95,7 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         if not query_params or "date" not in query_params:
             return create_response(400, {"error": "Missing required parameter: date"})
 
-        user_id = context.identity.cognito_identity_id
+        user_id = event["requestContext"]["authorizer"]["claims"]["sub"]
         date = query_params["date"]
 
         if not validate_date(date):
