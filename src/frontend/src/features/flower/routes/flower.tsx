@@ -14,7 +14,6 @@ export const Flower = () => {
   const { pathname } = useLocation()
   const date = pathname.split('/').pop() || ''
 
-
   const { data: titleData } = useTitle({ date })
   const title = titleData?.data?.title ?? ''
 
