@@ -1,76 +1,61 @@
-import { useEffect, useRef, useState } from 'react'
-import 'slick-carousel/slick/slick.css'
-import 'slick-carousel/slick/slick-theme.css'
 import { ContentLayout } from '@/components/layout'
-
-import { useTitle } from '../api/get-title'
-import { useNote } from '../api/get-note'
+import { getNextDate, getPreviousDate } from '@/utils/dateUtils'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { useFlower, useNote, useTitle } from '../api'
+import { DateDisplay, ImageDisplay, NoteDisplay } from '../components'
 
 export const Flower = () => {
-  const [date] = useState('2024-08-18')
-  const { data: titleData } = useTitle({
-    date,
-    queryConfig: {},
-  })
+  // 日付を取得
+  const { pathname } = useLocation()
+  const date = pathname.split('/').pop() || ''
 
-  const { data: noteData, error: noteError } = useNote({
-    date,
-    queryConfig: {},
-  })
+  const { data: titleData } = useTitle({ date })
+  const title = titleData?.data?.title ?? ''
 
-  const [note, setNote] = useState('')
-  const noteRef = useRef<HTMLTextAreaElement>(null)
+  const { data: noteData } = useNote({ date })
+  const note = noteData?.data?.content ?? ''
 
-  useEffect(() => {
-    if (noteData?.title.content) {
-      setNote(noteData.title.content)
-    }
-  }, [noteData])
+  const { data: flowerData } = useFlower({ date })
+  const flower = flowerData?.data?.flower ?? ''
 
-  useEffect(() => {
-    if (noteRef.current) {
-      noteRef.current.style.height = 'auto'
-      noteRef.current.style.height = `${noteRef.current.scrollHeight}px`
-    }
-  }, [])
-
-  // ノートの変更を処理する関数
-  const handleNoteChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setNote(e.target.value)
+  const navigate = useNavigate()
+  const handlePrevious = () => {
+    const prevDate = getPreviousDate(date)
+    navigate(`/flower/${prevDate}`)
   }
 
-  // エラー処理
-  // if (titleError && !(titleError instanceof Error && titleError.message.includes('404'))) {
-  //   return <div>Error loading title: {titleError instanceof Error ? titleError.message : 'Unknown error occurred'}</div>
-  // }
-
-  if (noteError && !(noteError instanceof Error && noteError.message.includes('404'))) {
-    return <div>Error loading note: {noteError instanceof Error ? noteError.message : 'Unknown error occurred'}</div>
+  // 翌日への移動（必要に応じて）
+  const handleNext = () => {
+    const nextDate = getNextDate(date)
+    navigate(`/flower/${nextDate}`)
   }
 
   return (
     <ContentLayout pagetitle="Diary">
-      <div className="flex flex-col w-full h-full gap-5 justify-between overflow-hidden">
-        <p>{date}</p>
-        <div className="flex justify-end">
-          <button
-            type="button"
-            className={'rounded-2xl p-1 text-base bg-light-buttonSecondaryDefault text-white w-2/5'}
-            disabled={note.trim() === ''}
-          >
-            Make Bouquet
-          </button>
+      <div className="flex flex-col w-full h-full gap-2 justify-between overflow-hidden">
+        {/* 日付 */}
+        <div className="flex flex-col gap-5">
+          <DateDisplay date={date} />
         </div>
-        <div className="flex flex-col gap-1 h-2/5 text-xs">
-          <div className="flex flex-col gap-1">
-            <p>Title</p>
-            <p className="bg-light-bgText rounded-md px-3 py-2">
-              {titleData?.title.title || ''} {/* 404の場合は空文字列を表示 */}
-            </p>
+
+        {/* 画像 - 高さを固定 */}
+        <div className="h-40 w-full">
+          <ImageDisplay src={flower} onPrevious={handlePrevious} onNext={handleNext} />
+        </div>
+
+        {/* タイトル、ノート */}
+        <div className="flex flex-col gap-1 text-xs">
+          <div className="flex justify-end">
+            <button type="button" aria-label="Make bouquet">
+              <img src="/make_bouquate.svg" alt="bouquet" />
+            </button>
           </div>
           <div className="flex flex-col gap-1">
-            <p>Note</p>
-            <textarea ref={noteRef} className="bg-light-bgText rounded-md px-3 py-2 tracking-widest" value={note} onChange={handleNoteChange} />
+            <p>Title</p>
+            <p className="bg-light-bgText rounded-md px-3 py-2 h-8">{title?.toString()}</p>
+          </div>
+          <div className="flex flex-col gap-1">
+            <NoteDisplay note={note.toString()} date={date} />
           </div>
         </div>
       </div>
