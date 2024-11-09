@@ -420,7 +420,6 @@ export class Api extends Construct {
     flowerImageBucket.grantRead(BouquetCreate)
     bouquetBucket.grantPut(BouquetCreate)
 
-    
     bouquetApi.addMethod('POST', new apigateway.LambdaIntegration(BouquetCreate), {
       authorizer: cognitoAuthorizer,
     })
