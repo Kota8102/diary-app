@@ -1,13 +1,8 @@
-import 'slick-carousel/slick/slick.css'
-import 'slick-carousel/slick/slick-theme.css'
 import { ContentLayout } from '@/components/layout'
-
-import { useLocation } from 'react-router-dom'
-
-import { useFlower } from '../api/get-flower'
-import { useNote } from '../api/get-note'
-import { useTitle } from '../api/get-title'
-import { DateDisplay } from '../components/DateDisplay'
+import { getNextDate, getPreviousDate } from '@/utils/dateUtils'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { useFlower, useNote, useTitle } from '../api'
+import { DateDisplay, ImageDisplay, NoteDisplay } from '../components'
 
 export const Flower = () => {
   // 日付を取得
@@ -22,16 +17,35 @@ export const Flower = () => {
 
   const { data: flowerData } = useFlower({ date })
   const flower = flowerData?.data?.flower ?? ''
-  console.log(flower)
+
+  const navigate = useNavigate()
+  const handlePrevious = () => {
+    const prevDate = getPreviousDate(date)
+    navigate(`/flower/${prevDate}`)
+  }
+
+  // 翌日への移動（必要に応じて）
+  const handleNext = () => {
+    const nextDate = getNextDate(date)
+    navigate(`/flower/${nextDate}`)
+  }
+
 
   return (
     <ContentLayout pagetitle="Diary">
-      <div className="flex flex-col w-full h-full gap-5 justify-between overflow-hidden">
+      <div className="flex flex-col w-full h-full gap-2 justify-between overflow-hidden">
+        {/* 日付 */}
         <div className="flex flex-col gap-5">
           <DateDisplay date={date} />
         </div>
 
-        <div className="flex flex-col gap-1 text-xs mt-auto">
+        {/* 画像 - 高さを固定 */}
+        <div className="h-40 w-full">
+          <ImageDisplay src={flower} onPrevious={handlePrevious} onNext={handleNext} />
+        </div>
+
+        {/* タイトル、ノート */}
+        <div className="flex flex-col gap-1 text-xs">
           <div className="flex justify-end">
             <button type="button" aria-label="Make bouquet">
               <img src="/make_bouquate.svg" alt="bouquet" />
@@ -42,8 +56,7 @@ export const Flower = () => {
             <p className="bg-light-bgText rounded-md px-3 py-2 h-8">{title?.toString()}</p>
           </div>
           <div className="flex flex-col gap-1">
-            <p>Note</p>
-            <textarea className="bg-light-bgText rounded-md px-3 py-2 tracking-widest h-36" value={note.toString()} />
+            <NoteDisplay note={note.toString()} date={date} />
           </div>
         </div>
       </div>
