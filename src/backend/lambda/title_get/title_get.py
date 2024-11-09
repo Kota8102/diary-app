@@ -63,9 +63,11 @@ def get_title_from_dynamodb(user_id: str, date: str) -> Optional[str]:
 
     table = dynamodb.Table(table_name)
 
+    logger.info(f"Retrieving title for user_id: {user_id} and date: {date}")
+
     try:
-        logger.info(f"Retrieving title for user_id: {user_id} and date: {date}")
         response = table.get_item(Key={"user_id": user_id, "date": date})
+        logger.info(f"Retrieved title: {response.get('Item', {}).get('title')}")
         return response.get("Item", {}).get("title")
 
     except ClientError as e:
