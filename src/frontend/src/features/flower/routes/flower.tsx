@@ -30,7 +30,6 @@ export const Flower = () => {
     navigate(`/flower/${nextDate}`)
   }
 
-
   return (
     <ContentLayout pagetitle="Diary">
       <div className="flex flex-col w-full h-full gap-2 justify-between overflow-hidden">

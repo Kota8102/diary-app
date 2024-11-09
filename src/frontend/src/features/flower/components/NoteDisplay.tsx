@@ -3,15 +3,15 @@ import { useNavigate } from 'react-router-dom'
 import { pencil } from '@/assets/icons'
 
 type NoteProps = {
-  note: string;
-  date: string;
+  note: string
+  date: string
 }
 export const NoteDisplay = ({ note, date }: NoteProps) => {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   const handleEdit = (): void => {
-    navigate(`/diary/${date}`);
-  };
+    navigate(`/diary/${date}`)
+  }
 
   return (
     <div className="flex flex-col gap-1">
@@ -22,15 +22,10 @@ export const NoteDisplay = ({ note, date }: NoteProps) => {
           value={note.toString()}
           readOnly
         />
-        <button
-          onClick={handleEdit}
-          className="absolute bottom-2 right-2"
-          aria-label="Edit note"
-          type="button"
-        >
+        <button onClick={handleEdit} className="absolute bottom-2 right-2" aria-label="Edit note" type="button">
           <img src={pencil} alt="edit" className="w-5 h-5" />
         </button>
       </div>
     </div>
-  );
-};
+  )
+}
