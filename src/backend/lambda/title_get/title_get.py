@@ -7,7 +7,7 @@ import boto3
 from botocore.exceptions import ClientError
 
 logger = logging.getLogger(__name__)
-dynamodb = boto3.resource("dynamodb")
+dynamodb = boto3.resource("dynamodb", region_name="ap-northeast-1")
 
 
 def create_response(status_code: int, body: Dict[str, Any]) -> Dict[str, Any]:
