@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react'
 import 'slick-carousel/slick/slick.css'
 import 'slick-carousel/slick/slick-theme.css'
 import { ContentLayout } from '@/components/layout'
 
 import { useLocation } from 'react-router-dom'
 
+import { useFlower } from '../api/get-flower'
+import { useNote } from '../api/get-note'
 import { useTitle } from '../api/get-title'
 import { DateDisplay } from '../components/DateDisplay'
 
@@ -13,20 +14,16 @@ export const Flower = () => {
   const { pathname } = useLocation()
   const date = pathname.split('/').pop() || ''
 
-  const [title, setTitle] = useState('')
-  const [note] = useState('')
 
-  const { data: titleData } = useTitle({
-    date,
-    queryConfig: {},
-  })
+  const { data: titleData } = useTitle({ date })
+  const title = titleData?.data?.title ?? ''
 
-  useEffect(() => {
-    console.log(titleData)
-    if (titleData?.title !== undefined) {
-      setTitle(String(titleData.title) || '')
-    }
-  }, [titleData])
+  const { data: noteData } = useNote({ date })
+  const note = noteData?.data?.content ?? ''
+
+  const { data: flowerData } = useFlower({ date })
+  const flower = flowerData?.data?.flower ?? ''
+  console.log(flower)
 
   return (
     <ContentLayout pagetitle="Diary">
@@ -43,11 +40,11 @@ export const Flower = () => {
           </div>
           <div className="flex flex-col gap-1">
             <p>Title</p>
-            <p className="bg-light-bgText rounded-md px-3 py-2 h-8">{title || ''}</p>
+            <p className="bg-light-bgText rounded-md px-3 py-2 h-8">{title?.toString()}</p>
           </div>
           <div className="flex flex-col gap-1">
             <p>Note</p>
-            <textarea className="bg-light-bgText rounded-md px-3 py-2 tracking-widest h-36" value={note} />
+            <textarea className="bg-light-bgText rounded-md px-3 py-2 tracking-widest h-36" value={note.toString()} />
           </div>
         </div>
       </div>
