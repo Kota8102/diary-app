@@ -397,12 +397,6 @@ export class Api extends Construct {
       stream: dynamodb.StreamViewType.NEW_AND_OLD_IMAGES,
     })
 
-    //花束の画像保存用バケット
-    const bouquetBucket = new s3.Bucket(this, 'bouquetBucket', {
-      enforceSSL: true,
-      serverAccessLogsPrefix: 'log/',
-    })
-
     //花束作成用Lambda関数の定義
     const BouquetCreate = new lambda.Function(this, 'BouquetCreate', {
       runtime: lambda.Runtime.PYTHON_3_11,
@@ -426,9 +420,9 @@ export class Api extends Construct {
     flowerImageBucket.grantRead(BouquetCreate)
     bouquetBucket.grantPut(BouquetCreate)
 
-    const bouquetApi = api.root.addResource('bouquet')
+    
     bouquetApi.addMethod('POST', new apigateway.LambdaIntegration(BouquetCreate), {
-      authorizer: cognitoAutorither,
+      authorizer: cognitoAuthorizer,
     })
 
     this.api = api
