@@ -6,7 +6,12 @@ import { serializer } from './snapshot-plugin'
 import * as Backendstack from '../lib/backend-stack'
 
 test('Snapshot test', () => {
-  const app = new cdk.App()
+  const app = new cdk.App({
+    context: {
+      // バンドリングをスキップするためのコンテキスト設定
+      'aws:cdk:bundling-stacks': [],
+    },
+  })
 
   const stack = new Backendstack.BackendStack(app, 'CdkSampleStack')
 

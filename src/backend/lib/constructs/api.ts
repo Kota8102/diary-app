@@ -128,22 +128,54 @@ export class Api extends Construct {
 
     // API Gatewayのエンドポイント設定
     const diary = api.root.addResource('diary')
-    const cognitoAutorither = new apigateway.CognitoUserPoolsAuthorizer(this, 'cognitoAuthorizer', {
+    const cognitoAuthorizer = new apigateway.CognitoUserPoolsAuthorizer(this, 'cognitoAuthorizer', {
       cognitoUserPools: [props.userPool],
     })
 
+    diary.addMethod(
+      'OPTIONS',
+      new apigateway.MockIntegration({
+        integrationResponses: [
+          {
+            statusCode: '200',
+            responseParameters: {
+              'method.response.header.Access-Control-Allow-Headers': "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+              'method.response.header.Access-Control-Allow-Origin': "'*'",
+              'method.response.header.Access-Control-Allow-Methods': "'OPTIONS,GET,POST,PUT,DELETE'",
+            },
+          },
+        ],
+        passthroughBehavior: apigateway.PassthroughBehavior.NEVER,
+        requestTemplates: {
+          'application/json': '{"statusCode": 200}',
+        },
+      }),
+      {
+        methodResponses: [
+          {
+            statusCode: '200',
+            responseParameters: {
+              'method.response.header.Access-Control-Allow-Headers': true,
+              'method.response.header.Access-Control-Allow-Origin': true,
+              'method.response.header.Access-Control-Allow-Methods': true,
+            },
+          },
+        ],
+      },
+    )
+
     // 各エンドポイントのメソッド定義
     diary.addMethod('POST', new apigateway.LambdaIntegration(diaryCreateFunction), {
-      authorizer: cognitoAutorither,
+      authorizer: cognitoAuthorizer,
     })
     diary.addMethod('PUT', new apigateway.LambdaIntegration(diaryEditFunction), {
-      authorizer: cognitoAutorither,
+      authorizer: cognitoAuthorizer,
     })
     diary.addMethod('GET', new apigateway.LambdaIntegration(diaryReadFunction), {
-      authorizer: cognitoAutorither,
+      authorizer: cognitoAuthorizer,
     })
     diary.addMethod('DELETE', new apigateway.LambdaIntegration(diaryDeleteFunction), {
-      authorizer: cognitoAutorither,
+      authorizer: cognitoAuthorizer,
     })
 
     // 生成AI用のDynamoDBテーブルの作成
@@ -201,8 +233,39 @@ export class Api extends Construct {
     })
     generativeAiTable.grantReadData(titleGetFunction)
     const titleApi = api.root.addResource('title')
+    titleApi.addMethod(
+      'OPTIONS',
+      new apigateway.MockIntegration({
+        integrationResponses: [
+          {
+            statusCode: '200',
+            responseParameters: {
+              'method.response.header.Access-Control-Allow-Headers': "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+              'method.response.header.Access-Control-Allow-Origin': "'*'",
+              'method.response.header.Access-Control-Allow-Methods': "'OPTIONS,GET,POST,PUT,DELETE'",
+            },
+          },
+        ],
+        passthroughBehavior: apigateway.PassthroughBehavior.NEVER,
+        requestTemplates: {
+          'application/json': '{"statusCode": 200}',
+        },
+      }),
+      {
+        methodResponses: [
+          {
+            statusCode: '200',
+            responseParameters: {
+              'method.response.header.Access-Control-Allow-Headers': true,
+              'method.response.header.Access-Control-Allow-Origin': true,
+              'method.response.header.Access-Control-Allow-Methods': true,
+            },
+          },
+        ],
+      },
+    )
     titleApi.addMethod('GET', new apigateway.LambdaIntegration(titleGetFunction), {
-      authorizer: cognitoAutorither,
+      authorizer: cognitoAuthorizer,
     })
 
     // 花の画像保存用S3バケットの作成
@@ -252,8 +315,71 @@ export class Api extends Construct {
     flowerImageBucket.grantRead(flowerGetFunction)
 
     const flowerApi = api.root.addResource('flower')
+    flowerApi.addMethod(
+      'OPTIONS',
+      new apigateway.MockIntegration({
+        integrationResponses: [
+          {
+            statusCode: '200',
+            responseParameters: {
+              'method.response.header.Access-Control-Allow-Headers': "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+              'method.response.header.Access-Control-Allow-Origin': "'*'",
+              'method.response.header.Access-Control-Allow-Methods': "'OPTIONS,GET,POST,PUT,DELETE'",
+            },
+          },
+        ],
+        passthroughBehavior: apigateway.PassthroughBehavior.NEVER,
+        requestTemplates: {
+          'application/json': '{"statusCode": 200}',
+        },
+      }),
+      {
+        methodResponses: [
+          {
+            statusCode: '200',
+            responseParameters: {
+              'method.response.header.Access-Control-Allow-Headers': true,
+              'method.response.header.Access-Control-Allow-Origin': true,
+              'method.response.header.Access-Control-Allow-Methods': true,
+            },
+          },
+        ],
+      },
+    )
     flowerApi.addMethod('GET', new apigateway.LambdaIntegration(flowerGetFunction), {
-      authorizer: cognitoAutorither,
+      authorizer: cognitoAuthorizer,
+    })
+
+    // 花束画像保存用のS3バケットの作成
+    const bouquetBucket = new s3.Bucket(this, 'bouquetBucket', {
+      enforceSSL: true,
+      serverAccessLogsPrefix: 'log/',
+    })
+
+    // 花束取得用Lambda関数の定義
+    const bouquetGetFunction = new lambda.Function(this, 'bouquetGetFunction', {
+      runtime: lambda.Runtime.PYTHON_3_11,
+      handler: 'bouquet_get.lambda_handler',
+      code: lambda.Code.fromAsset('lambda/bouquet_get'),
+      environment: {
+        BUCKET_NAME: bouquetBucket.bucketName,
+      },
+      timeout: cdk.Duration.seconds(10),
+    })
+    bouquetBucket.grantRead(bouquetGetFunction)
+
+    // /bouquet APIの設定
+    const bouquetApi = api.root.addResource('bouquet')
+
+    bouquetApi.addMethod('GET', new apigateway.LambdaIntegration(bouquetGetFunction), {
+      authorizer: cognitoAuthorizer,
+      requestParameters: {
+        'method.request.querystring.date': true,
+      },
+      requestValidatorOptions: {
+        requestValidatorName: 'ValidateQueryString',
+        validateRequestParameters: true,
+      },
     })
 
     // 日記コンテンツを保存するDynamoDBテーブルの作成
