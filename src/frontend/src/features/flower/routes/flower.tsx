@@ -14,7 +14,7 @@ export const Flower = () => {
   const date = pathname.split('/').pop() || ''
 
   const [title, setTitle] = useState('')
-  const [note, setNote] = useState('')
+  const [note] = useState('')
 
   const { data: titleData } = useTitle({
     date,
