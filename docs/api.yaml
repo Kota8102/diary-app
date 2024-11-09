@@ -16,7 +16,6 @@ servers:
           - "stg" 
           - "prod"
 
-
 paths:
   /title:
     get:
@@ -91,7 +90,72 @@ paths:
                     error: "Internal server error"
                     details: "Please contact support"
 
-# Cognito認証の設定
+  /flower:
+    get:
+      summary: 花の画像取得
+      description: 指定された日付の花の画像を取得します
+      security:
+        - CognitoAuth: []
+      parameters:
+        - name: date
+          in: query
+          description: 日記の日付 (YYYY-MM-DD形式)
+          required: true
+          schema:
+            type: string
+            format: date
+            pattern: '^\d{4}-\d{2}-\d{2}$'
+            example: "2024-03-15"
+      responses:
+        '200':
+          description: 正常に画像を取得
+          content:
+            image/png:
+              schema:
+                type: object
+                properties:
+                  flower:
+                    type: string
+                    format: byte
+                    description: Base64エンコードされた画像データ
+        '204':
+          description: 画像が存在しない
+        '400':
+          description: バリデーションエラー
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: エラーメッセージ
+              examples:
+                invalidDate:
+                  value:
+                    error: "Date must be in yyyy-mm-dd format"
+                missingDate:
+                  value:
+                    error: "Missing required parameter: date"
+        '500':
+          description: サーバーエラー
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: エラーメッセージ
+                  details:
+                    type: string
+                    description: エラーの詳細（DEBUGモード時のみ）
+              examples:
+                s3Error:
+                  value:
+                    error: "Internal server error"
+                    details: "S3 operation failed"
+
 components:
   securitySchemes:
     CognitoAuth:
@@ -101,7 +165,6 @@ components:
       description: Cognito認証トークン
       x-amazon-apigateway-authtype: cognito_user_pools
 
-# API Gatewayの設定
 x-amazon-apigateway-integration:
   uri: 
     Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaFunction.Arn}/invocations
@@ -109,7 +172,6 @@ x-amazon-apigateway-integration:
   httpMethod: POST
   type: aws_proxy
   
-# リクエストバリデーションの設定
 x-amazon-apigateway-request-validators:
   basic:
     validateRequestBody: true
