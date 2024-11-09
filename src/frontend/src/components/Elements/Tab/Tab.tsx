@@ -14,7 +14,6 @@ import {
 import { getToday } from '@/utils/dateUtils'
 import { TabItem } from './TabItem'
 
-
 export const Tab = () => {
   const today = getToday()
 

@@ -8,7 +8,6 @@ import { useLocation } from 'react-router-dom'
 import { useTitle } from '../api/get-title'
 
 export const Flower = () => {
-
   // 日付を取得
   const { pathname } = useLocation()
   const date = pathname.split('/').pop() || ''
