@@ -31,24 +31,24 @@ export const Flower = () => {
   return (
     <ContentLayout pagetitle="Diary">
       <div className="flex flex-col w-full h-full gap-5 justify-between overflow-hidden">
-        <DateDisplay date={date} />
-        <div className="flex justify-end">
-          <button
-            type="button"
-            className={'rounded-2xl p-1 text-base bg-light-buttonSecondaryDefault text-white w-2/5'}
-            disabled={note.trim() === ''}
-          >
-            Make Bouquet
-          </button>
+        <div className="flex flex-col gap-5">
+          <DateDisplay date={date} />
+
         </div>
-        <div className="flex flex-col gap-1 h-2/5 text-xs">
+
+        <div className="flex flex-col gap-1 text-xs mt-auto">
+          <div className="flex justify-end">
+            <button type="button" aria-label="Make bouquet">
+              <img src="/make_bouquate.svg" alt="bouquet" />
+            </button>
+          </div>
           <div className="flex flex-col gap-1">
             <p>Title</p>
             <p className="bg-light-bgText rounded-md px-3 py-2 h-8">{title || ''}</p>
           </div>
           <div className="flex flex-col gap-1">
             <p>Note</p>
-            <textarea className="bg-light-bgText rounded-md px-3 py-2 tracking-widest" value={note} />
+            <textarea className="bg-light-bgText rounded-md px-3 py-2 tracking-widest h-36" value={note} />
           </div>
         </div>
       </div>
