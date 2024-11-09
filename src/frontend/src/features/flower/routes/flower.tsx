@@ -6,6 +6,7 @@ import { ContentLayout } from '@/components/layout'
 import { useLocation } from 'react-router-dom'
 
 import { useTitle } from '../api/get-title'
+import { DateDisplay } from '../components/DateDisplay'
 
 export const Flower = () => {
   // 日付を取得
@@ -30,7 +31,7 @@ export const Flower = () => {
   return (
     <ContentLayout pagetitle="Diary">
       <div className="flex flex-col w-full h-full gap-5 justify-between overflow-hidden">
-        <p>{date}</p>
+        <DateDisplay date={date} />
         <div className="flex justify-end">
           <button
             type="button"
@@ -43,13 +44,13 @@ export const Flower = () => {
         <div className="flex flex-col gap-1 h-2/5 text-xs">
           <div className="flex flex-col gap-1">
             <p>Title</p>
-            <p className="bg-light-bgText rounded-md px-3 py-2">
-              {title || ''} {/* 404の場合は空文字列を表示 */}
+            <p className="bg-light-bgText rounded-md px-3 py-2 h-8">
+              {title || ''}
             </p>
           </div>
           <div className="flex flex-col gap-1">
             <p>Note</p>
-            {/* <textarea ref={noteRef} className="bg-light-bgText rounded-md px-3 py-2 tracking-widest" value={note} onChange={handleNoteChange} /> */}
+            <textarea className="bg-light-bgText rounded-md px-3 py-2 tracking-widest" value={note} />
           </div>
         </div>
       </div>
