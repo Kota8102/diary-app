@@ -33,7 +33,6 @@ export const Flower = () => {
       <div className="flex flex-col w-full h-full gap-5 justify-between overflow-hidden">
         <div className="flex flex-col gap-5">
           <DateDisplay date={date} />
-
         </div>
 
         <div className="flex flex-col gap-1 text-xs mt-auto">
