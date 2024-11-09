@@ -9,6 +9,15 @@ from botocore.exceptions import ClientError
 logger = logging.getLogger(__name__)
 dynamodb = boto3.resource("dynamodb", region_name="ap-northeast-1")
 
+# ロガーの設定
+formatter = logging.Formatter(
+    "[%(asctime)s - %(levelname)s - %(filename)s(func:%(funcName)s, line:%(lineno)d)] %(message)s"
+)
+handler = logging.StreamHandler()
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+logger.setLevel(logging.INFO)
+
 
 def create_response(status_code: int, body: Dict[str, Any]) -> Dict[str, Any]:
     """HTTP レスポンスを生成する

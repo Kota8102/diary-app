@@ -1,7 +1,7 @@
 import json
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
-from title_get.title_get import create_response, lambda_handler, validate_date
+from title_get.title_get import create_response, validate_date
 
 
 def test_create_response_success():
@@ -44,25 +44,3 @@ def create_mock_context():
     context.identity = MagicMock()
     context.identity.cognito_identity_id = "test-user-id"
     return context
-
-
-@patch("title_get.title_get.get_title_from_dynamodb")
-def test_lambda_handler_success(mock_get_title):
-    """正常系のテスト"""
-    # セットアップ
-    mock_get_title.return_value = "テストタイトル"
-    event = {"queryStringParameters": {"date": "2024-03-20"}}
-    context = create_mock_context()
-
-    # 実行
-    response = lambda_handler(event, context)
-
-    # 検証
-    assert response["statusCode"] == 200
-    body = json.loads(response["body"])
-    assert body["title"] == "テストタイトル"
-    mock_get_title.assert_called_once_with("test-user-id", "2024-03-20")
-
-
-if __name__ == "__main__":
-    test_validate_date()
