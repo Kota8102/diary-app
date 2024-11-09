@@ -1,47 +1,82 @@
 import json
 import logging
 import os
+from typing import Any, Dict, Optional
 
 import boto3
+from botocore.exceptions import ClientError
 
 logger = logging.getLogger(__name__)
+dynamodb = boto3.resource("dynamodb")
 
 
-def get_title_from_dynamodb(user_id, date):
+def create_response(status_code: int, body: Dict[str, Any]) -> Dict[str, Any]:
+    """HTTP レスポンスを生成する
+
+    Args:
+        status_code (int): HTTPステータスコード
+        body (dict): レスポンスボディ
+
+    Returns:
+        dict: フォーマット済みのHTTPレスポンス
+    """
+    return {
+        "statusCode": status_code,
+        "body": json.dumps(body),
+        "headers": {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+        },
+    }
+
+
+def validate_date(date: str) -> bool:
+    """日付形式を検証する
+
+    Args:
+        date (str): 検証する日付文字列
+
+    Returns:
+        bool: 日付が有効な場合True
+    """
+    # ここに日付バリデーションロジックを実装
+    return bool(date and isinstance(date, str))
+
+
+def get_title_from_dynamodb(user_id: str, date: str) -> Optional[str]:
     """ユーザーIDと日付を使用してDynamoDBからタイトルを取得する
 
     Args:
-        user_id (string): cognitoユーザープールからのユーザーID
-        date (string): 日記エントリーの日付
+        user_id (str): cognitoユーザープールからのユーザーID
+        date (str): 日記エントリーの日付
 
     Returns:
-        title (string): chatGPTによって生成されたタイトル
+        Optional[str]: chatGPTによって生成されたタイトル、見つからない場合はNone
 
+    Raises:
+        ValueError: 環境変数が設定されていない場合
     """
-
-    # 環境変数が設定されていない場合はエラー
-    table_name = os.environ["TABLE_NAME"]
+    table_name = os.environ.get("TABLE_NAME")
     if not table_name:
         logger.error("TABLE_NAME environment variable is not set.")
         raise ValueError("TABLE_NAME environment variable is not set.")
 
-    dynamodb = boto3.resource("dynamodb")
     table = dynamodb.Table(table_name)
 
     try:
         logger.info(f"Retrieving title for user_id: {user_id} and date: {date}")
         response = table.get_item(Key={"user_id": user_id, "date": date})
+        return response.get("Item", {}).get("title")
 
-        if "Item" in response:
-            return response["Item"].get("title")
-        else:
-            return None
+    except ClientError as e:
+        logger.error(f"DynamoDB client error: {e.response['Error']['Message']}")
+        raise
     except Exception as e:
-        logger.error(f"DynamoDBからのデータ取得中にエラーが発生しました: {e}")
-        return None
+        logger.error(f"Unexpected error while retrieving data from DynamoDB: {e}")
+        raise
 
 
-def lambda_handler(event, context):
+def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     """ユーザーIDと日付に基づいて日記のタイトルをDynamoDBから取得するAWS Lambda
     ハンドラー関数。
 
@@ -53,40 +88,38 @@ def lambda_handler(event, context):
         dict: ステータスコード、ヘッダー、JSONボディを含むHTTPレスポンス
     """
     try:
-        user_id = context.identity.cognito_identity_id
-        date = event["queryStringParameters"]["date"]
+        # クエリパラメータの取得と検証
+        query_params = event.get("queryStringParameters", {})
+        if not query_params or "date" not in query_params:
+            return create_response(400, {"error": "Missing required parameter: date"})
 
-        # DynamoDBからアイテムを取得
+        user_id = context.identity.cognito_identity_id
+        date = query_params["date"]
+
+        if not validate_date(date):
+            return create_response(400, {"error": "Invalid date format"})
+
+        # DynamoDBからタイトルを取得
         title = get_title_from_dynamodb(user_id, date)
 
-        if title:
-            logger.info(f"Retrieved title: {title}")
-            return {
-                "statusCode": 200,
-                "body": json.dumps({"title": title}),
-                "headers": {
-                    "Content-Type": "application/json",
-                    "Access-Control-Allow-Origin": "*",
-                },
-            }
-        else:
-            logger.info("No title found")
-            return {
-                "statusCode": 200,
-                "body": json.dumps({"title": ""}),
-                "headers": {
-                    "Content-Type": "application/json",
-                    "Access-Control-Allow-Origin": "*",
-                },
-            }
+        return create_response(200, {"title": title or ""})
+
+    except ValueError as e:
+        logger.error(f"Validation error: {str(e)}")
+        return create_response(400, {"error": str(e)})
+
+    except ClientError as e:
+        logger.error(f"DynamoDB error: {str(e)}")
+        return create_response(500, {"error": "Database operation failed"})
 
     except Exception as e:
-        logger.error(f"An error occurred: {str(e)}")
-        return {
-            "statusCode": 400,
-            "body": json.dumps(f"An error occurred: {str(e)}"),
-            "headers": {
-                "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": "*",
+        logger.error(f"Unexpected error: {str(e)}")
+        return create_response(
+            500,
+            {
+                "error": "Internal server error",
+                "details": str(e)
+                if os.environ.get("DEBUG")
+                else "Please contact support",
             },
-        }
+        )
