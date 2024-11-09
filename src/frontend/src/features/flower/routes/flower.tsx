@@ -44,9 +44,7 @@ export const Flower = () => {
         <div className="flex flex-col gap-1 h-2/5 text-xs">
           <div className="flex flex-col gap-1">
             <p>Title</p>
-            <p className="bg-light-bgText rounded-md px-3 py-2 h-8">
-              {title || ''}
-            </p>
+            <p className="bg-light-bgText rounded-md px-3 py-2 h-8">{title || ''}</p>
           </div>
           <div className="flex flex-col gap-1">
             <p>Note</p>
