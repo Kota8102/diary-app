@@ -1,0 +1,116 @@
+openapi: 3.0.0
+info:
+  title: Diary API
+  description: 日記関連のAPI
+  version: 1.0.0
+
+servers:
+  - url: https://{apiId}.execute-api.ap-northeast-1.amazonaws.com/{stage}
+    variables:
+      apiId:
+        default: "api-id"
+      stage:
+        default: "dev"
+        enum:
+          - "dev"
+          - "stg" 
+          - "prod"
+
+
+paths:
+  /title:
+    get:
+      summary: 日記タイトルの取得
+      description: 指定された日付の日記タイトルを取得します
+      security:
+        - CognitoAuth: []
+      parameters:
+        - name: date
+          in: query
+          description: 日記の日付 (YYYY-MM-DD形式)
+          required: true
+          schema:
+            type: string
+            format: date
+            example: "2024-03-15"
+      responses:
+        '200':
+          description: 正常にタイトルを取得
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  title:
+                    type: string
+                    description: 日記のタイトル
+                    example: "素晴らしい春の一日"
+              examples:
+                success:
+                  value:
+                    title: "素晴らしい春の一日"
+                empty:
+                  value:
+                    title: ""
+        '400':
+          description: バリデーションエラー
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: エラーメッセージ
+              examples:
+                invalidDate:
+                  value:
+                    error: "Invalid date format"
+                missingDate:
+                  value:
+                    error: "Missing required parameter: date"
+        '500':
+          description: サーバーエラー
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: エラーメッセージ
+                  details:
+                    type: string
+                    description: エラーの詳細（DEBUGモード時のみ）
+              examples:
+                databaseError:
+                  value:
+                    error: "Database operation failed"
+                internalError:
+                  value:
+                    error: "Internal server error"
+                    details: "Please contact support"
+
+# Cognito認証の設定
+components:
+  securitySchemes:
+    CognitoAuth:
+      type: apiKey
+      name: Authorization
+      in: header
+      description: Cognito認証トークン
+      x-amazon-apigateway-authtype: cognito_user_pools
+
+# API Gatewayの設定
+x-amazon-apigateway-integration:
+  uri: 
+    Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaFunction.Arn}/invocations
+  passthroughBehavior: when_no_match
+  httpMethod: POST
+  type: aws_proxy
+  
+# リクエストバリデーションの設定
+x-amazon-apigateway-request-validators:
+  basic:
+    validateRequestBody: true
+    validateRequestParameters: true
