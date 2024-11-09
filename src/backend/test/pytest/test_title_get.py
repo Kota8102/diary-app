@@ -1,4 +1,4 @@
-import importlib
+import importlib.util
 import json
 import os
 from unittest.mock import MagicMock, patch
@@ -6,32 +6,34 @@ from unittest.mock import MagicMock, patch
 import pytest
 from botocore.exceptions import ClientError
 
+# テスト対象のモジュールファイルのパスを取得
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+LAMBDA_MODULE_PATH = os.path.join(CURRENT_DIR, "..", "..", "lambda", "title_get.py")
+
 
 # 動的インポート関数
-def dynamic_import(module_name, relative_path):
+def import_lambda_module():
     try:
-        # モジュールのパスを絶対パスに変換
-        module_path = os.path.abspath(
-            os.path.join(os.path.dirname(__file__), relative_path)
+        spec = importlib.util.spec_from_file_location(
+            "lambda_function", LAMBDA_MODULE_PATH
         )
+        if spec is None:
+            raise ImportError(f"Could not load spec for module at {LAMBDA_MODULE_PATH}")
 
-        # モジュールの仕様（spec）を作成
-        spec = importlib.util.spec_from_file_location(module_name, module_path)
-
-        # モジュールオブジェクトを作成
         module = importlib.util.module_from_spec(spec)
+        if spec.loader is None:
+            raise ImportError(f"Spec loader is None for module at {LAMBDA_MODULE_PATH}")
 
-        # モジュールを実行
         spec.loader.exec_module(module)
-
         return module
     except Exception as e:
-        print(f"Error loading module {module_name} from {module_path}: {e}")
-        return None
+        raise ImportError(
+            f"Failed to import module from {LAMBDA_MODULE_PATH}: {str(e)}"
+        )
 
 
-# テスト対象のモジュールを動的にインポート
-lambda_module = dynamic_import("title_get", "./title_get.py")
+# テスト対象のモジュールをインポート
+lambda_module = import_lambda_module()
 
 
 @pytest.fixture
@@ -44,6 +46,15 @@ def mock_context():
 @pytest.fixture
 def mock_env(monkeypatch):
     monkeypatch.setenv("TABLE_NAME", "test_table")
+    return None
+
+
+@pytest.fixture(autouse=True)
+def setup_module():
+    """各テストの前に実行される設定"""
+    global lambda_module
+    if lambda_module is None:
+        pytest.skip("Lambda module could not be imported")
 
 
 class TestLambdaHandler:
@@ -66,7 +77,6 @@ class TestLambdaHandler:
     @patch("boto3.resource")
     def test_successful_title_retrieval(self, mock_boto3, mock_context, mock_env):
         """タイトル取得成功時のテスト"""
-        # DynamoDBのモックを設定
         mock_table = MagicMock()
         mock_table.get_item.return_value = {"Item": {"title": "Test Title"}}
         mock_dynamodb = MagicMock()
@@ -143,3 +153,7 @@ class TestCreateResponse:
         assert response["headers"]["Content-Type"] == "application/json"
         assert response["headers"]["Access-Control-Allow-Origin"] == "*"
         assert json.loads(response["body"]) == test_body
+
+
+if __name__ == "__main__":
+    pytest.main(["-v"])
