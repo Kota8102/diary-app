@@ -15,10 +15,10 @@ import { getToday } from '@/utils/dateUtils'
 import { TabItem } from './TabItem'
 
 type TabConfig = {
-  path: string;
-  label: string;
-  activeIcon: string;
-  inactiveIcon: string;
+  path: string
+  label: string
+  activeIcon: string
+  inactiveIcon: string
 }
 
 const TAB_ITEMS: TabConfig[] = [
@@ -52,7 +52,7 @@ const TAB_ITEMS: TabConfig[] = [
     activeIcon: setting,
     inactiveIcon: outlinedSetting,
   },
-] as const;
+] as const
 
 /**
  * タブナビゲーションコンポーネント
@@ -64,13 +64,7 @@ export const Tab = () => {
     <nav className="flex justify-between items-center bg-light-bgTab">
       {/* 定義済みのタブ項目をマッピングして表示 */}
       {TAB_ITEMS.map(({ path, label, activeIcon, inactiveIcon }) => (
-        <TabItem
-          key={path}
-          linkPath={path}
-          label={label}
-          activeIcon={activeIcon}
-          inactiveIcon={inactiveIcon}
-        />
+        <TabItem key={path} linkPath={path} label={label} activeIcon={activeIcon} inactiveIcon={inactiveIcon} />
       ))}
     </nav>
   )
