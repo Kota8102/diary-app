@@ -22,6 +22,7 @@
     "@types/react-slick": "^0.23.13",
     "aws-amplify": "^5.3.18",
     "buffer": "^6.0.3",
+    "clsx": "^2.1.1",
     "dayjs": "^1.11.13",
     "dotenv": "^16.4.5",
     "lucide-react": "^0.456.0",
@@ -35,6 +36,7 @@
     "react-router-dom": "^6.22.3",
     "react-slick": "^0.30.2",
     "slick-carousel": "^1.8.1",
+    "tailwind-merge": "^2.5.4",
     "vite-tsconfig-paths": "^4.3.2",
     "zod": "^3.23.8"
   },
