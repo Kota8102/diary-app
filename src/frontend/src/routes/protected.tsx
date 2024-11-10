@@ -48,7 +48,7 @@ export const protectedRoutes = [
     ),
   },
   {
-    path: 'flower',
+    path: 'flower/*',
     element: (
       <MainLayout>
         <Flower />

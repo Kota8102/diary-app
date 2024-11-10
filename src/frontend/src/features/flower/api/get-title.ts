@@ -1,20 +1,24 @@
-import { queryOptions, useQuery } from '@tanstack/react-query';
+import { queryOptions, useQuery } from '@tanstack/react-query'
 
 import { api } from '@/lib/api'
-import type { Title } from '@/types/api'
 import type { QueryConfig } from '@/lib/react-query'
+import type { Title } from '@/types/api'
 
 // タイトルを取得する関数
 // 指定された日付に基づいてタイトルを取得するAPIリクエストを行う
 export const getTitle = ({
-  date
+  date,
 }: {
   date: string
-}): Promise<{ title: Title }> => {
+}): Promise<{
+  data: {
+    title: Title
+  }
+}> => {
   return api.get('/title', {
     params: {
-      date
-    }
+      date,
+    },
   })
 }
 
@@ -24,13 +28,13 @@ export const getTitleQueryOptions = (date: string) => {
   return queryOptions({
     queryKey: ['title', date], // キャッシュキーも日付に基づいて一意にする
     queryFn: () => getTitle({ date }),
-  });
-};
+  })
+}
 
 // useTitleフックのオプション型定義
 type UseTitleOptions = {
-  queryConfig?: QueryConfig<typeof getTitleQueryOptions>;
-};
+  queryConfig?: QueryConfig<typeof getTitleQueryOptions>
+}
 
 // タイトルを取得するためのカスタムフック
 // このフックは、指定された日付に基づいてタイトルを取得し、
@@ -40,5 +44,5 @@ export const useTitle = ({ queryConfig = {}, date }: UseTitleOptions & { date: s
     ...getTitleQueryOptions(date),
     ...queryConfig,
     // 追加のクエリ設定があれば上書きする
-  });
-};
+  })
+}
