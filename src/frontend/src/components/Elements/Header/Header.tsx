@@ -12,15 +12,9 @@ const HeaderIcon = () => {
   }
 
   return (
-    <button
-      type="button"
-      className="w-8 h-8 rounded-full bg-light-buttonSecondaryDefault"
-      onClick={handleClick}
-      aria-label="ブーケページへ移動"
-    />
+    <button type="button" className="w-8 h-8 rounded-full bg-light-buttonSecondaryDefault" onClick={handleClick} aria-label="ブーケページへ移動" />
   )
 }
-
 
 export const Header = ({ title, showHeaderIcon }: HeaderProps) => {
   return (
