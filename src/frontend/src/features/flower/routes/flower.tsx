@@ -4,6 +4,8 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { useFlower, useNote, useTitle } from '../api'
 import { DateDisplay, ImageDisplay, NoteDisplay } from '../components'
 
+import { makeBouquete } from '@/assets/icons'
+
 export const Flower = () => {
   // 日付を取得
   const { pathname } = useLocation()
@@ -47,7 +49,7 @@ export const Flower = () => {
         <div className="flex flex-col gap-1 text-xs">
           <div className="flex justify-end">
             <button type="button" aria-label="Make bouquet">
-              <img src="/make_bouquate.svg" alt="bouquet" />
+              <img src={makeBouquete} alt="bouquet" />
             </button>
           </div>
           <div className="flex flex-col gap-1">
