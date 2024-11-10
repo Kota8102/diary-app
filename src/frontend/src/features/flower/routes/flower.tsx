@@ -31,7 +31,7 @@ export const Flower = () => {
   }
 
   return (
-    <ContentLayout pagetitle="Diary">
+    <ContentLayout pagetitle="Diary" showHeaderIcon={true}>
       <div className="flex flex-col w-full h-full gap-2 justify-between overflow-hidden">
         {/* 日付 */}
         <div className="flex flex-col gap-5">

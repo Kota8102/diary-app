@@ -1,16 +1,17 @@
 import type React from 'react'
+import { Header } from '../Elements/Header'
 import { Tab } from '../Elements/Tab'
-
 type ContentLayoutProps = {
   children: React.ReactNode
   pagetitle: string
+  showHeaderIcon?: boolean
 }
 
-export const ContentLayout = ({ children, pagetitle }: ContentLayoutProps) => {
+export const ContentLayout = ({ children, pagetitle, showHeaderIcon = false }: ContentLayoutProps) => {
   return (
     <div className="flex flex-col h-screen">
       <div className="flex flex-col flex-grow overflow-auto p-5">
-        {pagetitle && <h1 className="text-2xl text-light-textPlaceholder pl-1 pb-2">{pagetitle}</h1>}
+        <Header title={pagetitle} showHeaderIcon={showHeaderIcon} />
         <div className="flex-grow pt-2 pl-1">{children}</div>
       </div>
       <Tab />
