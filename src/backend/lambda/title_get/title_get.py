@@ -18,27 +18,6 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 logger.setLevel(logging.INFO)
 
-def lambda_handler(event, context):
-    """指定されたユーザーIDと日付に基づいて、DynamoDBから日記のタイトルを取得するAWS Lambdaハンドラ関数。
-
-    この関数は以下を行います:
-    - コンテキストからユーザーIDを抽出（Cognitoアイデンティティを使用）。
-    - 受信イベントのクエリパラメータから日付を抽出。
-    - ユーザーIDと日付を使用してDynamoDBから日記のタイトルを取得。
-    - タイトルが見つかった場合は、HTTP 200ステータスコードでタイトルを含むJSONレスポンスを返却。
-    - タイトルが見つからなかった場合は、空のタイトルを返却。
-    - 例外が発生した場合は、HTTP 400ステータスコードとエラーメッセージを返却。
-
-    Args:
-        event (dict): クエリパラメータやその他のデータを含む受信リクエストの詳細。
-        context (object): 実行時情報を提供するコンテキストオブジェクト。
-
-    Returns:
-        dict: ステータスコード、ヘッダー、JSON本文を含むHTTPレスポンス。
-    """
-    try:
-        user_id = event["requestContext"]["authorizer"]["claims"]["sub"]
-        date = event["queryStringParameters"]["date"]
 
 def create_response(status_code: int, body: Dict[str, Any]) -> Dict[str, Any]:
     """HTTP レスポンスを生成する
@@ -59,11 +38,19 @@ def create_response(status_code: int, body: Dict[str, Any]) -> Dict[str, Any]:
         },
     }
 
+
 def validate_date(date: str) -> bool:
     """日付形式を検証する
 
     Args:
         date (str): 検証する日付文字列
+
+    Returns:
+        bool: 日付が有効な場合True
+    """
+    # ここに日付バリデーションロジックを実装
+    return bool(date and isinstance(date, str))
+
 
 def get_title_from_dynamodb(user_id: str, date: str) -> Optional[str]:
     """ユーザーIDと日付を使用してDynamoDBからタイトルを取得する
