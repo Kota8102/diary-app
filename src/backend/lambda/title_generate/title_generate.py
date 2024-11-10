@@ -75,7 +75,7 @@ def generate_title_and_save_to_dynamodb(diary_content, record):
 
     system_message = """Please write a title of 10 words or less based on the contents of your diary.""".strip()
     request_data = {
-        "model": "gpt-3.5-turbo",
+        "model": "gpt-4o-mini",
         "messages": [
             {"role": "system", "content": system_message},
             {"role": "user", "content": diary_content}
