@@ -10,7 +10,7 @@ import '../styles/calendar.css'
 export const Calendar = () => {
   return (
     <div>
-      <ContentLayout pagetitle="Calendar">
+      <ContentLayout pagetitle="Calendar" showHeaderIcon={true}>
         <div className="pt-5">
           <FullCalendar
             plugins={[dayGridPlugin, interactionPlugin]}
