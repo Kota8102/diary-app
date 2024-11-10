@@ -87,11 +87,18 @@ def generate_title_and_save_to_dynamodb(diary_content, record):
             api_endpoint, api_key, request_data)
         generated_title = json.loads(
             response)['choices'][0]['message']['content']
-    except Exception as e:
-        logger.error(f"An error occurred during OpenAI API call: {str(e)}")
+    except urllib.error.HTTPError as e:
+        if e.code == 429:
+            logger.error("API request rate limit exceeded or usage has exceeded billing threshold. "
+                         "Please wait and try again or check your account billing details.")
+        else:
+            logger.error(
+                f"An HTTP error occurred during OpenAI API call: {str(e)}")
         raise
-
-    logger.info(f"title: {generated_title}")
+    except Exception as e:
+        logger.error(
+            f"An unexpected error occurred during OpenAI API call: {str(e)}")
+        raise
 
     dynamodb = boto3.resource('dynamodb')
     table_name = os.environ['TABLE_NAME']
@@ -128,8 +135,17 @@ def get_parameter_from_parameter_store(parameter_name):
     try:
         response = ssm.get_parameter(Name=parameter_name, WithDecryption=True)
         return response['Parameter']['Value']
+    except response.exceptions.HTTPError as e:
+        if e.response.status_code == 429:
+            logger.error("API request rate limit exceeded or usage has exceeded billing threshold. "
+                         "Please wait and try again or check your account billing details.")
+        else:
+            logger.error(f"An error occurred during OpenAI API call: {str(e)}")
+        raise
     except Exception as e:
-        return f"An error occurred during getting parameter from parameter store: {str(e)}"
+        logger.error(
+            f"An unexpected error occurred during OpenAI API call: {str(e)}")
+        raise
 
 
 def send_request_to_openai_api(api_endpoint, api_key, request_data):
