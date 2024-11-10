@@ -1,12 +1,20 @@
 import json
+import logging
 import os
 import urllib.parse
 import urllib.request
-from logging import getLogger
 
 import boto3
 
-logger = getLogger(__name__)
+logger = logging.getLogger(__name__)
+# ロガーの設定
+formatter = logging.Formatter(
+    "[%(asctime)s - %(levelname)s - %(filename)s(func:%(funcName)s, line:%(lineno)d)] %(message)s"
+)
+handler = logging.StreamHandler()
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+logger.setLevel(logging.INFO)
 
 
 def lambda_handler(event, context):
@@ -28,20 +36,20 @@ def lambda_handler(event, context):
     """
     logger.info("title generate lambda start")
     try:
-        record = event['Records'][0]
-        if record['eventName'] == 'INSERT':
-            logger.info(
-                f"content: {record['dynamodb']['NewImage']['content']['S']}")
-            diary_content = record['dynamodb']['NewImage']['content']['S']
-            generate_title_and_save_to_dynamodb(diary_content, record)
+        record = event["Records"][0]
+        if record["eventName"] == "INSERT":
+            logger.info(f"content: {record['dynamodb']['NewImage']['content']['S']}")
+            diary_content = record["dynamodb"]["NewImage"]["content"]["S"]
+            generated_title = generate_title_from_content(diary_content)
+            save_title_to_dynamodb(generated_title, record)
 
         return {
-            'statusCode': 200,
-            'body': json.dumps('Processed DynamoDB Stream records.'),
-            'headers': {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*'
-            }
+            "statusCode": 200,
+            "body": json.dumps("Processed DynamoDB Stream records."),
+            "headers": {
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Origin": "*",
+            },
         }
     except Exception as e:
         return {
@@ -54,23 +62,23 @@ def lambda_handler(event, context):
         }
 
 
-def generate_title_and_save_to_dynamodb(diary_content, record):
-    """ChatGPTを使用して日記の内容からタイトルを生成し、DynamoDBに保存します。
+def generate_title_from_content(diary_content):
+    """ChatGPTを使用して日記の内容からタイトルを生成します。
 
     Args:
         diary_content (string): 日記の内容
-        record (dict): Lambda関数のイベントレコード
 
     Returns:
-        none
+        string: 生成されたタイトル
     """
     api_endpoint = "https://api.openai.com/v1/chat/completions"
 
     try:
-        api_key = get_parameter_from_parameter_store('OpenAI_API_KEY')
+        api_key = get_parameter_from_parameter_store("OpenAI_API_KEY")
     except Exception as e:
         logger.error(
-            f"An error occurred during getting parameter from parameter store: {str(e)}")
+            f"An error occurred during getting parameter from parameter store: {str(e)}"
+        )
         raise
 
     system_message = """Please write a title of 10 words or less based on the contents of your diary.""".strip()
@@ -78,41 +86,49 @@ def generate_title_and_save_to_dynamodb(diary_content, record):
         "model": "gpt-4o-mini",
         "messages": [
             {"role": "system", "content": system_message},
-            {"role": "user", "content": diary_content}
+            {"role": "user", "content": diary_content},
         ],
         "temperature": 0.7,
     }
     try:
-        response = send_request_to_openai_api(
-            api_endpoint, api_key, request_data)
-        generated_title = json.loads(
-            response)['choices'][0]['message']['content']
+        response = send_request_to_openai_api(api_endpoint, api_key, request_data)
+        generated_title = json.loads(response)["choices"][0]["message"]["content"]
+        return generated_title
     except urllib.error.HTTPError as e:
         if e.code == 429:
-            logger.error("API request rate limit exceeded or usage has exceeded billing threshold. "
-                         "Please wait and try again or check your account billing details.")
-        else:
             logger.error(
-                f"An HTTP error occurred during OpenAI API call: {str(e)}")
+                "API request rate limit exceeded or usage has exceeded billing threshold. "
+                "Please wait and try again or check your account billing details."
+            )
+        else:
+            logger.error(f"An HTTP error occurred during OpenAI API call: {str(e)}")
         raise
     except Exception as e:
-        logger.error(
-            f"An unexpected error occurred during OpenAI API call: {str(e)}")
+        logger.error(f"An unexpected error occurred during OpenAI API call: {str(e)}")
         raise
 
-    dynamodb = boto3.resource('dynamodb')
-    table_name = os.environ['TABLE_NAME']
+
+def save_title_to_dynamodb(generated_title, record):
+    """生成されたタイトルをDynamoDBに保存します。
+
+    Args:
+        generated_title (string): 生成されたタイトル
+        record (dict): Lambda関数のイベントレコード
+
+    Returns:
+        none
+    """
+    dynamodb = boto3.resource("dynamodb")
+    table_name = os.environ["TABLE_NAME"]
     table = dynamodb.Table(table_name)
     try:
         dynamodb_response = table.update_item(
             Key={
-                'user_id': record['dynamodb']['NewImage']['user_id']['S'],
-                'date': record['dynamodb']['NewImage']['date']['S']
+                "user_id": record["dynamodb"]["NewImage"]["user_id"]["S"],
+                "date": record["dynamodb"]["NewImage"]["date"]["S"],
             },
             UpdateExpression="set title = :t",
-            ExpressionAttributeValues={
-                ':t': generated_title
-            }
+            ExpressionAttributeValues={":t": generated_title},
         )
         logger.info(f"DynamoDB update response: {dynamodb_response}")
     except Exception as e:
@@ -130,14 +146,16 @@ def get_parameter_from_parameter_store(parameter_name):
         string: OpenAI APIトークン
     """
 
-    ssm = boto3.client('ssm', region_name=os.environ.get(
-        'AWS_REGION', 'ap-northeast-1'))
+    ssm = boto3.client(
+        "ssm", region_name=os.environ.get("AWS_REGION", "ap-northeast-1")
+    )
     try:
         response = ssm.get_parameter(Name=parameter_name, WithDecryption=True)
-        return response['Parameter']['Value']
+        return response["Parameter"]["Value"]
     except Exception as e:
         logger.error(
-            f"An unexpected error occurred during get parameter fro parameter store: {str(e)}")
+            f"An unexpected error occurred during get parameter fro parameter store: {str(e)}"
+        )
         raise
 
 
@@ -146,16 +164,13 @@ def send_request_to_openai_api(api_endpoint, api_key, request_data):
 
     Args:
         api_endpoint (string): OpenAI APIエンドポイント
-        api_key (string): OpenAI APIキー 
+        api_key (string): OpenAI APIキー
         request_data (string): ChatGPTへのリクエストデータ
 
     Returns:
         dict: ChatGPTへのAPIリクエストのレスポンスデータ
     """
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + api_key
-    }
+    headers = {"Content-Type": "application/json", "Authorization": "Bearer " + api_key}
 
     data = json.dumps(request_data).encode("utf-8")
     req = urllib.request.Request(api_endpoint, data=data, headers=headers)

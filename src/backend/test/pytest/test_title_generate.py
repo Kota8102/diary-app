@@ -1,115 +1,102 @@
-import importlib.util
 import json
 import os
-import urllib
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
+from title_generate.title_generate import (
+    generate_title_from_content,
+    get_parameter_from_parameter_store,
+    save_title_to_dynamodb,
+    send_request_to_openai_api,
+)
 
-module_name = 'title_generate'
-module_path = os.path.abspath(os.path.join(
-    os.path.dirname(__file__), '../..', 'lambda', 'title_generate', 'title_generate.py'))
-spec = importlib.util.spec_from_file_location(module_name, module_path)
-title_generate = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(title_generate)
 
-
-@patch.dict(os.environ, {'TABLE_NAME': 'TestTable'})
-@patch.object(title_generate.boto3, 'resource')
-# Mocking boto3 client for Parameter Store
-@patch.object(title_generate.boto3, 'client')
-@patch.object(title_generate, 'send_request_to_openai_api')
-def test_lambda_handler_success(mock_openai_api, mock_boto_client, mock_boto_resource):
-    # Mock Parameter Store to return a fake API key
-    mock_ssm = MagicMock()
-    mock_ssm.get_parameter.return_value = {
-        'Parameter': {'Value': 'mocked-api-key'}}
-    mock_boto_client.return_value = mock_ssm
-
-    # Mock OpenAI API response
-    mock_openai_api.return_value = json.dumps({
-        'choices': [{
-            'message': {
-                'content': 'Generated Diary Title'
+# Fixture for DynamoDB event
+@pytest.fixture
+def dynamodb_record():
+    return {
+        "dynamodb": {
+            "NewImage": {
+                "user_id": {"S": "test-user-id"},
+                "date": {"S": "2024-03-15"},
+                "content": {"S": "今日は良い天気だった"},
             }
-        }]
-    })
-
-    # Set up mock DynamoDB resource
-    mock_dynamodb = MagicMock()
-    mock_table = MagicMock()
-    mock_boto_resource.return_value = mock_dynamodb
-    mock_dynamodb.Table.return_value = mock_table
-
-    # Create a mock DynamoDB stream event
-    event = {
-        "Records": [{
-            "eventName": "INSERT",
-            "dynamodb": {
-                "NewImage": {
-                    "content": {"S": "This is a diary entry."},
-                    "user_id": {"S": "user123"},
-                    "date": {"S": "2024-10-18"}
-                }
-            }
-        }]
+        }
     }
 
-    # Call the Lambda function
-    response = title_generate.lambda_handler(event, None)
 
-    # Check the response
-    assert response['statusCode'] == 200
-    body = json.loads(response['body'])
-    assert body == 'Processed DynamoDB Stream records.'
+# Test for generate_title_from_content
+def test_generate_title_from_content():
+    """ChatGPTを使ったタイトル生成のテスト"""
+    diary_content = "今日は楽しい一日でした"
+    expected_title = "A joyful day"
 
-    # Ensure the title was saved in DynamoDB
-    mock_table.update_item.assert_called_once_with(
-        Key={'user_id': 'user123', 'date': '2024-10-18'},
-        UpdateExpression="set title = :t",
-        ExpressionAttributeValues={':t': 'Generated Diary Title'}
-    )
+    with patch(
+        "title_generate.title_generate.get_parameter_from_parameter_store",
+        return_value="fake-api-key",
+    ), patch(
+        "title_generate.title_generate.send_request_to_openai_api",
+        return_value=json.dumps(
+            {"choices": [{"message": {"content": expected_title}}]}
+        ),
+    ):
+        title = generate_title_from_content(diary_content)
+        assert title == expected_title
 
 
-@patch.dict(os.environ, {'TABLE_NAME': 'TestTable'})
-@patch.object(title_generate.boto3, 'resource')
-# Mocking boto3 client for Parameter Store
-@patch.object(title_generate.boto3, 'client')
-@patch.object(title_generate, 'send_request_to_openai_api')
-def test_lambda_handler_error(mock_openai_api, mock_boto_client, mock_boto_resource):
-    # Mock Parameter Store to return a fake API key
-    mock_ssm = MagicMock()
-    mock_ssm.get_parameter.return_value = {
-        'Parameter': {'Value': 'mocked-api-key'}}
-    mock_boto_client.return_value = mock_ssm
+# Test for save_title_to_dynamodb
+def test_save_title_to_dynamodb(dynamodb_record):
+    """DynamoDBに生成されたタイトルを保存するテスト"""
+    generated_title = "A joyful day"
 
-    # Simulate an error from OpenAI API
-    mock_openai_api.side_effect = Exception("OpenAI API failure")
+    with patch("boto3.resource") as mock_dynamodb_resource, patch.dict(
+        os.environ, {"TABLE_NAME": "test-table"}
+    ):
+        table = mock_dynamodb_resource.return_value.Table.return_value
+        save_title_to_dynamodb(generated_title, dynamodb_record)
+        table.update_item.assert_called_once_with(
+            Key={"user_id": "test-user-id", "date": "2024-03-15"},
+            UpdateExpression="set title = :t",
+            ExpressionAttributeValues={":t": generated_title},
+        )
 
-    # Set up mock DynamoDB resource
-    mock_dynamodb = MagicMock()
-    mock_table = MagicMock()
-    mock_boto_resource.return_value = mock_dynamodb
-    mock_dynamodb.Table.return_value = mock_table
 
-    # Create a mock DynamoDB stream event
-    event = {
-        "Records": [{
-            "eventName": "INSERT",
-            "dynamodb": {
-                "NewImage": {
-                    "content": {"S": "This is a diary entry."},
-                    "user_id": {"S": "user123"},
-                    "date": {"S": "2024-10-18"}
-                }
-            }
-        }]
+# Test for get_parameter_from_parameter_store
+def test_get_parameter_from_parameter_store():
+    """パラメータストアからAPIキーを取得するテスト"""
+    parameter_name = "OpenAI_API_KEY"
+    expected_value = "fake-api-key"
+
+    with patch("boto3.client") as mock_ssm:
+        mock_ssm.return_value.get_parameter.return_value = {
+            "Parameter": {"Value": expected_value}
+        }
+        api_key = get_parameter_from_parameter_store(parameter_name)
+        assert api_key == expected_value
+
+
+# Test for send_request_to_openai_api
+def test_send_request_to_openai_api():
+    """OpenAI APIへのリクエスト送信のテスト"""
+    api_endpoint = "https://api.openai.com/v1/chat/completions"
+    api_key = "fake-api-key"
+    request_data = {
+        "model": "gpt-4o-mini",
+        "messages": [
+            {
+                "role": "system",
+                "content": "Please write a title of 10 words or less based on the contents of your diary.",
+            },
+            {"role": "user", "content": "今日は楽しい一日でした"},
+        ],
+        "temperature": 0.7,
     }
 
-    # Call the Lambda function
-    response = title_generate.lambda_handler(event, None)
-
-    # Check the response for error
-    assert response['statusCode'] == 400
-    body = json.loads(response['body'])
-    assert "An error occurred" in body
+    with patch("urllib.request.urlopen") as mock_urlopen:
+        mock_urlopen.return_value.read.return_value = json.dumps(
+            {"choices": [{"message": {"content": "A joyful day"}}]}
+        ).encode("utf-8")
+        response = send_request_to_openai_api(api_endpoint, api_key, request_data)
+        assert (
+            json.loads(response)["choices"][0]["message"]["content"] == "A joyful day"
+        )

@@ -3,6 +3,7 @@ from unittest.mock import MagicMock
 
 from title_get.title_get import create_response, validate_date
 
+
 def test_create_response_success():
     """create_response関数の正常系テスト"""
     # テストデータ
@@ -35,6 +36,7 @@ def test_validate_date():
     assert validate_date(["2024-03-15"]) is False  # リスト
 
     assert validate_date({"date": "2024-03-15"}) is False  # 辞書
+
 
 def create_mock_context():
     """テスト用のモックコンテキストを作成"""
