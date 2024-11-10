@@ -3,7 +3,7 @@ import { Button } from '@/components/Elements/Button'
 import { ContentLayout } from '@/components/layout/ContentLayout'
 import { useLocation, useNavigate } from 'react-router-dom'
 
-export const WriteDiary = () => {
+export const DiaryRoute = () => {
   // 今日の日付を取得
   const today = new Date()
     .toLocaleDateString('ja-JP', {

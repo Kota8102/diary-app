@@ -5,11 +5,11 @@ import { useNavigate, useParams } from 'react-router-dom'
 
 import { DisabledButton } from '@/components/Elements/Button'
 import { ContentLayout } from '@/components/layout/ContentLayout'
-import { useCreateDiary } from '../api/create-diary'
+import { useCreateDiary } from '@/features/writeDiary/api/create-diary'
 
-import '../styles/react-datetime.css'
+import '@/features/writeDiary/styles/react-datetime.css'
 
-export const WriteDiaryInput = () => {
+export const DiaryCreateRoute = () => {
   const { date } = useParams<{ date: string }>()
   const navigate = useNavigate()
 
