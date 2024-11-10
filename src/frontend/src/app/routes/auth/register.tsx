@@ -3,9 +3,10 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { useAuth } from '@/lib/auth/cognito-auth'
-import { Input } from '../components'
 
-export const SignUp = () => {
+import { Input } from '@/features/auth/components/input'
+
+export const RegisterRoute = () => {
   const { signUp } = useAuth() // useAuth フックから signUp 関数を取得
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -23,7 +24,7 @@ export const SignUp = () => {
     } else {
       setError('')
       alert('登録成功！確認コードを入力してアカウントを有効化してください。')
-      navigate('/auth/confirm')
+      navigate('/auth/verify-email')
     }
   }
 

@@ -5,9 +5,9 @@ import FullCalendar from '@fullcalendar/react'
 
 import { ContentLayout } from '@/components/layout'
 
-import '../styles/calendar.css'
+import '@/features/diary/styles/calendar.css'
 
-export const Calendar = () => {
+export const CalendarRoute = () => {
   return (
     <div>
       <ContentLayout pagetitle="Calendar" showHeaderIcon={true}>

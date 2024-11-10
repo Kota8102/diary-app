@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { useAuth } from '@/lib/auth/cognito-auth'
-import { Input } from '../components'
+import { Input } from '@/features/auth/components/input'
 
-export const Login = () => {
+import { useAuth } from '@/lib/auth/cognito-auth'
+
+export const LoginRoute = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
@@ -18,7 +19,7 @@ export const Login = () => {
     const result = await signIn(username, password)
 
     if (result.success) {
-      navigate('/calendar') // ログイン成功後のリダイレクト先
+      navigate('/app/diary') // ログイン成功後のリダイレクト先
     } else {
       setErrorMessage(result.message)
     }

@@ -23,31 +23,31 @@ type TabConfig = {
 
 const TAB_ITEMS: TabConfig[] = [
   {
-    path: '/calendar',
+    path: '/app/calendar',
     label: 'カレンダー',
     activeIcon: calendar,
     inactiveIcon: outlinedCalendar,
   },
   {
-    path: '/bouquet',
+    path: '/app/bouquet',
     label: '花束をみる',
     activeIcon: bouquet,
     inactiveIcon: outlinedBouquet,
   },
   {
-    path: `/flower/${getToday()}`,
+    path: `/app/flower/${getToday()}`,
     label: '花をみる',
     activeIcon: flower,
     inactiveIcon: outlinedFlower,
   },
   {
-    path: '/diary',
+    path: '/app/diary',
     label: '日記を追加',
     activeIcon: add,
     inactiveIcon: outlinedAdd,
   },
   {
-    path: '/setting',
+    path: '/app/setting',
     label: '設定',
     activeIcon: setting,
     inactiveIcon: outlinedSetting,

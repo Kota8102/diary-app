@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { ContentLayout } from '@/components/layout'
 import { useAuth } from '@/lib/auth/cognito-auth'
 
-export const Setting = () => {
+export const SettingRoute = () => {
   const { signOut } = useAuth()
   const navigate = useNavigate()
 

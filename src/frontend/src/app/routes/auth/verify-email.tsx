@@ -3,10 +3,10 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { AuthLayout } from '@/components/layout'
+import { Input } from '@/features/auth/components/input'
 import { useAuth } from '@/lib/auth/cognito-auth'
-import { Input } from '../components'
 
-export const ConfirmSignUp = () => {
+export const VerifyEmailRoute = () => {
   const { confirmSignUp, signIn } = useAuth()
   const [verificationCode, setVerificationCode] = useState('')
   const [username, setUsername] = useState('')
