@@ -12,7 +12,6 @@ spec = importlib.util.spec_from_file_location(module_name, module_path)
 title_get = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(title_get)
 
-
 @patch.object(title_get.boto3, 'resource')
 @patch.dict('os.environ', {'TABLE_NAME': 'TestTable'})
 def test_lambda_handler_success(mock_boto_resource):
@@ -23,18 +22,22 @@ def test_lambda_handler_success(mock_boto_resource):
     mock_dynamodb.Table.return_value = mock_table
     mock_boto_resource.return_value = mock_dynamodb
 
-    # Mock context
-    class Context:
-        def __init__(self):
-            self.identity = MagicMock()
-            self.identity.cognito_identity_id = '123'
-
+    # Mock event with requestContext and authorizer
     event = {
         "queryStringParameters": {
             "date": "2024-08-21"
+        },
+        "requestContext": {
+            "authorizer": {
+                "claims": {
+                    "sub": "123"
+                }
+            }
         }
     }
-    context = Context()
+    
+    # Mock context
+    context = MagicMock()
 
     # Call the Lambda function
     response = title_get.lambda_handler(event, context)
@@ -55,18 +58,22 @@ def test_lambda_handler_no_title(mock_boto_resource):
     mock_dynamodb.Table.return_value = mock_table
     mock_boto_resource.return_value = mock_dynamodb
 
-    # Mock context
-    class Context:
-        def __init__(self):
-            self.identity = MagicMock()
-            self.identity.cognito_identity_id = '123'
-
+    # Mock event with requestContext and authorizer
     event = {
         "queryStringParameters": {
             "date": "2024-08-21"
+        },
+        "requestContext": {
+            "authorizer": {
+                "claims": {
+                    "sub": "123"
+                }
+            }
         }
     }
-    context = Context()
+    
+    # Mock context
+    context = MagicMock()
 
     # Call the Lambda function
     response = title_get.lambda_handler(event, context)
@@ -79,23 +86,27 @@ def test_lambda_handler_no_title(mock_boto_resource):
 
 @patch.object(title_get.boto3, 'resource')
 def test_lambda_handler_table_not_found(mock_boto_resource):
-    # Set up mock DynamoDB resource with table not found!
+    # Set up mock DynamoDB resource with table not found
     mock_dynamodb = MagicMock()
     mock_dynamodb.Table.side_effect = Exception("Table not found")
     mock_boto_resource.return_value = mock_dynamodb
 
-    # Mock context
-    class Context:
-        def __init__(self):
-            self.identity = MagicMock()
-            self.identity.cognito_identity_id = '123'
-
+    # Mock event with requestContext and authorizer
     event = {
         "queryStringParameters": {
             "date": "2024-08-21"
+        },
+        "requestContext": {
+            "authorizer": {
+                "claims": {
+                    "sub": "123"
+                }
+            }
         }
     }
-    context = Context()
+    
+    # Mock context
+    context = MagicMock()
 
     # Call the Lambda function
     response = title_get.lambda_handler(event, context)
