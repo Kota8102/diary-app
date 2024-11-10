@@ -135,16 +135,9 @@ def get_parameter_from_parameter_store(parameter_name):
     try:
         response = ssm.get_parameter(Name=parameter_name, WithDecryption=True)
         return response['Parameter']['Value']
-    except response.exceptions.HTTPError as e:
-        if e.response.status_code == 429:
-            logger.error("API request rate limit exceeded or usage has exceeded billing threshold. "
-                         "Please wait and try again or check your account billing details.")
-        else:
-            logger.error(f"An error occurred during OpenAI API call: {str(e)}")
-        raise
     except Exception as e:
         logger.error(
-            f"An unexpected error occurred during OpenAI API call: {str(e)}")
+            f"An unexpected error occurred during get parameter fro parameter store: {str(e)}")
         raise
 
 
