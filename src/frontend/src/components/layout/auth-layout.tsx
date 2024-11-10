@@ -5,5 +5,5 @@ type AuthLayoutProps = {
 }
 
 export const AuthLayout = ({ children }: AuthLayoutProps) => {
-  return <div className="min-h-screen py-12 px-5">{children}</div>
+  return <div className="h-screen px-4 pb-16">{children}</div>
 }
