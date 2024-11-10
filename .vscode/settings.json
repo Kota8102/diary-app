@@ -1,6 +1,6 @@
 {
-  "editor.defaultFormatter": "biomejs.biome",
   "editor.formatOnSave": true,
+  "editor.tabSize": 2,
   "editor.codeActionsOnSave": {
     "source.organizeImports.biome": "explicit"
   },
@@ -11,5 +11,17 @@
       "source.organizeImports": "explicit"
     },
     "editor.defaultFormatter": "charliermarsh.ruff"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "biomejs.biome"
   }
 }
