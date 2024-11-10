@@ -23,7 +23,7 @@ def lambda_handler(event, context):
         dict: ステータスコード、ヘッダー、JSON本文を含むHTTPレスポンス。
     """
     try:
-        user_id = context.identity.cognito_identity_id
+        user_id = event["requestContext"]["authorizer"]["claims"]["sub"]
         date = event["queryStringParameters"]["date"]
 
         # Fetch item from DynamoDB
