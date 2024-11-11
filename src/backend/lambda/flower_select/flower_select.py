@@ -41,7 +41,8 @@ def lambda_handler(event, context):
             diary_content = record["dynamodb"]["NewImage"]["content"]["S"]
             user_id = record["dynamodb"]["NewImage"]["user_id"]["S"]
             date = record["dynamodb"]["NewImage"]["date"]["S"]
-            select_flower_and_save_to_dynamodb(user_id, date, diary_content)
+            flower_id = select_flower(diary_content)
+            save_to_dynamodb(user_id, date, flower_id)
         return {
             "statusCode": 200,
             "body": json.dumps("Processed DynamoDB Stream records."),
@@ -61,21 +62,61 @@ def lambda_handler(event, context):
         }
 
 
-def select_flower_and_save_to_dynamodb(user_id, date, diary_content):
-    """日記の内容に基づいて花を選択し、その花のIDをDynamoDBに保存します。
+def select_flower(diary_content):
+    """日記の内容に基づいて花を選択し、花のIDを返します。
 
     この関数は次の処理を行います:
     - パラメータストアからAPIキーを取得。
     - 日記の内容を使用してAPIを呼び出し、花を選択。
-    - 選択した花のIDをDynamoDBに保存。
 
     Args:
         diary_content (str): 日記の内容。
-        date (str): 花を選択する日付。
+
+    Returns:
+        str: 選択された花のID。
     """
     api_key = get_parameter_from_parameter_store("DIFY_API_KEY")
-    flower_id = select_flower_using_api(api_key, diary_content)
-    save_flower_id_to_dynamodb(user_id, date, flower_id)
+    return select_flower_using_api(api_key, diary_content)
+
+
+def save_to_dynamodb(user_id, date, flower_id):
+    """選択された花のIDをDynamoDBに保存します。
+
+    Args:
+        user_id (str): ユーザーのID。
+        date (str): 花を選択する日付。
+        flower_id (str): 保存する選択された花のID。
+
+    Raises:
+        Exception: DynamoDBへの保存が失敗した場合。
+    """
+    logger.info("save_flower_id_to_dynamodb")
+
+    dynamodb = boto3.resource("dynamodb")
+    table_name = os.environ["GENERATIVE_AI_TABLE_NAME"]
+    table = dynamodb.Table(table_name)
+
+    item = {
+        "user_id": user_id,
+        "date": date,
+    }
+
+    update_expression = "set flower_id = :flower"
+    expression_attribute_values = {
+        ':flower': flower_id
+    }
+
+    try:
+        response = table.update_item(
+            Key=item,
+            UpdateExpression=update_expression,
+            ExpressionAttributeValues=expression_attribute_values
+        )
+        logger.info(f"DynamoDB Update Response: {response}")
+
+    except Exception as e:
+        logger.error(f"Error saving to DynamoDB: {e}")
+        raise
 
 
 def get_parameter_from_parameter_store(parameter_name):
@@ -137,43 +178,3 @@ def select_flower_using_api(api_key, query):
 
     logger.info("Answer: ", flower_id)
     return flower_id
-
-
-def save_flower_id_to_dynamodb(user_id, date, flower_id):
-    """選択された花のIDをDynamoDBに保存します。
-
-    Args:
-        user_id (str): ユーザーのID。
-        date (str): 花を選択する日付。
-        flower_id (str): 保存する選択された花のID。
-
-    Raises:
-        Exception: DynamoDBへの保存が失敗した場合。
-    """
-    logger.info("save_flower_id_to_dynamodb")
-
-    dynamodb = boto3.resource("dynamodb")
-    table_name = os.environ["GENERATIVE_AI_TABLE_NAME"]
-    table = dynamodb.Table(table_name)
-
-    item = {
-        "user_id": user_id,
-        "date": date,
-    }
-
-    update_expression = "set flower_id = :flower"
-    expression_attribute_values = {
-        ':flower': flower_id
-    }
-
-    try:
-        response = table.update_item(
-            Key=item,
-            UpdateExpression=update_expression,
-            ExpressionAttributeValues=expression_attribute_values
-        )
-        logger.info(f"DynamoDB Update Response: {response}")
-
-    except Exception as e:
-        logger.error(f"Error saving to DynamoDB: {e}")
-        raise
