@@ -1,9 +1,11 @@
+import json
 import os
 from unittest.mock import MagicMock, patch
 
 import pytest
 from flower_select.flower_select import (
     get_parameter_from_parameter_store,
+    lambda_handler,
     save_to_dynamodb,
     select_flower,
     select_flower_using_api,
@@ -18,22 +20,13 @@ def create_mock_context():
     return context
 
 
-# Fixture for DynamoDB event
+# Fixture for lambda event
 @pytest.fixture
-def dynamodb_record():
+def lambda_event():
     return {
-        "Records": [
-            {
-                "eventName": "INSERT",
-                "dynamodb": {
-                    "NewImage": {
-                        "content": {"S": "今日は良い天気だった"},
-                        "user_id": {"S": "test-user-id"},
-                        "date": {"S": "2024-03-15"},
-                    }
-                },
-            }
-        ]
+        "user_id": "test-user-id",
+        "date": "2024-03-15",
+        "diary_content": "今日は良い天気だった",
     }
 
 

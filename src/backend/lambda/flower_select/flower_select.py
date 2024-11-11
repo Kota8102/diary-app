@@ -17,35 +17,36 @@ logger.setLevel(logging.INFO)
 
 
 def lambda_handler(event, context):
-    """DynamoDBストリームレコードを処理するAWS Lambdaハンドラ関数。
+    """別のLambdaから呼び出され、日記の内容に基づいて花を選び、DynamoDBに保存します。
 
     この関数は次の処理を行います:
-    - 受信したDynamoDBストリームレコードを順に処理。
-    - イベント名が「INSERT」であるか確認。
-    - DynamoDBレコードの新しいイメージから日記の内容を抽出。
-    - 日記内容に基づいて花を選択し、花のIDをDynamoDBに保存する関数を呼び出します。
+    - 引数として受け取った日記の内容を使用して花を選択。
+    - 選択された花のIDをDynamoDBに保存。
 
     Args:
-        event (dict): 処理するレコードを含むDynamoDBストリームイベント。
+        event (dict): 別のLambdaから渡される引数で、user_id, date, diary_content を含む。
         context (object): ランタイム情報を提供するコンテキストオブジェクト。
 
     Returns:
         dict: ステータスコード、ヘッダー、JSON本文を含むHTTPレスポンス。
-            - 成功時 (200): レコードが処理された旨のメッセージを返します。
+            - 成功時 (200): 花のIDが保存された旨のメッセージを返します。
             - 失敗時 (400): エラーメッセージとエラーの内容を返します。
     """
     logger.info("Flower Generate Function Start")
     try:
-        record = event["Records"][0]
-        if record["eventName"] == "INSERT":
-            diary_content = record["dynamodb"]["NewImage"]["content"]["S"]
-            user_id = record["dynamodb"]["NewImage"]["user_id"]["S"]
-            date = record["dynamodb"]["NewImage"]["date"]["S"]
-            flower_id = select_flower(diary_content)
-            save_to_dynamodb(user_id, date, flower_id)
+        user_id = event["user_id"]
+        date = event["date"]
+        diary_content = event["diary_content"]
+
+        # 日記の内容に基づいて花を選択
+        flower_id = select_flower(diary_content)
+
+        # 選択した花のIDをDynamoDBに保存
+        save_to_dynamodb(user_id, date, flower_id)
+
         return {
             "statusCode": 200,
-            "body": json.dumps("Processed DynamoDB Stream records."),
+            "body": json.dumps("Flower ID saved to DynamoDB."),
             "headers": {
                 "Content-Type": "application/json",
                 "Access-Control-Allow-Origin": "*",

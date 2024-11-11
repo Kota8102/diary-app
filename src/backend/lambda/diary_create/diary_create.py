@@ -58,10 +58,31 @@ def lambda_handler(event, context):
         # DynamoDBにアイテムを保存
         table.put_item(Item=item)
 
+        # 同期的に別のLambda関数を呼び出して、日記内容に基づいて花を選択し保存する
+        lambda_client = boto3.client("lambda")
+        response = lambda_client.invoke(
+            FunctionName=os.getenv(
+                "FLOWER_SELECT_FUNCTION_NAME"),  # 呼び出すLambda関数名
+            InvocationType="RequestResponse",  # 同期で呼び出し
+            Payload=json.dumps({
+                "user_id": user_id,
+                "date": date,
+                "diary_content": content
+            })
+        )
+
+        # 呼び出したLambdaのレスポンスを取得
+        response_payload = json.loads(response['Payload'].read())
+        logger.info(
+            f"Received response from Flower Lambda: {response_payload}")
+
         # 成功レスポンスの返却
         return {
             "statusCode": 201,
-            "body": json.dumps("Success"),
+            "body": json.dumps({
+                "message": "Success",
+                "flower_lambda_response": response_payload
+            }),
             "headers": {
                 "Content-Type": "application/json",
                 "Access-Control-Allow-Origin": "*",
