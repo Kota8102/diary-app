@@ -1,8 +1,19 @@
 import json
+import logging
 import os
 
 import boto3
 import requests
+
+logger = logging.getLogger(__name__)
+# ロガーの設定
+formatter = logging.Formatter(
+    "[%(asctime)s - %(levelname)s - %(filename)s(func:%(funcName)s, line:%(lineno)d)] %(message)s"
+)
+handler = logging.StreamHandler()
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+logger.setLevel(logging.INFO)
 
 
 def lambda_handler(event, context):
@@ -23,15 +34,13 @@ def lambda_handler(event, context):
             - 成功時 (200): レコードが処理された旨のメッセージを返します。
             - 失敗時 (400): エラーメッセージとエラーの内容を返します。
     """
-    print("Flower Generate Function Start")
+    logger.info("Flower Generate Function Start")
     try:
         record = event["Records"][0]
-        print(f"record: {record}")
         if record["eventName"] == "INSERT":
             diary_content = record["dynamodb"]["NewImage"]["content"]["S"]
             user_id = record["dynamodb"]["NewImage"]["user_id"]["S"]
             date = record["dynamodb"]["NewImage"]["date"]["S"]
-            print(f"content: {diary_content}")
             select_flower_and_save_to_dynamodb(user_id, date, diary_content)
         return {
             "statusCode": 200,
@@ -81,8 +90,7 @@ def get_parameter_from_parameter_store(parameter_name):
     Raises:
         Exception: パラメータの取得に失敗した場合。
     """
-
-    print("get_parameter_from_parameter_store")
+    logger.info("get_parameter_from_parameter_store")
     try:
         ssm = boto3.client("ssm")
         response = ssm.get_parameter(Name=parameter_name, WithDecryption=True)
@@ -104,7 +112,7 @@ def select_flower_using_api(api_key, query):
     Raises:
         Exception: API呼び出しが失敗またはエラーを返した場合。
     """
-    print("select flower using api")
+    logger.info("select flower using api")
     BASE_URL = 'https://api.dify.ai/v1'
 
     headers = {
@@ -127,7 +135,7 @@ def select_flower_using_api(api_key, query):
 
     flower_id = response.json()["answer"]
 
-    print("Answer: ", flower_id)
+    logger.info("Answer: ", flower_id)
     return flower_id
 
 
@@ -142,7 +150,7 @@ def save_flower_id_to_dynamodb(user_id, date, flower_id):
     Raises:
         Exception: DynamoDBへの保存が失敗した場合。
     """
-    print("save_flower_id_to_dynamodb")
+    logger.info("save_flower_id_to_dynamodb")
 
     dynamodb = boto3.resource("dynamodb")
     table_name = os.environ["GENERATIVE_AI_TABLE_NAME"]
@@ -164,8 +172,8 @@ def save_flower_id_to_dynamodb(user_id, date, flower_id):
             UpdateExpression=update_expression,
             ExpressionAttributeValues=expression_attribute_values
         )
-        print(f"DynamoDB Update Response: {response}")
+        logger.info(f"DynamoDB Update Response: {response}")
 
     except Exception as e:
-        print(f"Error saving to DynamoDB: {e}")
+        logger.error(f"Error saving to DynamoDB: {e}")
         raise
