@@ -5,13 +5,12 @@ import * as React from 'react'
 
 import { cn } from '@/utils/cn'
 
-// Spinnerコンポーネントは現在未使用
-// import { Spinner } from '../spinner'
+import { Spinner } from '../spinner'
 
 // ボタンのスタイルバリエーションを定義
 const buttonVariants = cva(
   // ベースとなるスタイル
-  'rounded-full w-full text-light-textDefault',
+  'rounded-full w-full text-light-textDefault inline-flex items-center justify-center',
   // 'inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50',
   {
     variants: {
@@ -55,12 +54,14 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const Comp = asChild ? Slot : 'button'
     return (
       <Comp className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...props}>
-        {/* ローディング表示は現在未実装 */}
-        {/* {isLoading && <Spinner size="sm" className="text-current" />} */}
-        {/* アイコンの表示（ローディング中は非表示） */}
-        {!isLoading && icon && <span className="mr-2">{icon}</span>}
-        {/* ボタンのコンテンツ */}
-        <span className="py-2.5 px-4">{children}</span>
+        {isLoading ? (
+          <Spinner size="sm" className="text-current" />
+        ) : (
+          <>
+            {icon && <span className="mr-2">{icon}</span>}
+            {children}
+          </>
+        )}
       </Comp>
     )
   },

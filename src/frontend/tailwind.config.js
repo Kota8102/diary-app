@@ -6,14 +6,17 @@ export default {
       colors: {
         base: '#F5F5F5',
         light: {
-          textDefault: '#404040',
+          // 背景色
           bgDefault: '#FDFAF8',
           bgText: '#F6F3F0',
-          bgModal: '#F6F3F0',
-          bgTab: '#EDEAE6',
-          textPaleBg: '#404040',
-          textPlaceholder: '#404040',
+          bgFooter: '#EDEAE6',
+
+          // テキスト色
+          textDefault: '#404040',
+          textPaleBg: '#999999',
           textWeakBg: '#FFFFFF',
+
+          // ボタン色
           buttonPrimaryDefault: '#CFC8C1',
           buttonPrimaryHover: '#E7E0DA',
           buttonPrimaryPress: '#B1ADA8',
