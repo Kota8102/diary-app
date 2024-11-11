@@ -176,5 +176,4 @@ def select_flower_using_api(api_key, query):
 
     flower_id = response.json()["answer"]
 
-    logger.info("Answer: ", flower_id)
     return flower_id
