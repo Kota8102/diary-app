@@ -6,22 +6,22 @@ import requests
 
 
 def lambda_handler(event, context):
-    """AWS Lambda handler function to process DynamoDB stream records.
+    """DynamoDBストリームレコードを処理するAWS Lambdaハンドラ関数。
 
-    This function:
-    - Iterates over the incoming DynamoDB stream records.
-    - Checks if the event name is "INSERT".
-    - Extracts the diary content from the new image in the DynamoDB record.
-    - Calls the function to select a flower based on the diary content and saves the flower ID to DynamoDB.
+    この関数は次の処理を行います:
+    - 受信したDynamoDBストリームレコードを順に処理。
+    - イベント名が「INSERT」であるか確認。
+    - DynamoDBレコードの新しいイメージから日記の内容を抽出。
+    - 日記内容に基づいて花を選択し、花のIDをDynamoDBに保存する関数を呼び出します。
 
     Args:
-        event (dict): Incoming DynamoDB stream event, containing records to be processed.
-        context (object): The context object providing runtime information for the Lambda function.
+        event (dict): 処理するレコードを含むDynamoDBストリームイベント。
+        context (object): ランタイム情報を提供するコンテキストオブジェクト。
 
     Returns:
-        dict: HTTP response with a status code, headers, and a JSON body.
-            - On success (200), returns a message indicating that the records were processed.
-            - On failure (400), returns an error message indicating what went wrong.
+        dict: ステータスコード、ヘッダー、JSON本文を含むHTTPレスポンス。
+            - 成功時 (200): レコードが処理された旨のメッセージを返します。
+            - 失敗時 (400): エラーメッセージとエラーの内容を返します。
     """
     print("Flower Generate Function Start")
     try:
@@ -53,33 +53,35 @@ def lambda_handler(event, context):
 
 
 def select_flower_and_save_to_dynamodb(user_id, date, diary_content):
-    """Selects a flower based on the diary content and saves the flower ID to DynamoDB.
+    """日記の内容に基づいて花を選択し、その花のIDをDynamoDBに保存します。
 
-    This function:
-    - Retrieves the API key from the parameter store.
-    - Calls the API to select a flower using the diary content.
-    - Saves the selected flower ID to DynamoDB.
+    この関数は次の処理を行います:
+    - パラメータストアからAPIキーを取得。
+    - 日記の内容を使用してAPIを呼び出し、花を選択。
+    - 選択した花のIDをDynamoDBに保存。
 
     Args:
-        diary_content (str): The content of the diary entry.
-        date (str): Date to choose the flower.
+        diary_content (str): 日記の内容。
+        date (str): 花を選択する日付。
     """
     api_key = get_parameter_from_parameter_store("DIFY_API_KEY")
     flower_id = select_flower_using_api(api_key, diary_content)
     save_flower_id_to_dynamodb(user_id, date, flower_id)
 
+
 def get_parameter_from_parameter_store(parameter_name):
-    """Retrieves a parameter value from the AWS Systems Manager Parameter Store.
+    """AWS Systems Manager Parameter Storeからパラメータ値を取得します。
 
     Args:
-        parameter_name (str): The name of the parameter to retrieve.
+        parameter_name (str): 取得するパラメータの名前。
 
     Returns:
-        str: The value of the specified parameter.
+        str: 指定したパラメータの値。
 
     Raises:
-        Exception: If the parameter retrieval fails.
+        Exception: パラメータの取得に失敗した場合。
     """
+
     print("get_parameter_from_parameter_store")
     try:
         ssm = boto3.client("ssm")
@@ -90,17 +92,17 @@ def get_parameter_from_parameter_store(parameter_name):
 
 
 def select_flower_using_api(api_key, query):
-    """Selects a flower based on the provided query by calling an external API.
+    """指定されたクエリに基づき、外部APIを呼び出して花を選択します。
 
     Args:
-        api_key (str): The API key for authentication.
-        query (str): The query string to select a flower.
+        api_key (str): 認証用のAPIキー。
+        query (str): 花を選択するためのクエリ文字列。
 
     Returns:
-        str: The selected flower ID.
+        str: 選択された花のID。
 
     Raises:
-        Exception: If the API call fails or returns an error.
+        Exception: API呼び出しが失敗またはエラーを返した場合。
     """
     print("select flower using api")
     BASE_URL = 'https://api.dify.ai/v1'
@@ -122,23 +124,23 @@ def select_flower_using_api(api_key, query):
         response = requests.post(url, headers=headers, json=data)
     except Exception as e:
         raise Exception(f"Failed to select flower: {e}")
-    
+
     flower_id = response.json()["answer"]
-    
+
     print("Answer: ", flower_id)
     return flower_id
 
 
 def save_flower_id_to_dynamodb(user_id, date, flower_id):
-    """Saves the selected flower ID to DynamoDB.
+    """選択された花のIDをDynamoDBに保存します。
 
     Args:
-        user_id (str): The ID of the user.
-        date (str): Date to choose the flower.
-        flower_id (str): The ID of the selected flower to save.
+        user_id (str): ユーザーのID。
+        date (str): 花を選択する日付。
+        flower_id (str): 保存する選択された花のID。
 
     Raises:
-        Exception: If saving to DynamoDB fails.
+        Exception: DynamoDBへの保存が失敗した場合。
     """
     print("save_flower_id_to_dynamodb")
 
