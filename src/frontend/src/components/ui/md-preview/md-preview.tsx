@@ -1,5 +1,5 @@
 import createDOMPurify from 'dompurify'
-import { parse } from 'marked'
+import { marked } from 'marked'
 
 const DOMPurify = createDOMPurify(window)
 
@@ -13,7 +13,9 @@ export const MDPreview = ({ value = '' }: MDPreviewProps) => {
       className="prose prose-slate absolute inset-0 p-4 overflow-y-auto bg-white rounded-lg"
       ref={(node) => {
         if (node) {
-          node.innerHTML = DOMPurify.sanitize(parse(value) as string)
+          // parseの代わりにmarked.parseを使用し、型エラーを解消
+          const content = marked.parse(value)
+          node.innerHTML = DOMPurify.sanitize(content)
         }
       }}
     />
