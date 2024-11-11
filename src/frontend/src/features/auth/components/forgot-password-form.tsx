@@ -36,7 +36,6 @@ export const ForgotPasswordForm = () => {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-6 pt-20">
       <div className="text-center mb-6">
-        <h2 className="text-xl font-bold">パスワード再設定</h2>
         <p className="text-sm text-gray-600 mt-2">
           登録済みのメールアドレスを入力してください。
           <br />

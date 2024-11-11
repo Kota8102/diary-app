@@ -65,6 +65,14 @@ export const createAppRouter = (_queryClient: QueryClient) =>
         return { Component: ForgotPasswordRoute }
       },
     },
+    // パスワード再設定ページ
+    {
+      path: paths.auth.resetPassword.path,
+      lazy: async () => {
+        const { ResetPasswordRoute } = await import('./routes/auth/reset-password')
+        return { Component: ResetPasswordRoute }
+      },
+    },
 
     // アプリルート
     {
