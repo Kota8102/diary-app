@@ -3,6 +3,7 @@ import * as acm from 'aws-cdk-lib/aws-certificatemanager'
 import * as s3 from 'aws-cdk-lib/aws-s3'
 import type { Construct } from 'constructs'
 import { Api, Auth, Identity, Web } from './constructs'
+import { Diary } from './constructs/diary'
 
 interface BackendStackProps extends cdk.StackProps {}
 
@@ -40,9 +41,17 @@ export class BackendStack extends cdk.Stack {
       userPoolClient: auth.userPoolClient,
     })
 
+    // Diary機能コンストラクトのスタック化
+    const diary = new Diary(this, 'Diary', {
+      userPool: auth.userPool,
+    })
+
     // API機能スタックのインスタンス化
     const api = new Api(this, 'Api', {
       userPool: auth.userPool,
+      table: diary.table,
+      generativeAiTable: diary.generativeAiTable,
+      diaryApi: diary.diaryApi,
     })
 
     const web = new Web(this, 'Web', {
@@ -51,7 +60,7 @@ export class BackendStack extends cdk.Stack {
       identityPool: identity.identityPool,
       certificate,
       domainNames,
-      api: api.api,
+      api: diary.diaryApi,
     })
 
     new cdk.CfnOutput(this, 'WebFrontend', {
@@ -71,7 +80,7 @@ export class BackendStack extends cdk.Stack {
     })
 
     new cdk.CfnOutput(this, 'ApiEndpoint', {
-      value: api.api.url,
+      value: diary.diaryApi.url,
     })
   }
 }
