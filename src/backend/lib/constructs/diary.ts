@@ -8,10 +8,11 @@ import { Construct } from 'constructs'
 
 export interface DiaryProps {
   userPool: cognito.UserPool
+  api: apigateway.RestApi
+  cognitoAuthorizer: apigateway.CognitoUserPoolsAuthorizer
 }
 
 export class Diary extends Construct {
-  public readonly diaryApi: apigateway.RestApi
   public readonly diaryTableEventSource: DynamoEventSource
   public readonly table: dynamodb.Table
   public readonly generativeAiTable: dynamodb.Table
@@ -85,54 +86,23 @@ export class Diary extends Construct {
       },
     })
     table.grant(diaryDeleteFunction, 'dynamodb:DeleteItem')
-
-    // API Gateway用のCloudWatch Logsアクセス権限を持つロールの作成
-    const cloudwatchLogsRole = new cdk.aws_iam.Role(this, 'APIGatewayCloudWatchLogsRole', {
-      assumedBy: new cdk.aws_iam.ServicePrincipal('apigateway.amazonaws.com'),
-      managedPolicies: [cdk.aws_iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonAPIGatewayPushToCloudWatchLogs')],
-    })
-
-    // API Gatewayのアクセスログ用LogGroupの作成
-    const logGroup = new cdk.aws_logs.LogGroup(this, 'ApiGatewayAccessLogs', {
-      retention: 14,
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
-    })
-
-    // API Gatewayの作成
-    const diaryApi = new apigateway.RestApi(this, 'DiaryApi', {
-      cloudWatchRole: true,
-      cloudWatchRoleRemovalPolicy: cdk.RemovalPolicy.DESTROY,
-      deployOptions: {
-        accessLogDestination: new apigateway.LogGroupLogDestination(logGroup),
-        accessLogFormat: apigateway.AccessLogFormat.jsonWithStandardFields({
-          caller: true,
-          httpMethod: true,
-          ip: true,
-          protocol: true,
-          requestTime: true,
-          resourcePath: true,
-          responseLength: true,
-          status: true,
-          user: true,
-        }),
-        loggingLevel: apigateway.MethodLoggingLevel.INFO,
-        dataTraceEnabled: true,
-      },
-    })
-
-    // リクエストバリデーターの追加
-    const requestValidator = diaryApi.addRequestValidator('RequestValidator', {
-      validateRequestBody: true,
-      validateRequestParameters: true,
-    })
-
     // API Gatewayのエンドポイント設定
-    const diary = diaryApi.root.addResource('diary')
-    const cognitoAuthorizer = new apigateway.CognitoUserPoolsAuthorizer(this, 'diaryCognitoAuthorizer', {
-      cognitoUserPools: [props.userPool],
-    })
+    const diaryApi = props.api.root.addResource('diary')
 
-    diary.addMethod(
+    // 各エンドポイントのメソッド定義
+    diaryApi.addMethod('POST', new apigateway.LambdaIntegration(diaryCreateFunction), {
+      authorizer: props.cognitoAuthorizer,
+    })
+    diaryApi.addMethod('PUT', new apigateway.LambdaIntegration(diaryEditFunction), {
+      authorizer: props.cognitoAuthorizer,
+    })
+    diaryApi.addMethod('GET', new apigateway.LambdaIntegration(diaryReadFunction), {
+      authorizer: props.cognitoAuthorizer,
+    })
+    diaryApi.addMethod('DELETE', new apigateway.LambdaIntegration(diaryDeleteFunction), {
+      authorizer: props.cognitoAuthorizer,
+    })
+    diaryApi.addMethod(
       'OPTIONS',
       new apigateway.MockIntegration({
         integrationResponses: [
@@ -163,20 +133,6 @@ export class Diary extends Construct {
         ],
       },
     )
-
-    // 各エンドポイントのメソッド定義
-    diary.addMethod('POST', new apigateway.LambdaIntegration(diaryCreateFunction), {
-      authorizer: cognitoAuthorizer,
-    })
-    diary.addMethod('PUT', new apigateway.LambdaIntegration(diaryEditFunction), {
-      authorizer: cognitoAuthorizer,
-    })
-    diary.addMethod('GET', new apigateway.LambdaIntegration(diaryReadFunction), {
-      authorizer: cognitoAuthorizer,
-    })
-    diary.addMethod('DELETE', new apigateway.LambdaIntegration(diaryDeleteFunction), {
-      authorizer: cognitoAuthorizer,
-    })
 
     // 生成AI用Lambda関数のロール作成
     const generativeAiLambdaRole = new cdk.aws_iam.Role(this, 'generativeAiLambdaRole', {
@@ -232,44 +188,14 @@ export class Diary extends Construct {
       },
     })
     generativeAiTable.grantReadData(titleGetFunction)
-    const titleApi = diaryApi.root.addResource('title')
-    titleApi.addMethod(
-      'OPTIONS',
-      new apigateway.MockIntegration({
-        integrationResponses: [
-          {
-            statusCode: '200',
-            responseParameters: {
-              'method.response.header.Access-Control-Allow-Headers': "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
-              'method.response.header.Access-Control-Allow-Origin': "'*'",
-              'method.response.header.Access-Control-Allow-Methods': "'OPTIONS,GET,POST,PUT,DELETE'",
-            },
-          },
-        ],
-        passthroughBehavior: apigateway.PassthroughBehavior.NEVER,
-        requestTemplates: {
-          'application/json': '{"statusCode": 200}',
-        },
-      }),
-      {
-        methodResponses: [
-          {
-            statusCode: '200',
-            responseParameters: {
-              'method.response.header.Access-Control-Allow-Headers': true,
-              'method.response.header.Access-Control-Allow-Origin': true,
-              'method.response.header.Access-Control-Allow-Methods': true,
-            },
-          },
-        ],
-      },
-    )
+
+    const titleApi = props.api.root.addResource('flower')
+
     titleApi.addMethod('GET', new apigateway.LambdaIntegration(titleGetFunction), {
-      authorizer: cognitoAuthorizer,
+      authorizer: props.cognitoAuthorizer,
     })
 
     this.table = table
     this.generativeAiTable = generativeAiTable
-    this.diaryApi = diaryApi
   }
 }

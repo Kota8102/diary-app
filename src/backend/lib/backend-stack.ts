@@ -11,7 +11,7 @@ export class BackendStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: BackendStackProps) {
     super(scope, id, props)
 
-    const logBucket = new s3.Bucket(this, 'LogBucket', {
+    new s3.Bucket(this, 'LogBucket', {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       enforceSSL: true,
       serverAccessLogsPrefix: 'log/',
@@ -41,17 +41,15 @@ export class BackendStack extends cdk.Stack {
       userPoolClient: auth.userPoolClient,
     })
 
-    // Diary機能コンストラクトのスタック化
-    const diary = new Diary(this, 'Diary', {
-      userPool: auth.userPool,
-    })
-
     // API機能スタックのインスタンス化
     const api = new Api(this, 'Api', {
       userPool: auth.userPool,
-      table: diary.table,
-      generativeAiTable: diary.generativeAiTable,
-      diaryApi: diary.diaryApi,
+    })
+    // Diary機能コンストラクトのスタック化
+    const diary = new Diary(this, 'Diary', {
+      userPool: auth.userPool,
+      api: api.api,
+      cognitoAuthorizer: api.congnitoAuthorizer,
     })
 
     const web = new Web(this, 'Web', {
@@ -60,7 +58,7 @@ export class BackendStack extends cdk.Stack {
       identityPool: identity.identityPool,
       certificate,
       domainNames,
-      api: diary.diaryApi,
+      api: api.api,
     })
 
     new cdk.CfnOutput(this, 'WebFrontend', {
@@ -80,7 +78,7 @@ export class BackendStack extends cdk.Stack {
     })
 
     new cdk.CfnOutput(this, 'ApiEndpoint', {
-      value: diary.diaryApi.url,
+      value: api.api.url,
     })
   }
 }

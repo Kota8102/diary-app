@@ -127,14 +127,14 @@ exports[`Snapshot test 1`] = `
     },
   },
   "Outputs": {
-    "ApiEndpoint": {
+    "ApiDiaryApiEndpoint6F62C6CD": {
       "Value": {
         "Fn::Join": [
           "",
           [
             "https://",
             {
-              "Ref": "DiaryDiaryApi92905B11",
+              "Ref": "ApiDiaryApi1E03348A",
             },
             ".execute-api.",
             {
@@ -146,7 +146,33 @@ exports[`Snapshot test 1`] = `
             },
             "/",
             {
-              "Ref": "DiaryDiaryApiDeploymentStageprod25B5F7B5",
+              "Ref": "ApiDiaryApiDeploymentStageprodD9912276",
+            },
+            "/",
+          ],
+        ],
+      },
+    },
+    "ApiEndpoint": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Ref": "ApiDiaryApi1E03348A",
+            },
+            ".execute-api.",
+            {
+              "Ref": "AWS::Region",
+            },
+            ".",
+            {
+              "Ref": "AWS::URLSuffix",
+            },
+            "/",
+            {
+              "Ref": "ApiDiaryApiDeploymentStageprodD9912276",
             },
             "/",
           ],
@@ -161,32 +187,6 @@ exports[`Snapshot test 1`] = `
     "CognitoUserPoolId": {
       "Value": {
         "Ref": "AuthUserPool8115E87F",
-      },
-    },
-    "DiaryDiaryApiEndpoint699F172A": {
-      "Value": {
-        "Fn::Join": [
-          "",
-          [
-            "https://",
-            {
-              "Ref": "DiaryDiaryApi92905B11",
-            },
-            ".execute-api.",
-            {
-              "Ref": "AWS::Region",
-            },
-            ".",
-            {
-              "Ref": "AWS::URLSuffix",
-            },
-            "/",
-            {
-              "Ref": "DiaryDiaryApiDeploymentStageprod25B5F7B5",
-            },
-            "/",
-          ],
-        ],
       },
     },
     "IdentityPoolId": {
@@ -219,47 +219,7 @@ exports[`Snapshot test 1`] = `
     },
   },
   "Resources": {
-    "ApiBouquetCreate2BDD3C72": {
-      "DependsOn": [
-        "ApiBouquetCreateServiceRoleDefaultPolicy85A9DB9C",
-        "ApiBouquetCreateServiceRoleDEAB89D9",
-      ],
-      "Properties": {
-        "Code": {
-          "S3Bucket": {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
-          },
-          "S3Key": "HASH_REPLACED.zip",
-        },
-        "Environment": {
-          "Variables": {
-            "BOUQUET_BUCKET_NAME": {
-              "Ref": "ApibouquetBucketD88D6FCA",
-            },
-            "BOUQUET_TABLE_NAME": {
-              "Ref": "ApiBouquetTable92B8B9AD",
-            },
-            "FLOWER_BUCKET_NAME": {
-              "Ref": "ApiflowerImageBucket5AC81E41",
-            },
-            "GENERATIVE_AI_TABLE_NAME": {
-              "Ref": "DiarygenerativeAiTable72930DDE",
-            },
-          },
-        },
-        "Handler": "bouquet_create.lambda_handler",
-        "Role": {
-          "Fn::GetAtt": [
-            "ApiBouquetCreateServiceRoleDEAB89D9",
-            "Arn",
-          ],
-        },
-        "Runtime": "python3.11",
-        "Timeout": 15,
-      },
-      "Type": "AWS::Lambda::Function",
-    },
-    "ApiBouquetCreateServiceRoleDEAB89D9": {
+    "ApiAPIGatewayCloudWatchLogsRole38DC415F": {
       "Properties": {
         "AssumeRolePolicyDocument": {
           "Statement": [
@@ -267,7 +227,7 @@ exports[`Snapshot test 1`] = `
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "lambda.amazonaws.com",
+                "Service": "apigateway.amazonaws.com",
               },
             },
           ],
@@ -282,7 +242,7 @@ exports[`Snapshot test 1`] = `
                 {
                   "Ref": "AWS::Partition",
                 },
-                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+                ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs",
               ],
             ],
           },
@@ -290,163 +250,18 @@ exports[`Snapshot test 1`] = `
       },
       "Type": "AWS::IAM::Role",
     },
-    "ApiBouquetCreateServiceRoleDefaultPolicy85A9DB9C": {
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": [
-                "dynamodb:BatchGetItem",
-                "dynamodb:GetRecords",
-                "dynamodb:GetShardIterator",
-                "dynamodb:Query",
-                "dynamodb:GetItem",
-                "dynamodb:Scan",
-                "dynamodb:ConditionCheckItem",
-                "dynamodb:DescribeTable",
-              ],
-              "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "DiarygenerativeAiTable72930DDE",
-                    "Arn",
-                  ],
-                },
-                {
-                  "Ref": "AWS::NoValue",
-                },
-              ],
-            },
-            {
-              "Action": [
-                "dynamodb:BatchWriteItem",
-                "dynamodb:PutItem",
-                "dynamodb:UpdateItem",
-                "dynamodb:DeleteItem",
-                "dynamodb:DescribeTable",
-              ],
-              "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "ApiBouquetTable92B8B9AD",
-                    "Arn",
-                  ],
-                },
-                {
-                  "Ref": "AWS::NoValue",
-                },
-              ],
-            },
-            {
-              "Action": [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*",
-              ],
-              "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "ApiflowerImageBucket5AC81E41",
-                    "Arn",
-                  ],
-                },
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      {
-                        "Fn::GetAtt": [
-                          "ApiflowerImageBucket5AC81E41",
-                          "Arn",
-                        ],
-                      },
-                      "/*",
-                    ],
-                  ],
-                },
-              ],
-            },
-            {
-              "Action": [
-                "s3:PutObject",
-                "s3:PutObjectLegalHold",
-                "s3:PutObjectRetention",
-                "s3:PutObjectTagging",
-                "s3:PutObjectVersionTagging",
-                "s3:Abort*",
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::Join": [
-                  "",
-                  [
-                    {
-                      "Fn::GetAtt": [
-                        "ApibouquetBucketD88D6FCA",
-                        "Arn",
-                      ],
-                    },
-                    "/*",
-                  ],
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "ApiBouquetCreateServiceRoleDefaultPolicy85A9DB9C",
-        "Roles": [
-          {
-            "Ref": "ApiBouquetCreateServiceRoleDEAB89D9",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "ApiBouquetTable92B8B9AD": {
+    "ApiApiGatewayAccessLogsFB26645A": {
       "DeletionPolicy": "Delete",
       "Properties": {
-        "AttributeDefinitions": [
-          {
-            "AttributeName": "user_id",
-            "AttributeType": "S",
-          },
-          {
-            "AttributeName": "year_week",
-            "AttributeType": "S",
-          },
-        ],
-        "KeySchema": [
-          {
-            "AttributeName": "user_id",
-            "KeyType": "HASH",
-          },
-          {
-            "AttributeName": "year_week",
-            "KeyType": "RANGE",
-          },
-        ],
-        "PointInTimeRecoverySpecification": {
-          "PointInTimeRecoveryEnabled": true,
-        },
-        "ProvisionedThroughput": {
-          "ReadCapacityUnits": 5,
-          "WriteCapacityUnits": 5,
-        },
-        "StreamSpecification": {
-          "StreamViewType": "NEW_AND_OLD_IMAGES",
-        },
+        "RetentionInDays": 14,
       },
-      "Type": "AWS::DynamoDB::Table",
+      "Type": "AWS::Logs::LogGroup",
       "UpdateReplacePolicy": "Delete",
     },
-    "ApiapiCognitoAuthorizerC51171C7": {
+    "ApiCognitoAuthorizer23B91BA2": {
       "Properties": {
         "IdentitySource": "method.request.header.Authorization",
-        "Name": "CdkSampleStackApiapiCognitoAuthorizerD20C19C4",
+        "Name": "CdkSampleStackApiCognitoAuthorizer07815F88",
         "ProviderARNs": [
           {
             "Fn::GetAtt": [
@@ -456,155 +271,36 @@ exports[`Snapshot test 1`] = `
           },
         ],
         "RestApiId": {
-          "Ref": "DiaryDiaryApi92905B11",
+          "Ref": "ApiDiaryApi1E03348A",
         },
         "Type": "COGNITO_USER_POOLS",
       },
       "Type": "AWS::ApiGateway::Authorizer",
     },
-    "ApibouquetBucketD88D6FCA": {
-      "DeletionPolicy": "Retain",
+    "ApiDiaryApi1E03348A": {
       "Properties": {
-        "AccessControl": "LogDeliveryWrite",
-        "LoggingConfiguration": {
-          "LogFilePrefix": "log/",
-        },
-        "OwnershipControls": {
-          "Rules": [
-            {
-              "ObjectOwnership": "ObjectWriter",
-            },
-          ],
-        },
+        "Name": "DiaryApi",
       },
-      "Type": "AWS::S3::Bucket",
-      "UpdateReplacePolicy": "Retain",
+      "Type": "AWS::ApiGateway::RestApi",
     },
-    "ApibouquetBucketPolicy78EAE5A5": {
-      "Properties": {
-        "Bucket": {
-          "Ref": "ApibouquetBucketD88D6FCA",
-        },
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": "s3:*",
-              "Condition": {
-                "Bool": {
-                  "aws:SecureTransport": "false",
-                },
-              },
-              "Effect": "Deny",
-              "Principal": {
-                "AWS": "*",
-              },
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "ApibouquetBucketD88D6FCA",
-                    "Arn",
-                  ],
-                },
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      {
-                        "Fn::GetAtt": [
-                          "ApibouquetBucketD88D6FCA",
-                          "Arn",
-                        ],
-                      },
-                      "/*",
-                    ],
-                  ],
-                },
-              ],
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-      },
-      "Type": "AWS::S3::BucketPolicy",
-    },
-    "ApibouquetGetFunction8161E364": {
+    "ApiDiaryApiAccountD58FBD35": {
+      "DeletionPolicy": "Delete",
       "DependsOn": [
-        "ApibouquetGetFunctionServiceRoleDefaultPolicyC97BC5D0",
-        "ApibouquetGetFunctionServiceRoleFBF79C19",
+        "ApiDiaryApi1E03348A",
       ],
       "Properties": {
-        "Code": {
-          "S3Bucket": {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
-          },
-          "S3Key": "HASH_REPLACED.zip",
-        },
-        "Environment": {
-          "Variables": {
-            "BUCKET_NAME": {
-              "Ref": "ApibouquetBucketD88D6FCA",
-            },
-          },
-        },
-        "Handler": "bouquet_get.lambda_handler",
-        "Role": {
+        "CloudWatchRoleArn": {
           "Fn::GetAtt": [
-            "ApibouquetGetFunctionServiceRoleFBF79C19",
+            "ApiDiaryApiCloudWatchRole5768E80C",
             "Arn",
           ],
         },
-        "Runtime": "python3.11",
-        "Timeout": 10,
       },
-      "Type": "AWS::Lambda::Function",
+      "Type": "AWS::ApiGateway::Account",
+      "UpdateReplacePolicy": "Delete",
     },
-    "ApibouquetGetFunctionServiceRoleDefaultPolicyC97BC5D0": {
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*",
-              ],
-              "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "ApibouquetBucketD88D6FCA",
-                    "Arn",
-                  ],
-                },
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      {
-                        "Fn::GetAtt": [
-                          "ApibouquetBucketD88D6FCA",
-                          "Arn",
-                        ],
-                      },
-                      "/*",
-                    ],
-                  ],
-                },
-              ],
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "ApibouquetGetFunctionServiceRoleDefaultPolicyC97BC5D0",
-        "Roles": [
-          {
-            "Ref": "ApibouquetGetFunctionServiceRoleFBF79C19",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "ApibouquetGetFunctionServiceRoleFBF79C19": {
+    "ApiDiaryApiCloudWatchRole5768E80C": {
+      "DeletionPolicy": "Delete",
       "Properties": {
         "AssumeRolePolicyDocument": {
           "Statement": [
@@ -612,7 +308,7 @@ exports[`Snapshot test 1`] = `
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "lambda.amazonaws.com",
+                "Service": "apigateway.amazonaws.com",
               },
             },
           ],
@@ -627,67 +323,103 @@ exports[`Snapshot test 1`] = `
                 {
                   "Ref": "AWS::Partition",
                 },
-                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+                ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs",
               ],
             ],
           },
         ],
       },
       "Type": "AWS::IAM::Role",
+      "UpdateReplacePolicy": "Delete",
     },
-    "ApiflowerGenerateFunction44F41D90": {
+    "ApiDiaryApiDeploymentCA0DCBF549b0ab5e8e35266ba9fc57b2ebc543f7": {
       "DependsOn": [
-        "ApiflowerGenerateFunctionServiceRoleDefaultPolicyB3113527",
-        "ApiflowerGenerateFunctionServiceRoleB104E85C",
+        "ApiDiaryApidiaryDELETE81EA9C37",
+        "ApiDiaryApidiaryGET9A212B54",
+        "ApiDiaryApidiaryOPTIONS118FD5D0",
+        "ApiDiaryApidiaryPOST0B03467C",
+        "ApiDiaryApidiaryPUT140468F7",
+        "ApiDiaryApidiary4B91FACA",
+        "ApiDiaryApiflowerGETEAC01B09",
+        "ApiDiaryApiflower7C61878D",
+        "ApiDiaryApiRequestValidator4DFB42AA",
       ],
       "Properties": {
-        "Code": {
-          "S3Bucket": {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
-          },
-          "S3Key": "HASH_REPLACED.zip",
+        "Description": "Automatically created by the RestApi construct",
+        "RestApiId": {
+          "Ref": "ApiDiaryApi1E03348A",
         },
-        "Environment": {
-          "Variables": {
-            "DIARY_TABLE_NAME": {
-              "Ref": "DiarydiaryContentsTableF7DA06EF",
-            },
-            "FLOWER_BUCKET_NAME": {
-              "Ref": "ApiflowerImageBucket5AC81E41",
-            },
-            "GENERATIVE_AI_TABLE_NAME": {
-              "Ref": "DiarygenerativeAiTable72930DDE",
-            },
-          },
-        },
-        "Handler": "flower_generate.lambda_handler",
-        "Role": {
-          "Fn::GetAtt": [
-            "ApiflowerGenerateFunctionServiceRoleB104E85C",
-            "Arn",
-          ],
-        },
-        "Runtime": "python3.11",
-        "Timeout": 60,
       },
-      "Type": "AWS::Lambda::Function",
+      "Type": "AWS::ApiGateway::Deployment",
     },
-    "ApiflowerGenerateFunctionServiceRoleB104E85C": {
+    "ApiDiaryApiDeploymentStageprodD9912276": {
+      "DependsOn": [
+        "ApiDiaryApiAccountD58FBD35",
+      ],
       "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "lambda.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
+        "AccessLogSetting": {
+          "DestinationArn": {
+            "Fn::GetAtt": [
+              "ApiApiGatewayAccessLogsFB26645A",
+              "Arn",
+            ],
+          },
+          "Format": "{"requestId":"$context.requestId","ip":"$context.identity.sourceIp","user":"$context.identity.user","caller":"$context.identity.caller","requestTime":"$context.requestTime","httpMethod":"$context.httpMethod","resourcePath":"$context.resourcePath","status":"$context.status","protocol":"$context.protocol","responseLength":"$context.responseLength"}",
         },
-        "ManagedPolicyArns": [
+        "DeploymentId": {
+          "Ref": "ApiDiaryApiDeploymentCA0DCBF549b0ab5e8e35266ba9fc57b2ebc543f7",
+        },
+        "MethodSettings": [
           {
+            "DataTraceEnabled": true,
+            "HttpMethod": "*",
+            "LoggingLevel": "INFO",
+            "ResourcePath": "/*",
+          },
+        ],
+        "RestApiId": {
+          "Ref": "ApiDiaryApi1E03348A",
+        },
+        "StageName": "prod",
+      },
+      "Type": "AWS::ApiGateway::Stage",
+    },
+    "ApiDiaryApiRequestValidator4DFB42AA": {
+      "Properties": {
+        "RestApiId": {
+          "Ref": "ApiDiaryApi1E03348A",
+        },
+        "ValidateRequestBody": true,
+        "ValidateRequestParameters": true,
+      },
+      "Type": "AWS::ApiGateway::RequestValidator",
+    },
+    "ApiDiaryApidiary4B91FACA": {
+      "Properties": {
+        "ParentId": {
+          "Fn::GetAtt": [
+            "ApiDiaryApi1E03348A",
+            "RootResourceId",
+          ],
+        },
+        "PathPart": "diary",
+        "RestApiId": {
+          "Ref": "ApiDiaryApi1E03348A",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "ApiDiaryApidiaryDELETE81EA9C37": {
+      "Properties": {
+        "AuthorizationType": "COGNITO_USER_POOLS",
+        "AuthorizerId": {
+          "Ref": "ApiCognitoAuthorizer23B91BA2",
+        },
+        "HttpMethod": "DELETE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
             "Fn::Join": [
               "",
               [
@@ -695,147 +427,120 @@ exports[`Snapshot test 1`] = `
                 {
                   "Ref": "AWS::Partition",
                 },
-                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
-              ],
-            ],
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Role",
-    },
-    "ApiflowerGenerateFunctionServiceRoleDefaultPolicyB3113527": {
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": [
-                "dynamodb:BatchWriteItem",
-                "dynamodb:PutItem",
-                "dynamodb:UpdateItem",
-                "dynamodb:DeleteItem",
-                "dynamodb:DescribeTable",
-              ],
-              "Effect": "Allow",
-              "Resource": [
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region",
+                },
+                ":lambda:path/2015-03-31/functions/",
                 {
                   "Fn::GetAtt": [
-                    "DiarygenerativeAiTable72930DDE",
+                    "DiarydiaryDeleteLambda7D51A24F",
                     "Arn",
                   ],
                 },
-                {
-                  "Ref": "AWS::NoValue",
-                },
+                "/invocations",
               ],
-            },
-            {
-              "Action": "dynamodb:ListStreams",
-              "Effect": "Allow",
-              "Resource": "*",
-            },
-            {
-              "Action": [
-                "dynamodb:DescribeStream",
-                "dynamodb:GetRecords",
-                "dynamodb:GetShardIterator",
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "DiarydiaryContentsTableF7DA06EF",
-                  "StreamArn",
-                ],
-              },
-            },
-            {
-              "Action": [
-                "s3:PutObject",
-                "s3:PutObjectLegalHold",
-                "s3:PutObjectRetention",
-                "s3:PutObjectTagging",
-                "s3:PutObjectVersionTagging",
-                "s3:Abort*",
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::Join": [
-                  "",
-                  [
-                    {
-                      "Fn::GetAtt": [
-                        "ApiflowerImageBucket5AC81E41",
-                        "Arn",
-                      ],
-                    },
-                    "/*",
-                  ],
-                ],
-              },
-            },
-            {
-              "Action": "ssm:GetParameter",
-              "Effect": "Allow",
-              "Resource": "arn:aws:ssm:ap-northeast-1:851725642854:parameter/OpenAI_API_KEY",
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "ApiflowerGenerateFunctionServiceRoleDefaultPolicyB3113527",
-        "Roles": [
-          {
-            "Ref": "ApiflowerGenerateFunctionServiceRoleB104E85C",
+            ],
           },
-        ],
+        },
+        "ResourceId": {
+          "Ref": "ApiDiaryApidiary4B91FACA",
+        },
+        "RestApiId": {
+          "Ref": "ApiDiaryApi1E03348A",
+        },
       },
-      "Type": "AWS::IAM::Policy",
+      "Type": "AWS::ApiGateway::Method",
     },
-    "ApiflowerGetFunctionDEFFEDFA": {
-      "DependsOn": [
-        "ApiflowerGetFunctionServiceRoleDefaultPolicy9CAD1CFF",
-        "ApiflowerGetFunctionServiceRole548D226E",
-      ],
+    "ApiDiaryApidiaryDELETEApiPermissionCdkSampleStackApiDiaryApi4AB3EF3ADELETEdiaryFB9B75F4": {
       "Properties": {
-        "Code": {
-          "S3Bucket": {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
-          },
-          "S3Key": "HASH_REPLACED.zip",
-        },
-        "Environment": {
-          "Variables": {
-            "BUCKET_NAME": {
-              "Ref": "ApiflowerImageBucket5AC81E41",
-            },
-          },
-        },
-        "Handler": "flower_get.lambda_handler",
-        "Role": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
           "Fn::GetAtt": [
-            "ApiflowerGetFunctionServiceRole548D226E",
+            "DiarydiaryDeleteLambda7D51A24F",
             "Arn",
           ],
         },
-        "Runtime": "python3.11",
-        "Timeout": 10,
-      },
-      "Type": "AWS::Lambda::Function",
-    },
-    "ApiflowerGetFunctionServiceRole548D226E": {
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "lambda.amazonaws.com",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition",
               },
-            },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId",
+              },
+              ":",
+              {
+                "Ref": "ApiDiaryApi1E03348A",
+              },
+              "/",
+              {
+                "Ref": "ApiDiaryApiDeploymentStageprodD9912276",
+              },
+              "/DELETE/diary",
+            ],
           ],
-          "Version": "2012-10-17",
         },
-        "ManagedPolicyArns": [
-          {
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "ApiDiaryApidiaryDELETEApiPermissionTestCdkSampleStackApiDiaryApi4AB3EF3ADELETEdiary5E3D305B": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "DiarydiaryDeleteLambda7D51A24F",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId",
+              },
+              ":",
+              {
+                "Ref": "ApiDiaryApi1E03348A",
+              },
+              "/test-invoke-stage/DELETE/diary",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "ApiDiaryApidiaryGET9A212B54": {
+      "Properties": {
+        "AuthorizationType": "COGNITO_USER_POOLS",
+        "AuthorizerId": {
+          "Ref": "ApiCognitoAuthorizer23B91BA2",
+        },
+        "HttpMethod": "GET",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
             "Fn::Join": [
               "",
               [
@@ -843,124 +548,526 @@ exports[`Snapshot test 1`] = `
                 {
                   "Ref": "AWS::Partition",
                 },
-                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region",
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "DiarydiaryReadLambda86C35E76",
+                    "Arn",
+                  ],
+                },
+                "/invocations",
               ],
             ],
           },
-        ],
+        },
+        "ResourceId": {
+          "Ref": "ApiDiaryApidiary4B91FACA",
+        },
+        "RestApiId": {
+          "Ref": "ApiDiaryApi1E03348A",
+        },
       },
-      "Type": "AWS::IAM::Role",
+      "Type": "AWS::ApiGateway::Method",
     },
-    "ApiflowerGetFunctionServiceRoleDefaultPolicy9CAD1CFF": {
+    "ApiDiaryApidiaryGETApiPermissionCdkSampleStackApiDiaryApi4AB3EF3AGETdiary5EA4CF99": {
       "Properties": {
-        "PolicyDocument": {
-          "Statement": [
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "DiarydiaryReadLambda86C35E76",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId",
+              },
+              ":",
+              {
+                "Ref": "ApiDiaryApi1E03348A",
+              },
+              "/",
+              {
+                "Ref": "ApiDiaryApiDeploymentStageprodD9912276",
+              },
+              "/GET/diary",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "ApiDiaryApidiaryGETApiPermissionTestCdkSampleStackApiDiaryApi4AB3EF3AGETdiary4BE2D911": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "DiarydiaryReadLambda86C35E76",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId",
+              },
+              ":",
+              {
+                "Ref": "ApiDiaryApi1E03348A",
+              },
+              "/test-invoke-stage/GET/diary",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "ApiDiaryApidiaryOPTIONS118FD5D0": {
+      "Properties": {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "Integration": {
+          "IntegrationResponses": [
             {
-              "Action": [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*",
-              ],
-              "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "ApiflowerImageBucket5AC81E41",
-                    "Arn",
-                  ],
-                },
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      {
-                        "Fn::GetAtt": [
-                          "ApiflowerImageBucket5AC81E41",
-                          "Arn",
-                        ],
-                      },
-                      "/*",
-                    ],
-                  ],
-                },
-              ],
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,DELETE'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+              },
+              "StatusCode": "200",
             },
           ],
-          "Version": "2012-10-17",
+          "PassthroughBehavior": "NEVER",
+          "RequestTemplates": {
+            "application/json": "{"statusCode": 200}",
+          },
+          "Type": "MOCK",
         },
-        "PolicyName": "ApiflowerGetFunctionServiceRoleDefaultPolicy9CAD1CFF",
-        "Roles": [
+        "MethodResponses": [
           {
-            "Ref": "ApiflowerGetFunctionServiceRole548D226E",
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Allow-Origin": true,
+            },
+            "StatusCode": "200",
           },
         ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "ApiflowerImageBucket5AC81E41": {
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "AccessControl": "LogDeliveryWrite",
-        "LoggingConfiguration": {
-          "LogFilePrefix": "log/",
+        "ResourceId": {
+          "Ref": "ApiDiaryApidiary4B91FACA",
         },
-        "OwnershipControls": {
-          "Rules": [
-            {
-              "ObjectOwnership": "ObjectWriter",
-            },
-          ],
+        "RestApiId": {
+          "Ref": "ApiDiaryApi1E03348A",
         },
       },
-      "Type": "AWS::S3::Bucket",
-      "UpdateReplacePolicy": "Retain",
+      "Type": "AWS::ApiGateway::Method",
     },
-    "ApiflowerImageBucketPolicy7CE9FFF2": {
+    "ApiDiaryApidiaryPOST0B03467C": {
       "Properties": {
-        "Bucket": {
-          "Ref": "ApiflowerImageBucket5AC81E41",
+        "AuthorizationType": "COGNITO_USER_POOLS",
+        "AuthorizerId": {
+          "Ref": "ApiCognitoAuthorizer23B91BA2",
         },
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": "s3:*",
-              "Condition": {
-                "Bool": {
-                  "aws:SecureTransport": "false",
+        "HttpMethod": "POST",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
                 },
-              },
-              "Effect": "Deny",
-              "Principal": {
-                "AWS": "*",
-              },
-              "Resource": [
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region",
+                },
+                ":lambda:path/2015-03-31/functions/",
                 {
                   "Fn::GetAtt": [
-                    "ApiflowerImageBucket5AC81E41",
+                    "DiarydiaryCreateLambda0AD0EFFF",
                     "Arn",
                   ],
                 },
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      {
-                        "Fn::GetAtt": [
-                          "ApiflowerImageBucket5AC81E41",
-                          "Arn",
-                        ],
-                      },
-                      "/*",
-                    ],
-                  ],
-                },
+                "/invocations",
               ],
-            },
-          ],
-          "Version": "2012-10-17",
+            ],
+          },
+        },
+        "ResourceId": {
+          "Ref": "ApiDiaryApidiary4B91FACA",
+        },
+        "RestApiId": {
+          "Ref": "ApiDiaryApi1E03348A",
         },
       },
-      "Type": "AWS::S3::BucketPolicy",
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "ApiDiaryApidiaryPOSTApiPermissionCdkSampleStackApiDiaryApi4AB3EF3APOSTdiary020586D3": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "DiarydiaryCreateLambda0AD0EFFF",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId",
+              },
+              ":",
+              {
+                "Ref": "ApiDiaryApi1E03348A",
+              },
+              "/",
+              {
+                "Ref": "ApiDiaryApiDeploymentStageprodD9912276",
+              },
+              "/POST/diary",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "ApiDiaryApidiaryPOSTApiPermissionTestCdkSampleStackApiDiaryApi4AB3EF3APOSTdiaryEAAFBFB1": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "DiarydiaryCreateLambda0AD0EFFF",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId",
+              },
+              ":",
+              {
+                "Ref": "ApiDiaryApi1E03348A",
+              },
+              "/test-invoke-stage/POST/diary",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "ApiDiaryApidiaryPUT140468F7": {
+      "Properties": {
+        "AuthorizationType": "COGNITO_USER_POOLS",
+        "AuthorizerId": {
+          "Ref": "ApiCognitoAuthorizer23B91BA2",
+        },
+        "HttpMethod": "PUT",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region",
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "DiarydiaryEditLambda0E053A05",
+                    "Arn",
+                  ],
+                },
+                "/invocations",
+              ],
+            ],
+          },
+        },
+        "ResourceId": {
+          "Ref": "ApiDiaryApidiary4B91FACA",
+        },
+        "RestApiId": {
+          "Ref": "ApiDiaryApi1E03348A",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "ApiDiaryApidiaryPUTApiPermissionCdkSampleStackApiDiaryApi4AB3EF3APUTdiary921A4CD0": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "DiarydiaryEditLambda0E053A05",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId",
+              },
+              ":",
+              {
+                "Ref": "ApiDiaryApi1E03348A",
+              },
+              "/",
+              {
+                "Ref": "ApiDiaryApiDeploymentStageprodD9912276",
+              },
+              "/PUT/diary",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "ApiDiaryApidiaryPUTApiPermissionTestCdkSampleStackApiDiaryApi4AB3EF3APUTdiary924ADB1C": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "DiarydiaryEditLambda0E053A05",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId",
+              },
+              ":",
+              {
+                "Ref": "ApiDiaryApi1E03348A",
+              },
+              "/test-invoke-stage/PUT/diary",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "ApiDiaryApiflower7C61878D": {
+      "Properties": {
+        "ParentId": {
+          "Fn::GetAtt": [
+            "ApiDiaryApi1E03348A",
+            "RootResourceId",
+          ],
+        },
+        "PathPart": "flower",
+        "RestApiId": {
+          "Ref": "ApiDiaryApi1E03348A",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "ApiDiaryApiflowerGETApiPermissionCdkSampleStackApiDiaryApi4AB3EF3AGETflowerC60F1232": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "DiarytitleGetFunction90C2A326",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId",
+              },
+              ":",
+              {
+                "Ref": "ApiDiaryApi1E03348A",
+              },
+              "/",
+              {
+                "Ref": "ApiDiaryApiDeploymentStageprodD9912276",
+              },
+              "/GET/flower",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "ApiDiaryApiflowerGETApiPermissionTestCdkSampleStackApiDiaryApi4AB3EF3AGETflower857DBEF7": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "DiarytitleGetFunction90C2A326",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId",
+              },
+              ":",
+              {
+                "Ref": "ApiDiaryApi1E03348A",
+              },
+              "/test-invoke-stage/GET/flower",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "ApiDiaryApiflowerGETEAC01B09": {
+      "Properties": {
+        "AuthorizationType": "COGNITO_USER_POOLS",
+        "AuthorizerId": {
+          "Ref": "ApiCognitoAuthorizer23B91BA2",
+        },
+        "HttpMethod": "GET",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region",
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "DiarytitleGetFunction90C2A326",
+                    "Arn",
+                  ],
+                },
+                "/invocations",
+              ],
+            ],
+          },
+        },
+        "ResourceId": {
+          "Ref": "ApiDiaryApiflower7C61878D",
+        },
+        "RestApiId": {
+          "Ref": "ApiDiaryApi1E03348A",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
     },
     "AuthDiaryUserPoolClientC42D6E78": {
       "Properties": {
@@ -1326,1334 +1433,6 @@ exports[`Snapshot test 1`] = `
       },
       "Type": "AWS::IAM::Role",
     },
-    "DiaryAPIGatewayCloudWatchLogsRole0418681F": {
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "apigateway.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "ManagedPolicyArns": [
-          {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition",
-                },
-                ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs",
-              ],
-            ],
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Role",
-    },
-    "DiaryApiGatewayAccessLogs9B894EB0": {
-      "DeletionPolicy": "Delete",
-      "Properties": {
-        "RetentionInDays": 14,
-      },
-      "Type": "AWS::Logs::LogGroup",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "DiaryDiaryApi92905B11": {
-      "Properties": {
-        "Name": "DiaryApi",
-      },
-      "Type": "AWS::ApiGateway::RestApi",
-    },
-    "DiaryDiaryApiAccount37000532": {
-      "DeletionPolicy": "Delete",
-      "DependsOn": [
-        "DiaryDiaryApi92905B11",
-      ],
-      "Properties": {
-        "CloudWatchRoleArn": {
-          "Fn::GetAtt": [
-            "DiaryDiaryApiCloudWatchRole07C9F7D8",
-            "Arn",
-          ],
-        },
-      },
-      "Type": "AWS::ApiGateway::Account",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "DiaryDiaryApiCloudWatchRole07C9F7D8": {
-      "DeletionPolicy": "Delete",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "apigateway.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "ManagedPolicyArns": [
-          {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition",
-                },
-                ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs",
-              ],
-            ],
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Role",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "DiaryDiaryApiDeployment2FCBA74F1be6dc18037e5adcf50c7687d5473da8": {
-      "DependsOn": [
-        "DiaryDiaryApibouquetGETD9E658CF",
-        "DiaryDiaryApibouquetPOSTBE5BBBA6",
-        "DiaryDiaryApibouquetBA49E6D6",
-        "DiaryDiaryApidiaryDELETE2F808A36",
-        "DiaryDiaryApidiaryGET7B422CA4",
-        "DiaryDiaryApidiaryOPTIONS6DD3DB35",
-        "DiaryDiaryApidiaryPOST9C05F003",
-        "DiaryDiaryApidiaryPUTE31B501C",
-        "DiaryDiaryApidiary35867741",
-        "DiaryDiaryApiflowerGET5B9DF67C",
-        "DiaryDiaryApiflowerOPTIONS45C38AA3",
-        "DiaryDiaryApiflowerC3395EB1",
-        "DiaryDiaryApititleGETEDD6B9D8",
-        "DiaryDiaryApititleOPTIONSEC008AE1",
-        "DiaryDiaryApititle8A38C1B7",
-        "DiaryDiaryApiRequestValidator542C44ED",
-        "DiaryDiaryApivalidator76D00406",
-      ],
-      "Properties": {
-        "Description": "Automatically created by the RestApi construct",
-        "RestApiId": {
-          "Ref": "DiaryDiaryApi92905B11",
-        },
-      },
-      "Type": "AWS::ApiGateway::Deployment",
-    },
-    "DiaryDiaryApiDeploymentStageprod25B5F7B5": {
-      "DependsOn": [
-        "DiaryDiaryApiAccount37000532",
-      ],
-      "Properties": {
-        "AccessLogSetting": {
-          "DestinationArn": {
-            "Fn::GetAtt": [
-              "DiaryApiGatewayAccessLogs9B894EB0",
-              "Arn",
-            ],
-          },
-          "Format": "{"requestId":"$context.requestId","ip":"$context.identity.sourceIp","user":"$context.identity.user","caller":"$context.identity.caller","requestTime":"$context.requestTime","httpMethod":"$context.httpMethod","resourcePath":"$context.resourcePath","status":"$context.status","protocol":"$context.protocol","responseLength":"$context.responseLength"}",
-        },
-        "DeploymentId": {
-          "Ref": "DiaryDiaryApiDeployment2FCBA74F1be6dc18037e5adcf50c7687d5473da8",
-        },
-        "MethodSettings": [
-          {
-            "DataTraceEnabled": true,
-            "HttpMethod": "*",
-            "LoggingLevel": "INFO",
-            "ResourcePath": "/*",
-          },
-        ],
-        "RestApiId": {
-          "Ref": "DiaryDiaryApi92905B11",
-        },
-        "StageName": "prod",
-      },
-      "Type": "AWS::ApiGateway::Stage",
-    },
-    "DiaryDiaryApiRequestValidator542C44ED": {
-      "Properties": {
-        "RestApiId": {
-          "Ref": "DiaryDiaryApi92905B11",
-        },
-        "ValidateRequestBody": true,
-        "ValidateRequestParameters": true,
-      },
-      "Type": "AWS::ApiGateway::RequestValidator",
-    },
-    "DiaryDiaryApibouquetBA49E6D6": {
-      "Properties": {
-        "ParentId": {
-          "Fn::GetAtt": [
-            "DiaryDiaryApi92905B11",
-            "RootResourceId",
-          ],
-        },
-        "PathPart": "bouquet",
-        "RestApiId": {
-          "Ref": "DiaryDiaryApi92905B11",
-        },
-      },
-      "Type": "AWS::ApiGateway::Resource",
-    },
-    "DiaryDiaryApibouquetGETApiPermissionCdkSampleStackDiaryDiaryApi4B8499C2GETbouquet3F9D5D5E": {
-      "Properties": {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "ApibouquetGetFunction8161E364",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": {
-          "Fn::Join": [
-            "",
-            [
-              "arn:",
-              {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              {
-                "Ref": "DiaryDiaryApi92905B11",
-              },
-              "/",
-              {
-                "Ref": "DiaryDiaryApiDeploymentStageprod25B5F7B5",
-              },
-              "/GET/bouquet",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
-    "DiaryDiaryApibouquetGETApiPermissionTestCdkSampleStackDiaryDiaryApi4B8499C2GETbouquet4422693D": {
-      "Properties": {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "ApibouquetGetFunction8161E364",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": {
-          "Fn::Join": [
-            "",
-            [
-              "arn:",
-              {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              {
-                "Ref": "DiaryDiaryApi92905B11",
-              },
-              "/test-invoke-stage/GET/bouquet",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
-    "DiaryDiaryApibouquetGETD9E658CF": {
-      "Properties": {
-        "AuthorizationType": "COGNITO_USER_POOLS",
-        "AuthorizerId": {
-          "Ref": "ApiapiCognitoAuthorizerC51171C7",
-        },
-        "HttpMethod": "GET",
-        "Integration": {
-          "IntegrationHttpMethod": "POST",
-          "Type": "AWS_PROXY",
-          "Uri": {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition",
-                },
-                ":apigateway:",
-                {
-                  "Ref": "AWS::Region",
-                },
-                ":lambda:path/2015-03-31/functions/",
-                {
-                  "Fn::GetAtt": [
-                    "ApibouquetGetFunction8161E364",
-                    "Arn",
-                  ],
-                },
-                "/invocations",
-              ],
-            ],
-          },
-        },
-        "RequestParameters": {
-          "method.request.querystring.date": true,
-        },
-        "RequestValidatorId": {
-          "Ref": "DiaryDiaryApivalidator76D00406",
-        },
-        "ResourceId": {
-          "Ref": "DiaryDiaryApibouquetBA49E6D6",
-        },
-        "RestApiId": {
-          "Ref": "DiaryDiaryApi92905B11",
-        },
-      },
-      "Type": "AWS::ApiGateway::Method",
-    },
-    "DiaryDiaryApibouquetPOSTApiPermissionCdkSampleStackDiaryDiaryApi4B8499C2POSTbouquetE5A983F2": {
-      "Properties": {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "ApiBouquetCreate2BDD3C72",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": {
-          "Fn::Join": [
-            "",
-            [
-              "arn:",
-              {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              {
-                "Ref": "DiaryDiaryApi92905B11",
-              },
-              "/",
-              {
-                "Ref": "DiaryDiaryApiDeploymentStageprod25B5F7B5",
-              },
-              "/POST/bouquet",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
-    "DiaryDiaryApibouquetPOSTApiPermissionTestCdkSampleStackDiaryDiaryApi4B8499C2POSTbouquet90B9DC76": {
-      "Properties": {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "ApiBouquetCreate2BDD3C72",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": {
-          "Fn::Join": [
-            "",
-            [
-              "arn:",
-              {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              {
-                "Ref": "DiaryDiaryApi92905B11",
-              },
-              "/test-invoke-stage/POST/bouquet",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
-    "DiaryDiaryApibouquetPOSTBE5BBBA6": {
-      "Properties": {
-        "AuthorizationType": "COGNITO_USER_POOLS",
-        "AuthorizerId": {
-          "Ref": "ApiapiCognitoAuthorizerC51171C7",
-        },
-        "HttpMethod": "POST",
-        "Integration": {
-          "IntegrationHttpMethod": "POST",
-          "Type": "AWS_PROXY",
-          "Uri": {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition",
-                },
-                ":apigateway:",
-                {
-                  "Ref": "AWS::Region",
-                },
-                ":lambda:path/2015-03-31/functions/",
-                {
-                  "Fn::GetAtt": [
-                    "ApiBouquetCreate2BDD3C72",
-                    "Arn",
-                  ],
-                },
-                "/invocations",
-              ],
-            ],
-          },
-        },
-        "ResourceId": {
-          "Ref": "DiaryDiaryApibouquetBA49E6D6",
-        },
-        "RestApiId": {
-          "Ref": "DiaryDiaryApi92905B11",
-        },
-      },
-      "Type": "AWS::ApiGateway::Method",
-    },
-    "DiaryDiaryApidiary35867741": {
-      "Properties": {
-        "ParentId": {
-          "Fn::GetAtt": [
-            "DiaryDiaryApi92905B11",
-            "RootResourceId",
-          ],
-        },
-        "PathPart": "diary",
-        "RestApiId": {
-          "Ref": "DiaryDiaryApi92905B11",
-        },
-      },
-      "Type": "AWS::ApiGateway::Resource",
-    },
-    "DiaryDiaryApidiaryDELETE2F808A36": {
-      "Properties": {
-        "AuthorizationType": "COGNITO_USER_POOLS",
-        "AuthorizerId": {
-          "Ref": "DiarydiaryCognitoAuthorizer3442620A",
-        },
-        "HttpMethod": "DELETE",
-        "Integration": {
-          "IntegrationHttpMethod": "POST",
-          "Type": "AWS_PROXY",
-          "Uri": {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition",
-                },
-                ":apigateway:",
-                {
-                  "Ref": "AWS::Region",
-                },
-                ":lambda:path/2015-03-31/functions/",
-                {
-                  "Fn::GetAtt": [
-                    "DiarydiaryDeleteLambda7D51A24F",
-                    "Arn",
-                  ],
-                },
-                "/invocations",
-              ],
-            ],
-          },
-        },
-        "ResourceId": {
-          "Ref": "DiaryDiaryApidiary35867741",
-        },
-        "RestApiId": {
-          "Ref": "DiaryDiaryApi92905B11",
-        },
-      },
-      "Type": "AWS::ApiGateway::Method",
-    },
-    "DiaryDiaryApidiaryDELETEApiPermissionCdkSampleStackDiaryDiaryApi4B8499C2DELETEdiaryE2672A94": {
-      "Properties": {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "DiarydiaryDeleteLambda7D51A24F",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": {
-          "Fn::Join": [
-            "",
-            [
-              "arn:",
-              {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              {
-                "Ref": "DiaryDiaryApi92905B11",
-              },
-              "/",
-              {
-                "Ref": "DiaryDiaryApiDeploymentStageprod25B5F7B5",
-              },
-              "/DELETE/diary",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
-    "DiaryDiaryApidiaryDELETEApiPermissionTestCdkSampleStackDiaryDiaryApi4B8499C2DELETEdiary0CA094AD": {
-      "Properties": {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "DiarydiaryDeleteLambda7D51A24F",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": {
-          "Fn::Join": [
-            "",
-            [
-              "arn:",
-              {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              {
-                "Ref": "DiaryDiaryApi92905B11",
-              },
-              "/test-invoke-stage/DELETE/diary",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
-    "DiaryDiaryApidiaryGET7B422CA4": {
-      "Properties": {
-        "AuthorizationType": "COGNITO_USER_POOLS",
-        "AuthorizerId": {
-          "Ref": "DiarydiaryCognitoAuthorizer3442620A",
-        },
-        "HttpMethod": "GET",
-        "Integration": {
-          "IntegrationHttpMethod": "POST",
-          "Type": "AWS_PROXY",
-          "Uri": {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition",
-                },
-                ":apigateway:",
-                {
-                  "Ref": "AWS::Region",
-                },
-                ":lambda:path/2015-03-31/functions/",
-                {
-                  "Fn::GetAtt": [
-                    "DiarydiaryReadLambda86C35E76",
-                    "Arn",
-                  ],
-                },
-                "/invocations",
-              ],
-            ],
-          },
-        },
-        "ResourceId": {
-          "Ref": "DiaryDiaryApidiary35867741",
-        },
-        "RestApiId": {
-          "Ref": "DiaryDiaryApi92905B11",
-        },
-      },
-      "Type": "AWS::ApiGateway::Method",
-    },
-    "DiaryDiaryApidiaryGETApiPermissionCdkSampleStackDiaryDiaryApi4B8499C2GETdiaryD52076D5": {
-      "Properties": {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "DiarydiaryReadLambda86C35E76",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": {
-          "Fn::Join": [
-            "",
-            [
-              "arn:",
-              {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              {
-                "Ref": "DiaryDiaryApi92905B11",
-              },
-              "/",
-              {
-                "Ref": "DiaryDiaryApiDeploymentStageprod25B5F7B5",
-              },
-              "/GET/diary",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
-    "DiaryDiaryApidiaryGETApiPermissionTestCdkSampleStackDiaryDiaryApi4B8499C2GETdiaryD83FC020": {
-      "Properties": {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "DiarydiaryReadLambda86C35E76",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": {
-          "Fn::Join": [
-            "",
-            [
-              "arn:",
-              {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              {
-                "Ref": "DiaryDiaryApi92905B11",
-              },
-              "/test-invoke-stage/GET/diary",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
-    "DiaryDiaryApidiaryOPTIONS6DD3DB35": {
-      "Properties": {
-        "AuthorizationType": "NONE",
-        "HttpMethod": "OPTIONS",
-        "Integration": {
-          "IntegrationResponses": [
-            {
-              "ResponseParameters": {
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
-                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,DELETE'",
-                "method.response.header.Access-Control-Allow-Origin": "'*'",
-              },
-              "StatusCode": "200",
-            },
-          ],
-          "PassthroughBehavior": "NEVER",
-          "RequestTemplates": {
-            "application/json": "{"statusCode": 200}",
-          },
-          "Type": "MOCK",
-        },
-        "MethodResponses": [
-          {
-            "ResponseParameters": {
-              "method.response.header.Access-Control-Allow-Headers": true,
-              "method.response.header.Access-Control-Allow-Methods": true,
-              "method.response.header.Access-Control-Allow-Origin": true,
-            },
-            "StatusCode": "200",
-          },
-        ],
-        "ResourceId": {
-          "Ref": "DiaryDiaryApidiary35867741",
-        },
-        "RestApiId": {
-          "Ref": "DiaryDiaryApi92905B11",
-        },
-      },
-      "Type": "AWS::ApiGateway::Method",
-    },
-    "DiaryDiaryApidiaryPOST9C05F003": {
-      "Properties": {
-        "AuthorizationType": "COGNITO_USER_POOLS",
-        "AuthorizerId": {
-          "Ref": "DiarydiaryCognitoAuthorizer3442620A",
-        },
-        "HttpMethod": "POST",
-        "Integration": {
-          "IntegrationHttpMethod": "POST",
-          "Type": "AWS_PROXY",
-          "Uri": {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition",
-                },
-                ":apigateway:",
-                {
-                  "Ref": "AWS::Region",
-                },
-                ":lambda:path/2015-03-31/functions/",
-                {
-                  "Fn::GetAtt": [
-                    "DiarydiaryCreateLambda0AD0EFFF",
-                    "Arn",
-                  ],
-                },
-                "/invocations",
-              ],
-            ],
-          },
-        },
-        "ResourceId": {
-          "Ref": "DiaryDiaryApidiary35867741",
-        },
-        "RestApiId": {
-          "Ref": "DiaryDiaryApi92905B11",
-        },
-      },
-      "Type": "AWS::ApiGateway::Method",
-    },
-    "DiaryDiaryApidiaryPOSTApiPermissionCdkSampleStackDiaryDiaryApi4B8499C2POSTdiaryCBFAF7CF": {
-      "Properties": {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "DiarydiaryCreateLambda0AD0EFFF",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": {
-          "Fn::Join": [
-            "",
-            [
-              "arn:",
-              {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              {
-                "Ref": "DiaryDiaryApi92905B11",
-              },
-              "/",
-              {
-                "Ref": "DiaryDiaryApiDeploymentStageprod25B5F7B5",
-              },
-              "/POST/diary",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
-    "DiaryDiaryApidiaryPOSTApiPermissionTestCdkSampleStackDiaryDiaryApi4B8499C2POSTdiaryA3F61BE1": {
-      "Properties": {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "DiarydiaryCreateLambda0AD0EFFF",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": {
-          "Fn::Join": [
-            "",
-            [
-              "arn:",
-              {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              {
-                "Ref": "DiaryDiaryApi92905B11",
-              },
-              "/test-invoke-stage/POST/diary",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
-    "DiaryDiaryApidiaryPUTApiPermissionCdkSampleStackDiaryDiaryApi4B8499C2PUTdiaryE12F1933": {
-      "Properties": {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "DiarydiaryEditLambda0E053A05",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": {
-          "Fn::Join": [
-            "",
-            [
-              "arn:",
-              {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              {
-                "Ref": "DiaryDiaryApi92905B11",
-              },
-              "/",
-              {
-                "Ref": "DiaryDiaryApiDeploymentStageprod25B5F7B5",
-              },
-              "/PUT/diary",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
-    "DiaryDiaryApidiaryPUTApiPermissionTestCdkSampleStackDiaryDiaryApi4B8499C2PUTdiary069BE730": {
-      "Properties": {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "DiarydiaryEditLambda0E053A05",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": {
-          "Fn::Join": [
-            "",
-            [
-              "arn:",
-              {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              {
-                "Ref": "DiaryDiaryApi92905B11",
-              },
-              "/test-invoke-stage/PUT/diary",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
-    "DiaryDiaryApidiaryPUTE31B501C": {
-      "Properties": {
-        "AuthorizationType": "COGNITO_USER_POOLS",
-        "AuthorizerId": {
-          "Ref": "DiarydiaryCognitoAuthorizer3442620A",
-        },
-        "HttpMethod": "PUT",
-        "Integration": {
-          "IntegrationHttpMethod": "POST",
-          "Type": "AWS_PROXY",
-          "Uri": {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition",
-                },
-                ":apigateway:",
-                {
-                  "Ref": "AWS::Region",
-                },
-                ":lambda:path/2015-03-31/functions/",
-                {
-                  "Fn::GetAtt": [
-                    "DiarydiaryEditLambda0E053A05",
-                    "Arn",
-                  ],
-                },
-                "/invocations",
-              ],
-            ],
-          },
-        },
-        "ResourceId": {
-          "Ref": "DiaryDiaryApidiary35867741",
-        },
-        "RestApiId": {
-          "Ref": "DiaryDiaryApi92905B11",
-        },
-      },
-      "Type": "AWS::ApiGateway::Method",
-    },
-    "DiaryDiaryApiflowerC3395EB1": {
-      "Properties": {
-        "ParentId": {
-          "Fn::GetAtt": [
-            "DiaryDiaryApi92905B11",
-            "RootResourceId",
-          ],
-        },
-        "PathPart": "flower",
-        "RestApiId": {
-          "Ref": "DiaryDiaryApi92905B11",
-        },
-      },
-      "Type": "AWS::ApiGateway::Resource",
-    },
-    "DiaryDiaryApiflowerGET5B9DF67C": {
-      "Properties": {
-        "AuthorizationType": "COGNITO_USER_POOLS",
-        "AuthorizerId": {
-          "Ref": "ApiapiCognitoAuthorizerC51171C7",
-        },
-        "HttpMethod": "GET",
-        "Integration": {
-          "IntegrationHttpMethod": "POST",
-          "Type": "AWS_PROXY",
-          "Uri": {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition",
-                },
-                ":apigateway:",
-                {
-                  "Ref": "AWS::Region",
-                },
-                ":lambda:path/2015-03-31/functions/",
-                {
-                  "Fn::GetAtt": [
-                    "ApiflowerGetFunctionDEFFEDFA",
-                    "Arn",
-                  ],
-                },
-                "/invocations",
-              ],
-            ],
-          },
-        },
-        "ResourceId": {
-          "Ref": "DiaryDiaryApiflowerC3395EB1",
-        },
-        "RestApiId": {
-          "Ref": "DiaryDiaryApi92905B11",
-        },
-      },
-      "Type": "AWS::ApiGateway::Method",
-    },
-    "DiaryDiaryApiflowerGETApiPermissionCdkSampleStackDiaryDiaryApi4B8499C2GETflowerAF6AD7C0": {
-      "Properties": {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "ApiflowerGetFunctionDEFFEDFA",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": {
-          "Fn::Join": [
-            "",
-            [
-              "arn:",
-              {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              {
-                "Ref": "DiaryDiaryApi92905B11",
-              },
-              "/",
-              {
-                "Ref": "DiaryDiaryApiDeploymentStageprod25B5F7B5",
-              },
-              "/GET/flower",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
-    "DiaryDiaryApiflowerGETApiPermissionTestCdkSampleStackDiaryDiaryApi4B8499C2GETflower57F34398": {
-      "Properties": {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "ApiflowerGetFunctionDEFFEDFA",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": {
-          "Fn::Join": [
-            "",
-            [
-              "arn:",
-              {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              {
-                "Ref": "DiaryDiaryApi92905B11",
-              },
-              "/test-invoke-stage/GET/flower",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
-    "DiaryDiaryApiflowerOPTIONS45C38AA3": {
-      "Properties": {
-        "AuthorizationType": "NONE",
-        "HttpMethod": "OPTIONS",
-        "Integration": {
-          "IntegrationResponses": [
-            {
-              "ResponseParameters": {
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
-                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,DELETE'",
-                "method.response.header.Access-Control-Allow-Origin": "'*'",
-              },
-              "StatusCode": "200",
-            },
-          ],
-          "PassthroughBehavior": "NEVER",
-          "RequestTemplates": {
-            "application/json": "{"statusCode": 200}",
-          },
-          "Type": "MOCK",
-        },
-        "MethodResponses": [
-          {
-            "ResponseParameters": {
-              "method.response.header.Access-Control-Allow-Headers": true,
-              "method.response.header.Access-Control-Allow-Methods": true,
-              "method.response.header.Access-Control-Allow-Origin": true,
-            },
-            "StatusCode": "200",
-          },
-        ],
-        "ResourceId": {
-          "Ref": "DiaryDiaryApiflowerC3395EB1",
-        },
-        "RestApiId": {
-          "Ref": "DiaryDiaryApi92905B11",
-        },
-      },
-      "Type": "AWS::ApiGateway::Method",
-    },
-    "DiaryDiaryApititle8A38C1B7": {
-      "Properties": {
-        "ParentId": {
-          "Fn::GetAtt": [
-            "DiaryDiaryApi92905B11",
-            "RootResourceId",
-          ],
-        },
-        "PathPart": "title",
-        "RestApiId": {
-          "Ref": "DiaryDiaryApi92905B11",
-        },
-      },
-      "Type": "AWS::ApiGateway::Resource",
-    },
-    "DiaryDiaryApititleGETApiPermissionCdkSampleStackDiaryDiaryApi4B8499C2GETtitle1056415A": {
-      "Properties": {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "DiarytitleGetFunction90C2A326",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": {
-          "Fn::Join": [
-            "",
-            [
-              "arn:",
-              {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              {
-                "Ref": "DiaryDiaryApi92905B11",
-              },
-              "/",
-              {
-                "Ref": "DiaryDiaryApiDeploymentStageprod25B5F7B5",
-              },
-              "/GET/title",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
-    "DiaryDiaryApititleGETApiPermissionTestCdkSampleStackDiaryDiaryApi4B8499C2GETtitle1C394ECA": {
-      "Properties": {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "DiarytitleGetFunction90C2A326",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": {
-          "Fn::Join": [
-            "",
-            [
-              "arn:",
-              {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              {
-                "Ref": "DiaryDiaryApi92905B11",
-              },
-              "/test-invoke-stage/GET/title",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
-    "DiaryDiaryApititleGETEDD6B9D8": {
-      "Properties": {
-        "AuthorizationType": "COGNITO_USER_POOLS",
-        "AuthorizerId": {
-          "Ref": "DiarydiaryCognitoAuthorizer3442620A",
-        },
-        "HttpMethod": "GET",
-        "Integration": {
-          "IntegrationHttpMethod": "POST",
-          "Type": "AWS_PROXY",
-          "Uri": {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition",
-                },
-                ":apigateway:",
-                {
-                  "Ref": "AWS::Region",
-                },
-                ":lambda:path/2015-03-31/functions/",
-                {
-                  "Fn::GetAtt": [
-                    "DiarytitleGetFunction90C2A326",
-                    "Arn",
-                  ],
-                },
-                "/invocations",
-              ],
-            ],
-          },
-        },
-        "ResourceId": {
-          "Ref": "DiaryDiaryApititle8A38C1B7",
-        },
-        "RestApiId": {
-          "Ref": "DiaryDiaryApi92905B11",
-        },
-      },
-      "Type": "AWS::ApiGateway::Method",
-    },
-    "DiaryDiaryApititleOPTIONSEC008AE1": {
-      "Properties": {
-        "AuthorizationType": "NONE",
-        "HttpMethod": "OPTIONS",
-        "Integration": {
-          "IntegrationResponses": [
-            {
-              "ResponseParameters": {
-                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
-                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,DELETE'",
-                "method.response.header.Access-Control-Allow-Origin": "'*'",
-              },
-              "StatusCode": "200",
-            },
-          ],
-          "PassthroughBehavior": "NEVER",
-          "RequestTemplates": {
-            "application/json": "{"statusCode": 200}",
-          },
-          "Type": "MOCK",
-        },
-        "MethodResponses": [
-          {
-            "ResponseParameters": {
-              "method.response.header.Access-Control-Allow-Headers": true,
-              "method.response.header.Access-Control-Allow-Methods": true,
-              "method.response.header.Access-Control-Allow-Origin": true,
-            },
-            "StatusCode": "200",
-          },
-        ],
-        "ResourceId": {
-          "Ref": "DiaryDiaryApititle8A38C1B7",
-        },
-        "RestApiId": {
-          "Ref": "DiaryDiaryApi92905B11",
-        },
-      },
-      "Type": "AWS::ApiGateway::Method",
-    },
-    "DiaryDiaryApivalidator76D00406": {
-      "Properties": {
-        "Name": "ValidateQueryString",
-        "RestApiId": {
-          "Ref": "DiaryDiaryApi92905B11",
-        },
-        "ValidateRequestParameters": true,
-      },
-      "Type": "AWS::ApiGateway::RequestValidator",
-    },
     "DiaryTitleGenerateLambda7612098A": {
       "DependsOn": [
         "DiarygenerativeAiLambdaRoleDefaultPolicy5FC5F15D",
@@ -2700,25 +1479,6 @@ exports[`Snapshot test 1`] = `
         "StartingPosition": "LATEST",
       },
       "Type": "AWS::Lambda::EventSourceMapping",
-    },
-    "DiarydiaryCognitoAuthorizer3442620A": {
-      "Properties": {
-        "IdentitySource": "method.request.header.Authorization",
-        "Name": "CdkSampleStackDiarydiaryCognitoAuthorizer2B7633F2",
-        "ProviderARNs": [
-          {
-            "Fn::GetAtt": [
-              "AuthUserPool8115E87F",
-              "Arn",
-            ],
-          },
-        ],
-        "RestApiId": {
-          "Ref": "DiaryDiaryApi92905B11",
-        },
-        "Type": "COGNITO_USER_POOLS",
-      },
-      "Type": "AWS::ApiGateway::Authorizer",
     },
     "DiarydiaryContentsTableF7DA06EF": {
       "DeletionPolicy": "Delete",
@@ -4634,7 +3394,7 @@ exports[`Snapshot test 1`] = `
               [
                 "https://",
                 {
-                  "Ref": "DiaryDiaryApi92905B11",
+                  "Ref": "ApiDiaryApi1E03348A",
                 },
                 ".execute-api.",
                 {
@@ -4646,7 +3406,7 @@ exports[`Snapshot test 1`] = `
                 },
                 "/",
                 {
-                  "Ref": "DiaryDiaryApiDeploymentStageprod25B5F7B5",
+                  "Ref": "ApiDiaryApiDeploymentStageprodD9912276",
                 },
                 "/",
               ],
