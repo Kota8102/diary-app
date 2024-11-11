@@ -1,9 +1,11 @@
 export const paths = {
+  // 共通関連
   home: {
     path: '/',
     getHref: () => '/',
   },
 
+  // 認証関連
   auth: {
     choice: {
       path: '/auth',
@@ -25,8 +27,17 @@ export const paths = {
       path: '/auth/login',
       getHref: (redirectTo?: string | null | undefined) => `/auth/login${redirectTo ? `?redirectTo=${encodeURIComponent(redirectTo)}` : ''}`,
     },
+    forgotPassword: {
+      path: '/auth/forgot-password',
+      getHref: () => '/auth/forgot-password',
+    },
+    resetPassword: {
+      path: '/auth/reset-password',
+      getHref: () => '/auth/reset-password',
+    },
   },
 
+  // アプリ関連
   app: {
     path: '/app',
     getHref: () => '/app/diary',
