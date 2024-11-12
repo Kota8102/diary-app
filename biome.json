@@ -10,7 +10,16 @@
     }
   },
   "files": {
-    "ignore": ["**/node_modules/**", "**/dist/**", "**/cdk.out/**", "**/package.json/**", "**/package-lock.json/**", "**/*.snap/**", "docs/"]
+    "ignore": [
+      "**/node_modules/**",
+      "**/dist/**",
+      "**/cdk.out/**",
+      "**/package.json/**",
+      "**/package-lock.json/**",
+      "**/*.snap/**",
+      "docs/",
+      ".venv/"
+    ]
   },
   "formatter": {
     "enabled": true,

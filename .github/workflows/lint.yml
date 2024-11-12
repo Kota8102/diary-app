@@ -33,4 +33,4 @@ jobs:
 
       # BiomeでLint
       - name: Biome Lint
-        run: npx run lint ./src
+        run: npm run lint .
