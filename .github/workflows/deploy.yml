@@ -29,6 +29,10 @@ jobs:
         with:
           node-version: "20"
 
+      # 依存関係のインストール
+      - name: Install dependencies
+        run: npm ci
+
       # npmキャッシュの設定
       - name: Cache npm dependencies
         uses: actions/cache@v4
@@ -40,10 +44,6 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
-
-      # 依存関係のインストール
-      - name: Install dependencies
-        run: npm ci
 
   setup-python:
     runs-on: ubuntu-latest
@@ -58,6 +58,10 @@ jobs:
         with:
           python-version: "3.12"
 
+      # 依存関係のインストール
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
       # Pythonの依存関係キャッシュ
       - name: Cache pip dependencies
         uses: actions/cache@v4
@@ -67,10 +71,6 @@ jobs:
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
-
-      # 依存関係のインストール
-      - name: Install dependencies
-        run: pip install -r requirements.txt
 
   # 環境変数を設定
   set-environment:

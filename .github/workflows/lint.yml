@@ -21,10 +21,6 @@ jobs:
         with:
           node-version: "20"
 
-      # Biomeのインストール
-      - name: Install Biome
-        run: npm install -g @biomejs/biome
-
       # npmキャッシュの復元
       - name: Restore npm dependencies
         uses: actions/cache@v4
