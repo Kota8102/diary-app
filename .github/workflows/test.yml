@@ -1,8 +1,10 @@
 name: Tests
 
+# ワークフローが呼び出された場合にのみ実行
 on:
   workflow_call:
 
+# デフォルトのシェルをbashに設定
 defaults:
   run:
     shell: bash
@@ -12,16 +14,11 @@ jobs:
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
+      # チェックアウト
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      # Pythonのセットアップ
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
 
       # Pythonの依存関係の復元
       - name: Restore pip dependencies
@@ -32,15 +29,10 @@ jobs:
             venv
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
 
+      # pytestでテスト
       - name: Test with pytest
         run: |
           pytest
-
-      # Nodeのセットアップ
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
 
       # npmキャッシュの復元
       - name: Restore npm dependencies

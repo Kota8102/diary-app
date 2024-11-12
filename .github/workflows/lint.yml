@@ -1,8 +1,10 @@
 name: Lint
 
+# ワークフローが呼び出された場合にのみ実行
 on:
   workflow_call:
 
+# デフォルトのシェルをbashに設定
 defaults:
   run:
     shell: bash
@@ -12,14 +14,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
+      # チェックアウト
       - name: Checkout
         uses: actions/checkout@v4
-
-      # Nodeのセットアップ
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
 
       # npmキャッシュの復元
       - name: Restore npm dependencies

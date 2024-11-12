@@ -15,7 +15,7 @@ defaults:
     shell: bash
 
 jobs:
-  # 依存関係のセットアップとキャッシュ
+  # ジョブ: Nodeのセットアップとキャッシュ
   setup-node:
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -45,6 +45,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
+  # ジョブ: Pythonのセットアップとキャッシュ
   setup-python:
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -72,7 +73,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
 
-  # 環境変数を設定
+  # ジョブ: 環境変数の設定
   set-environment:
     needs:
       - setup-node
@@ -97,19 +98,21 @@ jobs:
       # 環境変数の出力
       environment: ${{ steps.set_environment.outputs.environment }}
 
+  # ジョブ: Lint
   lint:
     needs:
       - setup-node
       - setup-python
     uses: ./.github/workflows/lint.yml
 
+  # ジョブ: テスト
   test:
     needs:
       - setup-node
       - setup-python
     uses: ./.github/workflows/test.yml
 
-  # pr-agent
+  # ジョブ: PR Agent
   pr-agent:
     # プルリクエストが開いた場合にのみ実行
     if: github.event_name == 'pull_request'
@@ -121,7 +124,7 @@ jobs:
       - test
     uses: ./.github/workflows/pr-agent.yml
 
-  # デプロイ
+  # ジョブ: デプロイ
   deploy:
     needs:
       - set-environment
@@ -181,7 +184,7 @@ jobs:
           source venv/bin/activate
           npx -w src/backend npm run cdk deploy --all
 
-  # アクションのタイムライン
+  # ジョブ: アクションのタイムライン
   actions-timeline:
     needs: [lint, test, deploy]
     runs-on: ubuntu-latest
