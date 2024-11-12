@@ -103,14 +103,12 @@ jobs:
     needs:
       - setup-node
       - setup-python
-      - set-environment
     uses: ./.github/workflows/lint.yml
 
   test:
     needs:
       - setup-node
       - setup-python
-      - set-environment
     uses: ./.github/workflows/test.yml
 
   # pr-agent
@@ -118,8 +116,6 @@ jobs:
     # プルリクエストが開いた場合にのみ実行
     if: github.event_name == 'pull_request'
     needs:
-      - setup-node
-      - setup-python
       - test
     uses: ./.github/workflows/pr-agent.yml
 
