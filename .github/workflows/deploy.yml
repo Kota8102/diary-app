@@ -9,6 +9,7 @@ on:
       - "main"
       - "feature/*"
 
+# デフォルトのシェルをbashに設定
 defaults:
   run:
     shell: bash
