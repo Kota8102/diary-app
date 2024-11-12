@@ -15,9 +15,9 @@ jobs:
     timeout-minutes: 10
 
     permissions:
-      issues: write # Issue操作の権限
-      pull-requests: write # PRの操作権限
-      contents: write # リポジトリコンテンツの操作権限
+      contents: write
+      issues: write
+      pull-requests: write
 
     steps:
       - name: PR Agent
