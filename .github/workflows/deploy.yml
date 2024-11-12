@@ -116,6 +116,10 @@ jobs:
   pr-agent:
     # プルリクエストが開いた場合にのみ実行
     if: github.event_name == 'pull_request'
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
     needs:
       - test
     uses: ./.github/workflows/pr-agent.yml
