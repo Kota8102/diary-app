@@ -65,16 +65,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
 
-      # 依存関係のインストール
-      - name: Install Node dependencies
-        run: npm ci
-
-      - name: Install Python dependencies
-        run: |
-          python -m venv venv
-          source venv/bin/activate
-          pip install -r requirements.txt
-
   # 環境変数を設定
   set-environment:
     needs:
