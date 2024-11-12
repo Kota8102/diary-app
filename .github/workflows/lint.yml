@@ -25,8 +25,8 @@ jobs:
           path: |
             ~/.npm
             node_modules
-            src/backend/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+            packages/*/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json', 'packages/*/package-lock.json') }}
 
       # BiomeでLint
       - name: Biome Lint

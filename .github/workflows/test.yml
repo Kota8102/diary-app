@@ -41,9 +41,10 @@ jobs:
           path: |
             ~/.npm
             node_modules
-            src/backend/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+            packages/*/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json', 'packages/*/package-lock.json') }}
 
+      # CDKのテスト
       - name: CDK Test
         if: startsWith(github.ref, 'refs/heads/feature/')
         run: npx -w src/backend npm run test
