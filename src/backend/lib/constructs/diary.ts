@@ -39,6 +39,7 @@ export class Diary extends Construct {
         FLOWER_IMAGE_BUCKET_NAME: props.flowerImageBucket.bucketName,
         FLOWER_SELECT_FUNCTION_NAME: props.flowerSelectFunction.functionName,
       },
+      timeout: cdk.Duration.seconds(30),
     })
     props.table.grantWriteData(diaryCreateFunction)
     props.flowerSelectFunction.grantInvoke(diaryCreateFunction)
