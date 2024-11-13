@@ -5,6 +5,7 @@ import * as dynamodb from 'aws-cdk-lib/aws-dynamodb'
 import * as iam from 'aws-cdk-lib/aws-iam'
 import * as lambda from 'aws-cdk-lib/aws-lambda'
 import * as s3 from 'aws-cdk-lib/aws-s3'
+import * as ssm from 'aws-cdk-lib/aws-ssm'
 import { Construct } from 'constructs'
 
 export interface FlowerProps {
@@ -76,9 +77,12 @@ export class Flower extends Construct {
     generativeAiTable.grantWriteData(flowerSelectFunction)
     table.grantStreamRead(flowerSelectFunction)
     flowerImageBucket.grantPut(flowerSelectFunction)
+    const difyApiKey = ssm.StringParameter.fromStringParameterAttributes(this, 'DifyApiKey', {
+      parameterName: '/parameter/DIFY_API_KEY',
+    })
     flowerSelectFunction.addToRolePolicy(
       new iam.PolicyStatement({
-        resources: ['arn:aws:ssm:ap-northeast-1:851725642854:parameter/DIFY_API_KEY'],
+        resources: [difyApiKey.parameterArn],
         actions: ['ssm:GetParameter'],
       }),
     )
