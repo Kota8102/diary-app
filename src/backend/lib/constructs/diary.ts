@@ -12,6 +12,7 @@ export interface DiaryProps {
   cognitoAuthorizer: apigateway.CognitoUserPoolsAuthorizer
   table: dynamodb.Table
   generativeAiTable: dynamodb.Table
+  flowerSelectFunction: lambda.Function
 }
 
 export class Diary extends Construct {
@@ -33,9 +34,11 @@ export class Diary extends Construct {
       logRetention: 14,
       environment: {
         TABLE_NAME: props.table.tableName,
+        FLOWER_SELECT_FUNCTION_NAME: props.flowerSelectFunction.functionName,
       },
     })
     props.table.grantWriteData(diaryCreateFunction)
+    diaryCreateFunction.grantInvoke(props.flowerSelectFunction)
 
     // 日記編集用Lambda関数の定義
     const diaryEditFunction = new lambda.Function(this, 'diaryEditLambda', {

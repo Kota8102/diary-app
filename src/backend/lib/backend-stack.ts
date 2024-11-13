@@ -58,6 +58,7 @@ export class BackendStack extends cdk.Stack {
       cognitoAuthorizer: api.cognitoAuthorizer,
       table: flower.table,
       generativeAiTable: flower.generativeAiTable,
+      flowerSelectFunction: flower.flowerSelectFunction,
     })
 
     const bouquet = new Bouquet(this, 'Bouquet', {

@@ -17,6 +17,7 @@ export class Flower extends Construct {
   public readonly flowerImageBucket: s3.Bucket
   public readonly table: dynamodb.Table
   public readonly generativeAiTable: dynamodb.Table
+  public readonly flowerSelectFunction: lambda.Function
   constructor(scope: Construct, id: string, props: FlowerProps) {
     super(scope, id)
 
@@ -56,7 +57,7 @@ export class Flower extends Construct {
     })
 
     // 花の画像生成用Lambda関数の定義
-    const flowerGenerateFunction = new lambda.Function(this, 'flowerSelectFunction', {
+    const flowerSelectFunction = new lambda.Function(this, 'flowerSelectFunction', {
       runtime: lambda.Runtime.PYTHON_3_11,
       handler: 'flower_select.lambda_handler',
       code: lambda.Code.fromAsset('lambda/flower_select', {
@@ -72,10 +73,10 @@ export class Flower extends Construct {
       },
       timeout: cdk.Duration.seconds(60),
     })
-    generativeAiTable.grantWriteData(flowerGenerateFunction)
-    table.grantStreamRead(flowerGenerateFunction)
-    flowerImageBucket.grantPut(flowerGenerateFunction)
-    flowerGenerateFunction.addToRolePolicy(
+    generativeAiTable.grantWriteData(flowerSelectFunction)
+    table.grantStreamRead(flowerSelectFunction)
+    flowerImageBucket.grantPut(flowerSelectFunction)
+    flowerSelectFunction.addToRolePolicy(
       new iam.PolicyStatement({
         resources: ['arn:aws:ssm:ap-northeast-1:851725642854:parameter/OpenAI_API_KEY'],
         actions: ['ssm:GetParameter'],
@@ -134,5 +135,6 @@ export class Flower extends Construct {
     this.flowerImageBucket = flowerImageBucket
     this.table = table
     this.generativeAiTable = generativeAiTable
+    this.flowerSelectFunction = flowerSelectFunction
   }
 }
