@@ -38,7 +38,7 @@ export class Diary extends Construct {
       },
     })
     props.table.grantWriteData(diaryCreateFunction)
-    diaryCreateFunction.grantInvoke(props.flowerSelectFunction)
+    props.flowerSelectFunction.grantInvoke(diaryCreateFunction)
 
     // 日記編集用Lambda関数の定義
     const diaryEditFunction = new lambda.Function(this, 'diaryEditLambda', {
