@@ -218,7 +218,7 @@ exports[`Snapshot test 1`] = `
       "Type": "AWS::SSM::Parameter::Value<String>",
     },
     "FlowerDifyApiKeyParameterC587C4DC": {
-      "Default": "/parameter/DIFY_API_KEY",
+      "Default": "DIFY_API_KEY",
       "Type": "AWS::SSM::Parameter::Value<String>",
     },
   },
@@ -3410,7 +3410,7 @@ exports[`Snapshot test 1`] = `
                     {
                       "Ref": "AWS::AccountId",
                     },
-                    ":parameter/parameter/DIFY_API_KEY",
+                    ":parameter/DIFY_API_KEY",
                   ],
                 ],
               },
