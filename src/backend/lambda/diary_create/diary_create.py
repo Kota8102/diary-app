@@ -3,6 +3,8 @@ import logging
 import os
 import uuid
 from datetime import datetime
+import base64
+from botocore.exceptions import ClientError
 
 import boto3
 
@@ -102,6 +104,7 @@ def lambda_handler(event, context):
         )
 
         # 呼び出したLambdaのレスポンスを取得
+        logger.ifno(f"response: {response["Payload"]}")
         response_payload = json.loads(response['Payload'].read())
         logger.info(
             f"Received response from Flower Lambda: {response_payload}")
