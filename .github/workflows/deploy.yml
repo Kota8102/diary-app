@@ -19,6 +19,11 @@ env:
   NODE_VERSION: "20"
   PYTHON_VERSION: "3.12"
 
+# デフォルトのシェルをbashに設定
+defaults:
+  run:
+    shell: bash
+
 permissions: read-all
 
 jobs:
@@ -101,7 +106,6 @@ jobs:
       - name: CDK Synth
         if: startsWith(github.ref, 'refs/heads/feature/')
         run: |
-          source venv/bin/activate
           npx -w src/backend npm run cdk synth --all
 
       # CDK Deploy
@@ -112,7 +116,6 @@ jobs:
           CERTIFICATE_ARN: ${{ secrets.CERTIFICATE_ARN }}
           ENVIRONMENT: ${{ needs.set-environment.outputs.environment }}
         run: |
-          source venv/bin/activate
           npx -w src/backend npm run cdk deploy --all
 
   actions-timeline:
@@ -121,8 +124,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: Kesin11/actions-timeline@v2
-# name: Backend Deploy
 
+      # name: Backend Deploy
 # on:
 #   push:
 #     paths:
