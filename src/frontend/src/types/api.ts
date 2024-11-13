@@ -3,7 +3,7 @@ import type { AxiosResponse } from 'axios'
 export type ApiResponse<T = unknown> = AxiosResponse<T>
 
 export type Entity<T> = {
-  [K in keyof T]: T[K];
+  [K in keyof T]: T[K]
 }
 
 export type Title = Entity<{
@@ -15,11 +15,11 @@ export type Title = Entity<{
 // }>
 
 export type Note = Entity<{
-  updated_at: string;
-  content: string;
-  user_id: string;
-  date: string;
-  created_at: string;
-  diary_id: string;
-  is_deleted: boolean;
+  updated_at: string
+  content: string
+  user_id: string
+  date: string
+  created_at: string
+  diary_id: string
+  is_deleted: boolean
 }>

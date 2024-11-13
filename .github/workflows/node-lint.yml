@@ -1,0 +1,33 @@
+name: Node Biome
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        required: true
+        type: string
+
+jobs:
+  biome:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      # コードをチェックアウト
+      - uses: actions/checkout@v4
+
+      # Node.jsのセットアップ
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+
+      # 依存関係のインストール
+      - name: Install dependencies
+        run: npm ci
+
+      # Biomeのインストール
+      - name: Install Biome
+        run: npm install --global @biomejs/biome
+
+      # Biomeチェックの実行
+      - name: Run Biome check
+        run: biome check src/

@@ -1,0 +1,31 @@
+name: PR Agent
+
+# ワークフローが呼び出された場合にのみ実行
+on:
+  workflow_call:
+
+# デフォルトのシェルをbashに設定
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  pr-agent:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+
+    steps:
+      # PR Agent
+      - name: PR Agent
+        uses: Codium-ai/pr-agent@main
+        env:
+          OPENAI_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_REVIEWER.EXTRA_INSTRUCTIONS: "プルリクエストのレビューを日本語で行ってください。コードの品質、改善点、潜在的な問題に焦点を当ててください。"
+          PR_DESCRIPTION.EXTRA_INSTRUCTIONS: "日本語で詳細な説明を提供してください。コミットリントのパターン（`feat:`, `chore:`, `test:`, `fix:`, `ci:`, `docs:` など）に従ってタイトルを付けてください。"
+          PR_TITLE.EXTRA_INSTRUCTIONS: "日本語でタイトルを作成し、コミットリントのパターン（`feat:`, `chore:`, `test:`, `fix:`, `ci:`, `docs:` など）に従ってください。"

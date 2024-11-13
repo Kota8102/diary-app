@@ -258,6 +258,25 @@ exports[`Snapshot test 1`] = `
       "Type": "AWS::Logs::LogGroup",
       "UpdateReplacePolicy": "Delete",
     },
+    "ApiCognitoAuthorizer23B91BA2": {
+      "Properties": {
+        "IdentitySource": "method.request.header.Authorization",
+        "Name": "CdkSampleStackApiCognitoAuthorizer07815F88",
+        "ProviderARNs": [
+          {
+            "Fn::GetAtt": [
+              "AuthUserPool8115E87F",
+              "Arn",
+            ],
+          },
+        ],
+        "RestApiId": {
+          "Ref": "ApiDiaryApi1E03348A",
+        },
+        "Type": "COGNITO_USER_POOLS",
+      },
+      "Type": "AWS::ApiGateway::Authorizer",
+    },
     "ApiDiaryApi1E03348A": {
       "Properties": {
         "Name": "DiaryApi",
@@ -313,17 +332,16 @@ exports[`Snapshot test 1`] = `
       "Type": "AWS::IAM::Role",
       "UpdateReplacePolicy": "Delete",
     },
-    "ApiDiaryApiDeploymentCA0DCBF56ca46744c44b22fa78fcdf1bf5eb6d83": {
+    "ApiDiaryApiDeploymentCA0DCBF549b0ab5e8e35266ba9fc57b2ebc543f7": {
       "DependsOn": [
         "ApiDiaryApidiaryDELETE81EA9C37",
         "ApiDiaryApidiaryGET9A212B54",
+        "ApiDiaryApidiaryOPTIONS118FD5D0",
         "ApiDiaryApidiaryPOST0B03467C",
         "ApiDiaryApidiaryPUT140468F7",
         "ApiDiaryApidiary4B91FACA",
         "ApiDiaryApiflowerGETEAC01B09",
         "ApiDiaryApiflower7C61878D",
-        "ApiDiaryApititleGET40FCE039",
-        "ApiDiaryApititle5FEB75D0",
         "ApiDiaryApiRequestValidator4DFB42AA",
       ],
       "Properties": {
@@ -349,7 +367,7 @@ exports[`Snapshot test 1`] = `
           "Format": "{"requestId":"$context.requestId","ip":"$context.identity.sourceIp","user":"$context.identity.user","caller":"$context.identity.caller","requestTime":"$context.requestTime","httpMethod":"$context.httpMethod","resourcePath":"$context.resourcePath","status":"$context.status","protocol":"$context.protocol","responseLength":"$context.responseLength"}",
         },
         "DeploymentId": {
-          "Ref": "ApiDiaryApiDeploymentCA0DCBF56ca46744c44b22fa78fcdf1bf5eb6d83",
+          "Ref": "ApiDiaryApiDeploymentCA0DCBF549b0ab5e8e35266ba9fc57b2ebc543f7",
         },
         "MethodSettings": [
           {
@@ -395,7 +413,7 @@ exports[`Snapshot test 1`] = `
       "Properties": {
         "AuthorizationType": "COGNITO_USER_POOLS",
         "AuthorizerId": {
-          "Ref": "ApicognitoAuthorizer96AE9311",
+          "Ref": "ApiCognitoAuthorizer23B91BA2",
         },
         "HttpMethod": "DELETE",
         "Integration": {
@@ -416,7 +434,7 @@ exports[`Snapshot test 1`] = `
                 ":lambda:path/2015-03-31/functions/",
                 {
                   "Fn::GetAtt": [
-                    "ApidiaryDeleteLambdaC3EB15FB",
+                    "DiarydiaryDeleteLambda7D51A24F",
                     "Arn",
                   ],
                 },
@@ -439,7 +457,7 @@ exports[`Snapshot test 1`] = `
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
           "Fn::GetAtt": [
-            "ApidiaryDeleteLambdaC3EB15FB",
+            "DiarydiaryDeleteLambda7D51A24F",
             "Arn",
           ],
         },
@@ -480,7 +498,7 @@ exports[`Snapshot test 1`] = `
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
           "Fn::GetAtt": [
-            "ApidiaryDeleteLambdaC3EB15FB",
+            "DiarydiaryDeleteLambda7D51A24F",
             "Arn",
           ],
         },
@@ -516,7 +534,7 @@ exports[`Snapshot test 1`] = `
       "Properties": {
         "AuthorizationType": "COGNITO_USER_POOLS",
         "AuthorizerId": {
-          "Ref": "ApicognitoAuthorizer96AE9311",
+          "Ref": "ApiCognitoAuthorizer23B91BA2",
         },
         "HttpMethod": "GET",
         "Integration": {
@@ -537,7 +555,7 @@ exports[`Snapshot test 1`] = `
                 ":lambda:path/2015-03-31/functions/",
                 {
                   "Fn::GetAtt": [
-                    "ApidiaryReadLambda4CD9146E",
+                    "DiarydiaryReadLambda86C35E76",
                     "Arn",
                   ],
                 },
@@ -560,7 +578,7 @@ exports[`Snapshot test 1`] = `
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
           "Fn::GetAtt": [
-            "ApidiaryReadLambda4CD9146E",
+            "DiarydiaryReadLambda86C35E76",
             "Arn",
           ],
         },
@@ -601,7 +619,7 @@ exports[`Snapshot test 1`] = `
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
           "Fn::GetAtt": [
-            "ApidiaryReadLambda4CD9146E",
+            "DiarydiaryReadLambda86C35E76",
             "Arn",
           ],
         },
@@ -633,11 +651,51 @@ exports[`Snapshot test 1`] = `
       },
       "Type": "AWS::Lambda::Permission",
     },
+    "ApiDiaryApidiaryOPTIONS118FD5D0": {
+      "Properties": {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "Integration": {
+          "IntegrationResponses": [
+            {
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,DELETE'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+              },
+              "StatusCode": "200",
+            },
+          ],
+          "PassthroughBehavior": "NEVER",
+          "RequestTemplates": {
+            "application/json": "{"statusCode": 200}",
+          },
+          "Type": "MOCK",
+        },
+        "MethodResponses": [
+          {
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Allow-Origin": true,
+            },
+            "StatusCode": "200",
+          },
+        ],
+        "ResourceId": {
+          "Ref": "ApiDiaryApidiary4B91FACA",
+        },
+        "RestApiId": {
+          "Ref": "ApiDiaryApi1E03348A",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
     "ApiDiaryApidiaryPOST0B03467C": {
       "Properties": {
         "AuthorizationType": "COGNITO_USER_POOLS",
         "AuthorizerId": {
-          "Ref": "ApicognitoAuthorizer96AE9311",
+          "Ref": "ApiCognitoAuthorizer23B91BA2",
         },
         "HttpMethod": "POST",
         "Integration": {
@@ -658,7 +716,7 @@ exports[`Snapshot test 1`] = `
                 ":lambda:path/2015-03-31/functions/",
                 {
                   "Fn::GetAtt": [
-                    "ApidiaryCreateLambda110A058E",
+                    "DiarydiaryCreateLambda0AD0EFFF",
                     "Arn",
                   ],
                 },
@@ -681,7 +739,7 @@ exports[`Snapshot test 1`] = `
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
           "Fn::GetAtt": [
-            "ApidiaryCreateLambda110A058E",
+            "DiarydiaryCreateLambda0AD0EFFF",
             "Arn",
           ],
         },
@@ -722,7 +780,7 @@ exports[`Snapshot test 1`] = `
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
           "Fn::GetAtt": [
-            "ApidiaryCreateLambda110A058E",
+            "DiarydiaryCreateLambda0AD0EFFF",
             "Arn",
           ],
         },
@@ -758,7 +816,7 @@ exports[`Snapshot test 1`] = `
       "Properties": {
         "AuthorizationType": "COGNITO_USER_POOLS",
         "AuthorizerId": {
-          "Ref": "ApicognitoAuthorizer96AE9311",
+          "Ref": "ApiCognitoAuthorizer23B91BA2",
         },
         "HttpMethod": "PUT",
         "Integration": {
@@ -779,7 +837,7 @@ exports[`Snapshot test 1`] = `
                 ":lambda:path/2015-03-31/functions/",
                 {
                   "Fn::GetAtt": [
-                    "ApidiaryEditLambdaB302081D",
+                    "DiarydiaryEditLambda0E053A05",
                     "Arn",
                   ],
                 },
@@ -802,7 +860,7 @@ exports[`Snapshot test 1`] = `
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
           "Fn::GetAtt": [
-            "ApidiaryEditLambdaB302081D",
+            "DiarydiaryEditLambda0E053A05",
             "Arn",
           ],
         },
@@ -843,7 +901,7 @@ exports[`Snapshot test 1`] = `
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
           "Fn::GetAtt": [
-            "ApidiaryEditLambdaB302081D",
+            "DiarydiaryEditLambda0E053A05",
             "Arn",
           ],
         },
@@ -895,7 +953,7 @@ exports[`Snapshot test 1`] = `
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
           "Fn::GetAtt": [
-            "ApiflowerGetFunctionDEFFEDFA",
+            "DiarytitleGetFunction90C2A326",
             "Arn",
           ],
         },
@@ -936,7 +994,7 @@ exports[`Snapshot test 1`] = `
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
           "Fn::GetAtt": [
-            "ApiflowerGetFunctionDEFFEDFA",
+            "DiarytitleGetFunction90C2A326",
             "Arn",
           ],
         },
@@ -972,7 +1030,7 @@ exports[`Snapshot test 1`] = `
       "Properties": {
         "AuthorizationType": "COGNITO_USER_POOLS",
         "AuthorizerId": {
-          "Ref": "ApicognitoAuthorizer96AE9311",
+          "Ref": "ApiCognitoAuthorizer23B91BA2",
         },
         "HttpMethod": "GET",
         "Integration": {
@@ -993,7 +1051,7 @@ exports[`Snapshot test 1`] = `
                 ":lambda:path/2015-03-31/functions/",
                 {
                   "Fn::GetAtt": [
-                    "ApiflowerGetFunctionDEFFEDFA",
+                    "DiarytitleGetFunction90C2A326",
                     "Arn",
                   ],
                 },
@@ -1011,6 +1069,7 @@ exports[`Snapshot test 1`] = `
       },
       "Type": "AWS::ApiGateway::Method",
     },
+<<<<<<< HEAD
     "ApiDiaryApititle5FEB75D0": {
       "Properties": {
         "ParentId": {
@@ -2305,6 +2364,8 @@ exports[`Snapshot test 1`] = `
       },
       "Type": "AWS::IAM::Policy",
     },
+=======
+>>>>>>> main
     "AuthDiaryUserPoolClientC42D6E78": {
       "Properties": {
         "AllowedOAuthFlows": [
@@ -2664,6 +2725,802 @@ exports[`Snapshot test 1`] = `
         "ManagedPolicyArns": [
           {
             "Fn::Sub": "arn:\${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "DiaryTitleGenerateLambda7612098A": {
+      "DependsOn": [
+        "DiarygenerativeAiLambdaRoleDefaultPolicy5FC5F15D",
+        "DiarygenerativeAiLambdaRole98507273",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "S3Key": "HASH_REPLACED.zip",
+        },
+        "Environment": {
+          "Variables": {
+            "TABLE_NAME": {
+              "Ref": "DiarygenerativeAiTable72930DDE",
+            },
+          },
+        },
+        "Handler": "title_generate.lambda_handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "DiarygenerativeAiLambdaRole98507273",
+            "Arn",
+          ],
+        },
+        "Runtime": "python3.11",
+        "Timeout": 30,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "DiaryTitleGenerateLambdaDynamoDBEventSourceCdkSampleStackDiarydiaryContentsTable2203C4CAB95C2EEB": {
+      "Properties": {
+        "BatchSize": 100,
+        "EventSourceArn": {
+          "Fn::GetAtt": [
+            "DiarydiaryContentsTableF7DA06EF",
+            "StreamArn",
+          ],
+        },
+        "FunctionName": {
+          "Ref": "DiaryTitleGenerateLambda7612098A",
+        },
+        "StartingPosition": "LATEST",
+      },
+      "Type": "AWS::Lambda::EventSourceMapping",
+    },
+    "DiarydiaryContentsTableF7DA06EF": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "user_id",
+            "AttributeType": "S",
+          },
+          {
+            "AttributeName": "date",
+            "AttributeType": "S",
+          },
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "user_id",
+            "KeyType": "HASH",
+          },
+          {
+            "AttributeName": "date",
+            "KeyType": "RANGE",
+          },
+        ],
+        "PointInTimeRecoverySpecification": {
+          "PointInTimeRecoveryEnabled": true,
+        },
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5,
+        },
+        "StreamSpecification": {
+          "StreamViewType": "NEW_AND_OLD_IMAGES",
+        },
+      },
+      "Type": "AWS::DynamoDB::Table",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "DiarydiaryCreateLambda0AD0EFFF": {
+      "DependsOn": [
+        "DiarydiaryCreateLambdaServiceRoleDefaultPolicy0A19DF93",
+        "DiarydiaryCreateLambdaServiceRole86C8152B",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "S3Key": "HASH_REPLACED.zip",
+        },
+        "Environment": {
+          "Variables": {
+            "TABLE_NAME": {
+              "Ref": "DiarydiaryContentsTableF7DA06EF",
+            },
+          },
+        },
+        "Handler": "diary_create.lambda_handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "DiarydiaryCreateLambdaServiceRole86C8152B",
+            "Arn",
+          ],
+        },
+        "Runtime": "python3.11",
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "DiarydiaryCreateLambdaLogRetentionAE4FD8CA": {
+      "Properties": {
+        "LogGroupName": {
+          "Fn::Join": [
+            "",
+            [
+              "/aws/lambda/",
+              {
+                "Ref": "DiarydiaryCreateLambda0AD0EFFF",
+              },
+            ],
+          ],
+        },
+        "RetentionInDays": 14,
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "Custom::LogRetention",
+    },
+    "DiarydiaryCreateLambdaServiceRole86C8152B": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "DiarydiaryCreateLambdaServiceRoleDefaultPolicy0A19DF93": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "dynamodb:BatchWriteItem",
+                "dynamodb:PutItem",
+                "dynamodb:UpdateItem",
+                "dynamodb:DeleteItem",
+                "dynamodb:DescribeTable",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "DiarydiaryContentsTableF7DA06EF",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Ref": "AWS::NoValue",
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "DiarydiaryCreateLambdaServiceRoleDefaultPolicy0A19DF93",
+        "Roles": [
+          {
+            "Ref": "DiarydiaryCreateLambdaServiceRole86C8152B",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "DiarydiaryDeleteLambda7D51A24F": {
+      "DependsOn": [
+        "DiarydiaryDeleteLambdaServiceRoleDefaultPolicyCB143309",
+        "DiarydiaryDeleteLambdaServiceRole070CBD97",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "S3Key": "HASH_REPLACED.zip",
+        },
+        "Environment": {
+          "Variables": {
+            "TABLE_NAME": {
+              "Ref": "DiarydiaryContentsTableF7DA06EF",
+            },
+          },
+        },
+        "Handler": "diary_delete.lambda_handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "DiarydiaryDeleteLambdaServiceRole070CBD97",
+            "Arn",
+          ],
+        },
+        "Runtime": "python3.11",
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "DiarydiaryDeleteLambdaLogRetention162BA2D5": {
+      "Properties": {
+        "LogGroupName": {
+          "Fn::Join": [
+            "",
+            [
+              "/aws/lambda/",
+              {
+                "Ref": "DiarydiaryDeleteLambda7D51A24F",
+              },
+            ],
+          ],
+        },
+        "RetentionInDays": 14,
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "Custom::LogRetention",
+    },
+    "DiarydiaryDeleteLambdaServiceRole070CBD97": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "DiarydiaryDeleteLambdaServiceRoleDefaultPolicyCB143309": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "dynamodb:DeleteItem",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "DiarydiaryContentsTableF7DA06EF",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Ref": "AWS::NoValue",
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "DiarydiaryDeleteLambdaServiceRoleDefaultPolicyCB143309",
+        "Roles": [
+          {
+            "Ref": "DiarydiaryDeleteLambdaServiceRole070CBD97",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "DiarydiaryEditLambda0E053A05": {
+      "DependsOn": [
+        "DiarydiaryEditLambdaServiceRoleDefaultPolicy02DD86CA",
+        "DiarydiaryEditLambdaServiceRoleD8A73601",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "S3Key": "HASH_REPLACED.zip",
+        },
+        "Environment": {
+          "Variables": {
+            "TABLE_NAME": {
+              "Ref": "DiarydiaryContentsTableF7DA06EF",
+            },
+          },
+        },
+        "Handler": "diary_edit.lambda_handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "DiarydiaryEditLambdaServiceRoleD8A73601",
+            "Arn",
+          ],
+        },
+        "Runtime": "python3.11",
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "DiarydiaryEditLambdaLogRetention9304FA42": {
+      "Properties": {
+        "LogGroupName": {
+          "Fn::Join": [
+            "",
+            [
+              "/aws/lambda/",
+              {
+                "Ref": "DiarydiaryEditLambda0E053A05",
+              },
+            ],
+          ],
+        },
+        "RetentionInDays": 14,
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "Custom::LogRetention",
+    },
+    "DiarydiaryEditLambdaServiceRoleD8A73601": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "DiarydiaryEditLambdaServiceRoleDefaultPolicy02DD86CA": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "dynamodb:BatchGetItem",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+                "dynamodb:Query",
+                "dynamodb:GetItem",
+                "dynamodb:Scan",
+                "dynamodb:ConditionCheckItem",
+                "dynamodb:BatchWriteItem",
+                "dynamodb:PutItem",
+                "dynamodb:UpdateItem",
+                "dynamodb:DeleteItem",
+                "dynamodb:DescribeTable",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "DiarydiaryContentsTableF7DA06EF",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Ref": "AWS::NoValue",
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "DiarydiaryEditLambdaServiceRoleDefaultPolicy02DD86CA",
+        "Roles": [
+          {
+            "Ref": "DiarydiaryEditLambdaServiceRoleD8A73601",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "DiarydiaryReadLambda86C35E76": {
+      "DependsOn": [
+        "DiarydiaryReadLambdaServiceRoleDefaultPolicy5BD63C5D",
+        "DiarydiaryReadLambdaServiceRoleE103EA75",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "S3Key": "HASH_REPLACED.zip",
+        },
+        "Environment": {
+          "Variables": {
+            "TABLE_NAME": {
+              "Ref": "DiarydiaryContentsTableF7DA06EF",
+            },
+          },
+        },
+        "Handler": "diary_read.lambda_handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "DiarydiaryReadLambdaServiceRoleE103EA75",
+            "Arn",
+          ],
+        },
+        "Runtime": "python3.11",
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "DiarydiaryReadLambdaLogRetention3D1C85BD": {
+      "Properties": {
+        "LogGroupName": {
+          "Fn::Join": [
+            "",
+            [
+              "/aws/lambda/",
+              {
+                "Ref": "DiarydiaryReadLambda86C35E76",
+              },
+            ],
+          ],
+        },
+        "RetentionInDays": 14,
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "Custom::LogRetention",
+    },
+    "DiarydiaryReadLambdaServiceRoleDefaultPolicy5BD63C5D": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "dynamodb:BatchGetItem",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+                "dynamodb:Query",
+                "dynamodb:GetItem",
+                "dynamodb:Scan",
+                "dynamodb:ConditionCheckItem",
+                "dynamodb:DescribeTable",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "DiarydiaryContentsTableF7DA06EF",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Ref": "AWS::NoValue",
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "DiarydiaryReadLambdaServiceRoleDefaultPolicy5BD63C5D",
+        "Roles": [
+          {
+            "Ref": "DiarydiaryReadLambdaServiceRoleE103EA75",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "DiarydiaryReadLambdaServiceRoleE103EA75": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "DiarygenerativeAiLambdaRole98507273": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "DiarygenerativeAiLambdaRoleDefaultPolicy5FC5F15D": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "ssm:GetParameter",
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            {
+              "Action": [
+                "logs:DeleteRetentionPolicy",
+                "logs:PutRetentionPolicy",
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            {
+              "Action": [
+                "dynamodb:BatchWriteItem",
+                "dynamodb:PutItem",
+                "dynamodb:UpdateItem",
+                "dynamodb:DeleteItem",
+                "dynamodb:DescribeTable",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "DiarygenerativeAiTable72930DDE",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Ref": "AWS::NoValue",
+                },
+              ],
+            },
+            {
+              "Action": "dynamodb:ListStreams",
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            {
+              "Action": [
+                "dynamodb:DescribeStream",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "DiarydiaryContentsTableF7DA06EF",
+                  "StreamArn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "DiarygenerativeAiLambdaRoleDefaultPolicy5FC5F15D",
+        "Roles": [
+          {
+            "Ref": "DiarygenerativeAiLambdaRole98507273",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "DiarygenerativeAiTable72930DDE": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "user_id",
+            "AttributeType": "S",
+          },
+          {
+            "AttributeName": "date",
+            "AttributeType": "S",
+          },
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "user_id",
+            "KeyType": "HASH",
+          },
+          {
+            "AttributeName": "date",
+            "KeyType": "RANGE",
+          },
+        ],
+        "PointInTimeRecoverySpecification": {
+          "PointInTimeRecoveryEnabled": true,
+        },
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5,
+        },
+      },
+      "Type": "AWS::DynamoDB::Table",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "DiarytitleGetFunction90C2A326": {
+      "DependsOn": [
+        "DiarytitleGetFunctionServiceRoleDefaultPolicyF8576449",
+        "DiarytitleGetFunctionServiceRoleF818E903",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "S3Key": "HASH_REPLACED.zip",
+        },
+        "Environment": {
+          "Variables": {
+            "TABLE_NAME": {
+              "Ref": "DiarygenerativeAiTable72930DDE",
+            },
+          },
+        },
+        "Handler": "title_get.lambda_handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "DiarytitleGetFunctionServiceRoleF818E903",
+            "Arn",
+          ],
+        },
+        "Runtime": "python3.11",
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "DiarytitleGetFunctionServiceRoleDefaultPolicyF8576449": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "dynamodb:BatchGetItem",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+                "dynamodb:Query",
+                "dynamodb:GetItem",
+                "dynamodb:Scan",
+                "dynamodb:ConditionCheckItem",
+                "dynamodb:DescribeTable",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "DiarygenerativeAiTable72930DDE",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Ref": "AWS::NoValue",
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "DiarytitleGetFunctionServiceRoleDefaultPolicyF8576449",
+        "Roles": [
+          {
+            "Ref": "DiarytitleGetFunctionServiceRoleF818E903",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "DiarytitleGetFunctionServiceRoleF818E903": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
           },
         ],
       },

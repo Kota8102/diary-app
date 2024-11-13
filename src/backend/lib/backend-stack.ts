@@ -3,6 +3,7 @@ import * as acm from 'aws-cdk-lib/aws-certificatemanager'
 import * as s3 from 'aws-cdk-lib/aws-s3'
 import type { Construct } from 'constructs'
 import { Api, Auth, Identity, Web } from './constructs'
+import { Diary } from './constructs/diary'
 
 interface BackendStackProps extends cdk.StackProps {}
 
@@ -10,7 +11,7 @@ export class BackendStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: BackendStackProps) {
     super(scope, id, props)
 
-    const logBucket = new s3.Bucket(this, 'LogBucket', {
+    new s3.Bucket(this, 'LogBucket', {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       enforceSSL: true,
       serverAccessLogsPrefix: 'log/',
@@ -43,6 +44,12 @@ export class BackendStack extends cdk.Stack {
     // API機能スタックのインスタンス化
     const api = new Api(this, 'Api', {
       userPool: auth.userPool,
+    })
+    // Diary機能コンストラクトのスタック化
+    const diary = new Diary(this, 'Diary', {
+      userPool: auth.userPool,
+      api: api.api,
+      cognitoAuthorizer: api.cognitoAuthorizer,
     })
 
     const web = new Web(this, 'Web', {

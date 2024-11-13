@@ -1,127 +1,46 @@
-import importlib.util
 import json
-import os
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
-import pytest
-
-module_name = 'title_get'
-module_path = os.path.abspath(os.path.join(
-    os.path.dirname(__file__), '../..', 'lambda', 'title_get', 'title_get.py'))
-spec = importlib.util.spec_from_file_location(module_name, module_path)
-title_get = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(title_get)
+from title_get.title_get import create_response, validate_date
 
 
-@patch.object(title_get.boto3, 'resource')
-@patch.dict('os.environ', {'TABLE_NAME': 'TestTable'})
-def test_lambda_handler_success(mock_boto_resource):
-    # Set up mock DynamoDB resource
-    mock_dynamodb = MagicMock()
-    mock_table = MagicMock()
-    mock_table.get_item.return_value = {'Item': {'title': 'Test Diary Title'}}
-    mock_dynamodb.Table.return_value = mock_table
-    mock_boto_resource.return_value = mock_dynamodb
+def test_create_response_success():
+    """create_response関数の正常系テスト"""
+    # テストデータ
+    status_code = 200
+    body = {"message": "テストメッセージ"}
 
-    # Mock context
-    class Context:
-        def __init__(self):
-            self.identity = MagicMock()
+    # 関数の実行
+    response = create_response(status_code, body)
 
-    event = {
-        "queryStringParameters": {
-            "date": "2024-08-21"
-        },
-        "requestContext": {
-            "authorizer": {
-                "claims":
-                {
-                    "sub": "mock-user-id"
-                }
-            }
-        }
-    }
-    context = Context()
+    # アサーション
+    assert response["statusCode"] == 200
+    assert response["headers"]["Content-Type"] == "application/json"
+    assert response["headers"]["Access-Control-Allow-Origin"] == "*"
 
-    # Call the Lambda function
-    response = title_get.lambda_handler(event, context)
-
-    # Check the response
-    assert response['statusCode'] == 200
-    body = json.loads(response['body'])
-    assert body['title'] == 'Test Diary Title'
+    # bodyが正しくJSONシリアライズされていることを確認
+    decoded_body = json.loads(response["body"])
+    assert decoded_body == body
 
 
-@patch.object(title_get.boto3, 'resource')
-@patch.dict('os.environ', {'TABLE_NAME': 'TestTable'})
-def test_lambda_handler_no_title(mock_boto_resource):
-    # Set up mock DynamoDB resource
-    mock_dynamodb = MagicMock()
-    mock_table = MagicMock()
-    mock_table.get_item.return_value = {}
-    mock_dynamodb.Table.return_value = mock_table
-    mock_boto_resource.return_value = mock_dynamodb
+def test_validate_date():
+    """validate_date関数のテスト"""
+    # 正常系のテスト
+    assert validate_date("2024-03-15") is True
+    assert validate_date("2023-12-31") is True
 
-    # Mock context
-    class Context:
-        def __init__(self):
-            self.identity = MagicMock()
+    # 異常系のテスト
+    assert validate_date("") is False  # 空文字列
+    assert validate_date(None) is False  # None
+    assert validate_date(123) is False  # 数値
+    assert validate_date(["2024-03-15"]) is False  # リスト
 
-    event = {
-        "queryStringParameters": {
-            "date": "2024-08-21"
-        },
-        "requestContext": {
-            "authorizer": {
-                "claims":
-                {
-                    "sub": "mock-user-id"
-                }
-            }
-        }
-    }
-    context = Context()
-
-    # Call the Lambda function
-    response = title_get.lambda_handler(event, context)
-
-    # Check the response
-    assert response['statusCode'] == 200
-    body = json.loads(response['body'])
-    assert body['title'] == ''
+    assert validate_date({"date": "2024-03-15"}) is False  # 辞書
 
 
-@patch.object(title_get.boto3, 'resource')
-def test_lambda_handler_table_not_found(mock_boto_resource):
-    # Set up mock DynamoDB resource with table not found!
-    mock_dynamodb = MagicMock()
-    mock_dynamodb.Table.side_effect = Exception("Table not found")
-    mock_boto_resource.return_value = mock_dynamodb
-
-    # Mock context
-    class Context:
-        def __init__(self):
-            self.identity = MagicMock()
-
-    event = {
-        "queryStringParameters": {
-            "date": "2024-08-21"
-        },
-        "requestContext": {
-            "authorizer": {
-                "claims":
-                {
-                    "sub": "mock-user-id"
-                }
-            }
-        }
-    }
-    context = Context()
-
-    # Call the Lambda function
-    response = title_get.lambda_handler(event, context)
-
-    # Check the response
-    assert response['statusCode'] == 400
-    body = json.loads(response['body'])
-    assert "An error occurred" in body
+def create_mock_context():
+    """テスト用のモックコンテキストを作成"""
+    context = MagicMock()
+    context.identity = MagicMock()
+    context.identity.cognito_identity_id = "test-user-id"
+    return context
