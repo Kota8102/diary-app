@@ -58,6 +58,6 @@ export class Api extends Construct {
     })
 
     this.api = api
-    this.congnitoAuthorizer = cognitoAuthorizer
+    this. cognitoAuthorizer = cognitoAuthorizer
   }
 }
