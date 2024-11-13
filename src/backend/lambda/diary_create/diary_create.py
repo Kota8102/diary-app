@@ -106,10 +106,11 @@ def lambda_handler(event, context):
         # 呼び出したLambdaのレスポンスを取得
         logger.info(f"response: {response['Payload']}")
         response_payload = json.loads(response['Payload'].read())
-        logger.info(
-            f"Received response from Flower Lambda: {response_payload}")
-        flower_id = response_payload["flower_id"]
-        logger.info(f"flower_id: {response_payload['flower_id']}")
+        # response_payload の body を JSON としてデコード
+        body = json.loads(response_payload["body"])
+        flower_id = body["flower_id"]
+
+        logger.info(f"flower_id: {flower_id}")
         flower_image = get_img_from_s3(flower_id)
         # 成功レスポンスの返却
         return {
