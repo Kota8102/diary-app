@@ -9,7 +9,7 @@ export interface ApiProps {
 
 export class Api extends Construct {
   public readonly api: apigateway.RestApi
-  public readonly congnitoAuthorizer: apigateway.CognitoUserPoolsAuthorizer
+  public readonly cognitoAuthorizer: apigateway.CognitoUserPoolsAuthorizer
 
   constructor(scope: Construct, id: string, props: ApiProps) {
     super(scope, id)
