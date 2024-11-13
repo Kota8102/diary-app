@@ -49,7 +49,7 @@ export class BackendStack extends cdk.Stack {
     const diary = new Diary(this, 'Diary', {
       userPool: auth.userPool,
       api: api.api,
-      cognitoAuthorizer: api.congnitoAuthorizer,
+      cognitoAuthorizer: api.cognitoAuthorizer,
     })
 
     const web = new Web(this, 'Web', {
