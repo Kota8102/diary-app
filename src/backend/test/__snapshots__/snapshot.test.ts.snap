@@ -2351,6 +2351,9 @@ exports[`Snapshot test 1`] = `
         },
         "Environment": {
           "Variables": {
+            "FLOWER_IMAGE_BUCKET_NAME": {
+              "Ref": "FlowerflowerImageBucket46E60C76",
+            },
             "FLOWER_SELECT_FUNCTION_NAME": {
               "Ref": "FlowerflowerSelectFunctionD7EEBADA",
             },
