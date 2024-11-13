@@ -4,6 +4,7 @@ import type * as cognito from 'aws-cdk-lib/aws-cognito'
 import type * as dynamodb from 'aws-cdk-lib/aws-dynamodb'
 import * as lambda from 'aws-cdk-lib/aws-lambda'
 import { DynamoEventSource } from 'aws-cdk-lib/aws-lambda-event-sources'
+import type * as s3 from 'aws-cdk-lib/aws-s3'
 import { Construct } from 'constructs'
 
 export interface DiaryProps {
@@ -13,6 +14,7 @@ export interface DiaryProps {
   table: dynamodb.Table
   generativeAiTable: dynamodb.Table
   flowerSelectFunction: lambda.Function
+  flowerImageBucket: s3.Bucket
 }
 
 export class Diary extends Construct {
@@ -39,6 +41,7 @@ export class Diary extends Construct {
     })
     props.table.grantWriteData(diaryCreateFunction)
     props.flowerSelectFunction.grantInvoke(diaryCreateFunction)
+    props.flowerImageBucket.grantRead(diaryCreateFunction)
 
     // 日記編集用Lambda関数の定義
     const diaryEditFunction = new lambda.Function(this, 'diaryEditLambda', {

@@ -59,6 +59,7 @@ export class BackendStack extends cdk.Stack {
       table: flower.table,
       generativeAiTable: flower.generativeAiTable,
       flowerSelectFunction: flower.flowerSelectFunction,
+      flowerImageBucket: flower.flowerImageBucket,
     })
 
     const bouquet = new Bouquet(this, 'Bouquet', {

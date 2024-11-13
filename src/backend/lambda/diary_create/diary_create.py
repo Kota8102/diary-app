@@ -23,6 +23,36 @@ def validate_input(body):
     except ValueError:
         raise ValueError("不正な日付形式です。YYYY-MM-DDの形式を使用してください")
 
+def get_img_from_s3(flower_id): 
+    """
+    S3から画像を取得する
+
+    Args:
+        user_id (str): ユーザーID
+        date (str): 日付
+
+    Returns:
+        str: 画像のバイナリデータ
+    """
+
+    s3 = boto3.client("s3")
+    bucket_name = os.environ["BUCKET_NAME"]
+    s3_key = f"flowers/{flower_id}.png"
+
+    try:
+        response = s3.get_object(Bucket=bucket_name, Key=s3_key)
+        body = response["Body"].read()
+        logger.info(f"Image fetched from S3: {s3_key}")
+        return base64.b64encode(body).decode("utf-8")
+    except ClientError as e:
+        if e.response["Error"]["Code"] == "NoSuchKey":
+            logger.info(f"Image not found: {s3_key}")
+            return None
+        logger.error(f"S3 operation failed: {e}")
+        raise
+    except Exception as e:
+        logger.error(f"Error processing S3 response: {e}")
+        return None
 
 def lambda_handler(event, context):
     try:
@@ -75,13 +105,15 @@ def lambda_handler(event, context):
         response_payload = json.loads(response['Payload'].read())
         logger.info(
             f"Received response from Flower Lambda: {response_payload}")
-
+        flower_id = response_payload["flower_id"]
+        logger.info(f"flower_id: {response_payload["flower_id"]}")
+        flower_image = get_img_from_s3(flower_id)
         # 成功レスポンスの返却
         return {
             "statusCode": 201,
             "body": json.dumps({
                 "message": "Success",
-                "flower_lambda_response": response_payload
+                "flower_image": flower_image
             }),
             "headers": {
                 "Content-Type": "application/json",
