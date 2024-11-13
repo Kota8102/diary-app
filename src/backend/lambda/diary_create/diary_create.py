@@ -38,7 +38,7 @@ def get_img_from_s3(flower_id):
     """
 
     s3 = boto3.client("s3")
-    bucket_name = os.environ["BUCKET_NAME"]
+    bucket_name = os.environ["FLOWER_IMAGE_BUCKET_NAME"]
     s3_key = f"flowers/{flower_id}.png"
 
     try:

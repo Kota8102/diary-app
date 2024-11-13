@@ -36,6 +36,7 @@ export class Diary extends Construct {
       logRetention: 14,
       environment: {
         TABLE_NAME: props.table.tableName,
+        FLOWER_IMAGE_BUCKET_NAME: props.flowerImageBucket.bucketName,
         FLOWER_SELECT_FUNCTION_NAME: props.flowerSelectFunction.functionName,
       },
     })
