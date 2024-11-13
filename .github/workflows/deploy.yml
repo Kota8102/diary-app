@@ -68,6 +68,7 @@ jobs:
   deploy:
     needs: [set-environment, node-test]
     runs-on: ubuntu-latest
+    # メインブランチの場合は90分、それ以外は60分
     timeout-minutes: ${{ github.ref == 'refs/heads/main' && 90 || 60 }}
     environment: ${{ needs.set-environment.outputs.environment }}
     permissions:
@@ -75,29 +76,35 @@ jobs:
       contents: read
       pull-requests: write
     steps:
+      # ブランチのチェックアウト
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
+      # Nodeのセットアップ
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
 
+      # 依存関係のインストール
       - name: Install dependencies
         run: npm ci
 
+      # AWSクレデンシャルの設定
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: "${{ secrets.AWS_REGION }}"
           role-to-assume: "arn:aws:iam::${{ secrets.AWS_ACCOUNT }}:role/${{ secrets.ACTIONS_ROLE }}"
 
+      # CDK Synth
       - name: CDK Synth
         if: startsWith(github.ref, 'refs/heads/feature/')
         run: |
           source venv/bin/activate
           npx -w src/backend npm run cdk synth --all
 
+      # CDK Deploy
       - name: CDK Deploy
         if: startsWith(github.ref, 'refs/heads/feature/') || github.ref == 'refs/heads/main'
         continue-on-error: ${{ github.ref != 'refs/heads/main' }}
