@@ -38,8 +38,11 @@ def lambda_handler(event, context):
         date = event["date"]
         diary_content = event["diary_content"]
 
+        logger.info(f"user_id: {user_id}, date: {date}, diary_content: {diary_content}")
+
         # 日記の内容に基づいて花を選択
         flower_id = select_flower(diary_content)
+        logger.info(f"flower_id: {flower_id}")
 
         # 選択した花のIDをDynamoDBに保存
         save_to_dynamodb(user_id, date, flower_id)
@@ -76,7 +79,9 @@ def select_flower(diary_content):
     Returns:
         str: 選択された花のID。
     """
+    logger.info("select flower")
     api_key = get_parameter_from_parameter_store("DIFY_API_KEY")
+    logger.info(f"api key: {api_key}")
     return select_flower_using_api(api_key, diary_content)
 
 
