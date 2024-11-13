@@ -2,7 +2,7 @@ import * as cdk from 'aws-cdk-lib'
 import * as acm from 'aws-cdk-lib/aws-certificatemanager'
 import * as s3 from 'aws-cdk-lib/aws-s3'
 import type { Construct } from 'constructs'
-import { Api, Auth, Identity, Web } from './constructs'
+import { Api, Auth, Bouquet, Flower, Identity, Web } from './constructs'
 import { Diary } from './constructs/diary'
 
 interface BackendStackProps extends cdk.StackProps {}
@@ -50,6 +50,23 @@ export class BackendStack extends cdk.Stack {
       userPool: auth.userPool,
       api: api.api,
       cognitoAuthorizer: api.cognitoAuthorizer,
+    })
+
+    const flower = new Flower(this, 'Flower', {
+      userPool: auth.userPool,
+      table: diary.table,
+      api: api.api,
+      generativeAiTable: diary.generativeAiTable,
+      cognitoAuthorizer: api.cognitoAuthorizer,
+    })
+
+    const bouquet = new Bouquet(this, 'Bouquet', {
+      userPool: auth.userPool,
+      table: diary.table,
+      api: api.api,
+      generativeAiTable: diary.generativeAiTable,
+      cognitoAuthorizer: api.cognitoAuthorizer,
+      flowerImageBucket: flower.flowerImageBucket,
     })
 
     const web = new Web(this, 'Web', {

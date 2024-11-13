@@ -189,7 +189,7 @@ export class Diary extends Construct {
     })
     generativeAiTable.grantReadData(titleGetFunction)
 
-    const titleApi = props.api.root.addResource('flower')
+    const titleApi = props.api.root.addResource('title')
 
     titleApi.addMethod('GET', new apigateway.LambdaIntegration(titleGetFunction), {
       authorizer: props.cognitoAuthorizer,

@@ -27,10 +27,10 @@ export class Flower extends Construct {
     })
 
     // 花の画像生成用Lambda関数の定義
-    const flowerGenerateFunction = new lambda.Function(this, 'flowerGenerateFunction', {
+    const flowerGenerateFunction = new lambda.Function(this, 'flowerSelectFunction', {
       runtime: lambda.Runtime.PYTHON_3_11,
-      handler: 'flower_generate.lambda_handler',
-      code: lambda.Code.fromAsset('lambda/flower_generate', {
+      handler: 'flower_select.lambda_handler',
+      code: lambda.Code.fromAsset('lambda/flower_select', {
         bundling: {
           image: lambda.Runtime.PYTHON_3_11.bundlingImage,
           command: ['bash', '-c', 'pip install -r requirements.txt -t /asset-output && cp -au . /asset-output'],
