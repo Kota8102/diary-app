@@ -31,7 +31,3 @@ jobs:
       # Biomeチェックの実行
       - name: Run Biome check
         run: biome check src/
-
-      # Biomeフォーマットチェックの実行
-      - name: Run Biome format check
-        run: biome format --check src/
