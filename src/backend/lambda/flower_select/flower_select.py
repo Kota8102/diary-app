@@ -49,7 +49,10 @@ def lambda_handler(event, context):
 
         return {
             "statusCode": 200,
-            "body": json.dumps("Flower ID saved to DynamoDB."),
+            "body": json.dumps({
+                "message": "Flower ID saved to DynamoDB.",
+                "flower_id": flower_id  
+            }),
             "headers": {
                 "Content-Type": "application/json",
                 "Access-Control-Allow-Origin": "*",
@@ -81,7 +84,6 @@ def select_flower(diary_content):
     """
     logger.info("select flower")
     api_key = get_parameter_from_parameter_store("DIFY_API_KEY")
-    logger.info(f"api key: {api_key}")
     return select_flower_using_api(api_key, diary_content)
 
 
@@ -118,7 +120,6 @@ def save_to_dynamodb(user_id, date, flower_id):
             UpdateExpression=update_expression,
             ExpressionAttributeValues=expression_attribute_values
         )
-        logger.info(f"DynamoDB Update Response: {response}")
 
     except Exception as e:
         logger.error(f"Error saving to DynamoDB: {e}")
