@@ -1,0 +1,29 @@
+name: Node Test
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        required: true
+        type: string
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      # コードをチェックアウト
+      - uses: actions/checkout@v4
+
+      # Node.jsのセットアップ
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+
+      # 依存関係のインストール
+      - name: Install dependencies
+        run: npm ci
+
+      # テストの実行
+      - name: Run tests
+        run: npx -w src/backend npm run test

@@ -1,4 +1,4 @@
-name: Backend Deploy
+name: Deploy
 
 on:
   push:
@@ -9,174 +9,98 @@ on:
       - "main"
       - "feature/*"
 
-# デフォルトのシェルをbashに設定
-defaults:
-  run:
-    shell: bash
+# コンカレンシー
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+# 環境変数
+env:
+  NODE_VERSION: "20"
+  PYTHON_VERSION: "3.12"
+
+permissions: read-all
 
 jobs:
-  # ジョブ: Nodeのセットアップとキャッシュ
-  setup-node:
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      # Nodeのセットアップ
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-
-      # 依存関係のインストール
-      - name: Install dependencies
-        run: npm ci
-
-      # npmキャッシュの設定
-      - name: Cache npm dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.npm
-            node_modules
-            packages/*/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
-  # ジョブ: Pythonのセットアップとキャッシュ
-  setup-python:
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      # Pythonのセットアップ
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      # 依存関係のインストール
-      - name: Install dependencies
-        run: pip install -r requirements.txt
-
-      # Pythonの依存関係キャッシュ
-      - name: Cache pip dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-
-  # ジョブ: 環境変数の設定
   set-environment:
-    needs:
-      - setup-node
-      - setup-python
     runs-on: ubuntu-latest
     timeout-minutes: 3
+    outputs:
+      environment: ${{ steps.set_environment.outputs.environment }}
     steps:
       - name: Set environment
         id: set_environment
         run: |
-          # メインブランチの場合、環境をprodに設定
-          if [[ ${{ github.ref }} == "refs/heads/main" ]]; then
-            echo "environment=prod" >> $GITHUB_OUTPUT
-          # フィーチャーブランチの場合、環境をdevに設定
-          elif [[ ${{ github.ref }} =~ ^refs/heads/feature/#[0-9]*$ ]]; then
-            echo "environment=dev" >> $GITHUB_OUTPUT
-          # その他の場合、環境をunknownに設定
-          else
-            echo "environment=unknown" >> $GITHUB_OUTPUT
-          fi
-    outputs:
-      # 環境変数の出力
-      environment: ${{ steps.set_environment.outputs.environment }}
+          ENVIRONMENT=$([[ "${{ github.ref }}" == "refs/heads/main" ]] && echo "prod" || echo "dev")
+          echo "environment=$ENVIRONMENT" >> $GITHUB_OUTPUT
 
-  # ジョブ: Lint
-  lint:
-    needs:
-      - setup-node
-      - setup-python
-    uses: ./.github/workflows/lint.yml
+  # python-lint:
+  #   uses: ./.github/workflows/python-lint.yml
+  #   with:
+  #     python-version: ${{ env.PYTHON_VERSION }}
 
-  # ジョブ: テスト
-  test:
-    needs:
-      - setup-node
-      - setup-python
-    uses: ./.github/workflows/test.yml
+  # python-test:
+  #   needs: python-lint
+  #   uses: ./.github/workflows/python-test.yml
+  #   with:
+  #     python-version: ${{ env.PYTHON_VERSION }}
 
-  # ジョブ: PR Agent
+  node-lint:
+    uses: ./.github/workflows/node-lint.yml
+    with:
+      node-version: 20
+
+  node-test:
+    needs: node-lint
+    uses: ./.github/workflows/node-test.yml
+    with:
+      node-version: 20
+
   pr-agent:
-    # プルリクエストが開いた場合にのみ実行
     if: github.event_name == 'pull_request'
+    needs: [node-test]
+    uses: ./.github/workflows/pr-agent.yml
     permissions:
       contents: write
       issues: write
       pull-requests: write
-    needs:
-      - test
-    uses: ./.github/workflows/pr-agent.yml
 
-  # ジョブ: デプロイ
   deploy:
-    needs:
-      - set-environment
-      - lint
-      - test
+    needs: [set-environment, node-test]
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: ${{ github.ref == 'refs/heads/main' && 90 || 60 }}
     environment: ${{ needs.set-environment.outputs.environment }}
     permissions:
       id-token: write
       contents: read
       pull-requests: write
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      # Nodeのセットアップ
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: ${{ env.NODE_VERSION }}
 
-      # npmキャッシュの復元
-      - name: Restore npm dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.npm
-            node_modules
-            src/backend/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+      - name: Install dependencies
+        run: npm ci
 
-      # AWSクレデンシャルの設定
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: "${{ secrets.AWS_REGION }}"
           role-to-assume: "arn:aws:iam::${{ secrets.AWS_ACCOUNT }}:role/${{ secrets.ACTIONS_ROLE }}"
 
-      # CDK Synth
       - name: CDK Synth
         if: startsWith(github.ref, 'refs/heads/feature/')
         run: |
           source venv/bin/activate
           npx -w src/backend npm run cdk synth --all
 
-      # CDK Deploy
       - name: CDK Deploy
-        if: startsWith(github.ref, 'refs/heads/feature/') ||  github.ref == 'refs/heads/main'
+        if: startsWith(github.ref, 'refs/heads/feature/') || github.ref == 'refs/heads/main'
+        continue-on-error: ${{ github.ref != 'refs/heads/main' }}
         env:
           CERTIFICATE_ARN: ${{ secrets.CERTIFICATE_ARN }}
           ENVIRONMENT: ${{ needs.set-environment.outputs.environment }}
@@ -184,9 +108,184 @@ jobs:
           source venv/bin/activate
           npx -w src/backend npm run cdk deploy --all
 
-  # ジョブ: アクションのタイムライン
   actions-timeline:
-    needs: [lint, test, deploy]
+    if: always()
+    needs: [node-lint, node-test, deploy]
     runs-on: ubuntu-latest
     steps:
       - uses: Kesin11/actions-timeline@v2
+# name: Backend Deploy
+
+# on:
+#   push:
+#     paths:
+#       - "src/**"
+#       - ".github/workflows/**"
+#     branches:
+#       - "main"
+#       - "feature/*"
+
+# # デフォルトのシェルをbashに設定
+# defaults:
+#   run:
+#     shell: bash
+
+# # 環境変数
+# env:
+#   NODE_VERSION: "20"
+#   PYTHON_VERSION: "3.12"
+
+# jobs:
+#   # ジョブ: Nodeのセットアップとキャッシュ
+#   setup-node:
+#     runs-on: ubuntu-latest
+#     timeout-minutes: 20
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v4
+
+#       # Nodeのセットアップ
+#       - name: Setup Node
+#         uses: actions/setup-node@v4
+#         with:
+#           node-version: "${{ env.NODE_VERSION }}"
+
+#       # 依存関係のインストール
+#       - name: Install dependencies
+#         run: npm ci
+
+#   # ジョブ: Pythonのセットアップとキャッシュ
+#   setup-python:
+#     runs-on: ubuntu-latest
+#     timeout-minutes: 20
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v4
+
+#       # Pythonのセットアップ
+#       - name: Set up Python
+#         uses: actions/setup-python@v5
+#         with:
+#           python-version: "${{ env.PYTHON_VERSION }}"
+
+#       # 依存関係のインストール
+#       - name: Install dependencies
+#         run: pip install -r requirements.txt
+
+#   # ジョブ: 環境変数の設定
+#   set-environment:
+#     needs:
+#       - setup-node
+#       - setup-python
+#     runs-on: ubuntu-latest
+#     timeout-minutes: 3
+#     steps:
+#       - name: Set environment
+#         id: set_environment
+#         run: |
+#           # メインブランチの場合、環境をprodに設定
+#           if [[ ${{ github.ref }} == "refs/heads/main" ]]; then
+#             echo "environment=prod" >> $GITHUB_OUTPUT
+#           # フィーチャーブランチの場合、環境をdevに設定
+#           elif [[ ${{ github.ref }} =~ ^refs/heads/feature/#[0-9]*$ ]]; then
+#             echo "environment=dev" >> $GITHUB_OUTPUT
+#           # その他の場合、環境をunknownに設定
+#           else
+#             echo "environment=unknown" >> $GITHUB_OUTPUT
+#           fi
+#     outputs:
+#       # 環境変数の出力
+#       environment: ${{ steps.set_environment.outputs.environment }}
+
+#   # ジョブ: Lint
+#   lint:
+#     needs:
+#       - setup-node
+#       - setup-python
+#     uses: ./.github/workflows/lint.yml
+
+#   # ジョブ: テスト
+#   test:
+#     needs:
+#       - setup-node
+#       - setup-python
+#     uses: ./.github/workflows/test.yml
+
+#   # ジョブ: PR Agent
+#   pr-agent:
+#     # プルリクエストが開いた場合にのみ実行
+#     if: github.event_name == 'pull_request'
+#     permissions:
+#       contents: write
+#       issues: write
+#       pull-requests: write
+#     needs:
+#       - test
+#     uses: ./.github/workflows/pr-agent.yml
+
+#   # ジョブ: デプロイ
+#   deploy:
+#     needs:
+#       - set-environment
+#       - lint
+#       - test
+#     runs-on: ubuntu-latest
+#     timeout-minutes: 60
+#     environment: ${{ needs.set-environment.outputs.environment }}
+#     permissions:
+#       id-token: write
+#       contents: read
+#       pull-requests: write
+
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v4
+#         with:
+#           fetch-depth: 0
+
+#       # Nodeのセットアップ
+#       - name: Setup Node
+#         uses: actions/setup-node@v4
+#         with:
+#           node-version: "20"
+
+#       # npmキャッシュの復元
+#       - name: Restore npm dependencies
+#         uses: actions/cache@v4
+#         with:
+#           path: |
+#             ~/.npm
+#             node_modules
+#             src/backend/node_modules
+#           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+
+#       # AWSクレデンシャルの設定
+#       - name: Configure AWS Credentials
+#         uses: aws-actions/configure-aws-credentials@v4
+#         with:
+#           aws-region: "${{ secrets.AWS_REGION }}"
+#           role-to-assume: "arn:aws:iam::${{ secrets.AWS_ACCOUNT }}:role/${{ secrets.ACTIONS_ROLE }}"
+
+#       # CDK Synth
+#       - name: CDK Synth
+#         if: startsWith(github.ref, 'refs/heads/feature/')
+#         run: |
+#           source venv/bin/activate
+#           npx -w src/backend npm run cdk synth --all
+
+#       # CDK Deploy
+#       - name: CDK Deploy
+#         if: startsWith(github.ref, 'refs/heads/feature/') ||  github.ref == 'refs/heads/main'
+#         env:
+#           CERTIFICATE_ARN: ${{ secrets.CERTIFICATE_ARN }}
+#           ENVIRONMENT: ${{ needs.set-environment.outputs.environment }}
+#         run: |
+#           source venv/bin/activate
+#           npx -w src/backend npm run cdk deploy --all
+
+#   # ジョブ: アクションのタイムライン
+#   actions-timeline:
+#     needs: [lint, test, deploy]
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: Kesin11/actions-timeline@v2
