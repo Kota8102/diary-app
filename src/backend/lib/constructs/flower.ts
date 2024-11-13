@@ -78,7 +78,7 @@ export class Flower extends Construct {
     table.grantStreamRead(flowerSelectFunction)
     flowerImageBucket.grantPut(flowerSelectFunction)
     const difyApiKey = ssm.StringParameter.fromStringParameterAttributes(this, 'DifyApiKey', {
-      parameterName: '/parameter/DIFY_API_KEY',
+      parameterName: 'DIFY_API_KEY',
     })
     flowerSelectFunction.addToRolePolicy(
       new iam.PolicyStatement({
