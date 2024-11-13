@@ -1,7 +1,7 @@
 import * as cdk from 'aws-cdk-lib'
 import * as apigateway from 'aws-cdk-lib/aws-apigateway'
 import type * as cognito from 'aws-cdk-lib/aws-cognito'
-import * as dynamodb from 'aws-cdk-lib/aws-dynamodb'
+import type * as dynamodb from 'aws-cdk-lib/aws-dynamodb'
 import * as lambda from 'aws-cdk-lib/aws-lambda'
 import { DynamoEventSource } from 'aws-cdk-lib/aws-lambda-event-sources'
 import { Construct } from 'constructs'
@@ -10,32 +10,18 @@ export interface DiaryProps {
   userPool: cognito.UserPool
   api: apigateway.RestApi
   cognitoAuthorizer: apigateway.CognitoUserPoolsAuthorizer
+  table: dynamodb.Table
+  generativeAiTable: dynamodb.Table
 }
 
 export class Diary extends Construct {
   public readonly diaryTableEventSource: DynamoEventSource
-  public readonly table: dynamodb.Table
-  public readonly generativeAiTable: dynamodb.Table
 
   constructor(scope: Construct, id: string, props: DiaryProps) {
     super(scope, id)
-    // 日記コンテンツを保存するDynamoDBテーブルの作成
-    const table = new dynamodb.Table(this, 'diaryContentsTable', {
-      partitionKey: {
-        name: 'user_id',
-        type: dynamodb.AttributeType.STRING,
-      },
-      sortKey: {
-        name: 'date',
-        type: dynamodb.AttributeType.STRING,
-      },
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
-      pointInTimeRecovery: true,
-      stream: dynamodb.StreamViewType.NEW_AND_OLD_IMAGES,
-    })
 
     // DynamoDBストリームイベントソースの設定
-    const diaryTableEventSource = new DynamoEventSource(table, {
+    const diaryTableEventSource = new DynamoEventSource(props.table, {
       startingPosition: lambda.StartingPosition.LATEST,
     })
 
@@ -46,10 +32,10 @@ export class Diary extends Construct {
       code: lambda.Code.fromAsset('lambda/diary_create'),
       logRetention: 14,
       environment: {
-        TABLE_NAME: table.tableName,
+        TABLE_NAME: props.table.tableName,
       },
     })
-    table.grantWriteData(diaryCreateFunction)
+    props.table.grantWriteData(diaryCreateFunction)
 
     // 日記編集用Lambda関数の定義
     const diaryEditFunction = new lambda.Function(this, 'diaryEditLambda', {
@@ -58,10 +44,10 @@ export class Diary extends Construct {
       code: lambda.Code.fromAsset('lambda/diary_edit'),
       logRetention: 14,
       environment: {
-        TABLE_NAME: table.tableName,
+        TABLE_NAME: props.table.tableName,
       },
     })
-    table.grantReadWriteData(diaryEditFunction)
+    props.table.grantReadWriteData(diaryEditFunction)
 
     // 日記閲覧用Lambda関数の定義
     const diaryReadFunction = new lambda.Function(this, 'diaryReadLambda', {
@@ -70,10 +56,10 @@ export class Diary extends Construct {
       code: lambda.Code.fromAsset('lambda/diary_read'),
       logRetention: 14,
       environment: {
-        TABLE_NAME: table.tableName,
+        TABLE_NAME: props.table.tableName,
       },
     })
-    table.grantReadData(diaryReadFunction)
+    props.table.grantReadData(diaryReadFunction)
 
     // 日記削除用Lambda関数の定義
     const diaryDeleteFunction = new lambda.Function(this, 'diaryDeleteLambda', {
@@ -82,10 +68,10 @@ export class Diary extends Construct {
       code: lambda.Code.fromAsset('lambda/diary_delete'),
       logRetention: 14,
       environment: {
-        TABLE_NAME: table.tableName,
+        TABLE_NAME: props.table.tableName,
       },
     })
-    table.grant(diaryDeleteFunction, 'dynamodb:DeleteItem')
+    props.table.grant(diaryDeleteFunction, 'dynamodb:DeleteItem')
     // API Gatewayのエンドポイント設定
     const diaryApi = props.api.root.addResource('diary')
 
@@ -149,20 +135,6 @@ export class Diary extends Construct {
     generativeAiLambdaRole.addToPolicy(ssmPolicy)
     generativeAiLambdaRole.addToPolicy(cloudwatchPolicy)
 
-    // 生成AI用のDynamoDBテーブルの作成
-    const generativeAiTable = new dynamodb.Table(this, 'generativeAiTable', {
-      partitionKey: {
-        name: 'user_id',
-        type: dynamodb.AttributeType.STRING,
-      },
-      sortKey: {
-        name: 'date',
-        type: dynamodb.AttributeType.STRING,
-      },
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
-      pointInTimeRecovery: true,
-    })
-
     // タイトル生成用Lambda関数の定義
     const diaryGenerateTitleCreateFunction = new lambda.Function(this, 'TitleGenerateLambda', {
       runtime: lambda.Runtime.PYTHON_3_11,
@@ -170,12 +142,12 @@ export class Diary extends Construct {
       code: lambda.Code.fromAsset('lambda/title_generate'),
       role: generativeAiLambdaRole,
       environment: {
-        TABLE_NAME: generativeAiTable.tableName,
+        TABLE_NAME: props.generativeAiTable.tableName,
       },
       timeout: cdk.Duration.seconds(30),
     })
-    generativeAiTable.grantWriteData(diaryGenerateTitleCreateFunction)
-    table.grantStreamRead(diaryGenerateTitleCreateFunction)
+    props.generativeAiTable.grantWriteData(diaryGenerateTitleCreateFunction)
+    props.table.grantStreamRead(diaryGenerateTitleCreateFunction)
     diaryGenerateTitleCreateFunction.addEventSource(diaryTableEventSource)
 
     // タイトル取得用Lambda関数の定義
@@ -184,18 +156,15 @@ export class Diary extends Construct {
       handler: 'title_get.lambda_handler',
       code: lambda.Code.fromAsset('lambda/title_get'),
       environment: {
-        TABLE_NAME: generativeAiTable.tableName,
+        TABLE_NAME: props.generativeAiTable.tableName,
       },
     })
-    generativeAiTable.grantReadData(titleGetFunction)
+    props.generativeAiTable.grantReadData(titleGetFunction)
 
     const titleApi = props.api.root.addResource('title')
 
     titleApi.addMethod('GET', new apigateway.LambdaIntegration(titleGetFunction), {
       authorizer: props.cognitoAuthorizer,
     })
-
-    this.table = table
-    this.generativeAiTable = generativeAiTable
   }
 }

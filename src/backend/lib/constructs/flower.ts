@@ -1,7 +1,7 @@
 import * as cdk from 'aws-cdk-lib'
 import * as apigateway from 'aws-cdk-lib/aws-apigateway'
 import type * as cognito from 'aws-cdk-lib/aws-cognito'
-import type * as dynamodb from 'aws-cdk-lib/aws-dynamodb'
+import * as dynamodb from 'aws-cdk-lib/aws-dynamodb'
 import * as iam from 'aws-cdk-lib/aws-iam'
 import * as lambda from 'aws-cdk-lib/aws-lambda'
 import * as s3 from 'aws-cdk-lib/aws-s3'
@@ -9,16 +9,45 @@ import { Construct } from 'constructs'
 
 export interface FlowerProps {
   userPool: cognito.UserPool
-  table: dynamodb.Table
   api: apigateway.RestApi
-  generativeAiTable: dynamodb.Table
   cognitoAuthorizer: apigateway.CognitoUserPoolsAuthorizer
 }
 
 export class Flower extends Construct {
   public readonly flowerImageBucket: s3.Bucket
+  public readonly table: dynamodb.Table
+  public readonly generativeAiTable: dynamodb.Table
   constructor(scope: Construct, id: string, props: FlowerProps) {
     super(scope, id)
+
+    // 日記コンテンツを保存するDynamoDBテーブルの作成
+    const table = new dynamodb.Table(this, 'diaryContentsTable', {
+      partitionKey: {
+        name: 'user_id',
+        type: dynamodb.AttributeType.STRING,
+      },
+      sortKey: {
+        name: 'date',
+        type: dynamodb.AttributeType.STRING,
+      },
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      pointInTimeRecovery: true,
+      stream: dynamodb.StreamViewType.NEW_AND_OLD_IMAGES,
+    })
+
+    // 生成AI用のDynamoDBテーブルの作成
+    const generativeAiTable = new dynamodb.Table(this, 'generativeAiTable', {
+      partitionKey: {
+        name: 'user_id',
+        type: dynamodb.AttributeType.STRING,
+      },
+      sortKey: {
+        name: 'date',
+        type: dynamodb.AttributeType.STRING,
+      },
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      pointInTimeRecovery: true,
+    })
 
     // 花の画像保存用S3バケットの作成
     const flowerImageBucket = new s3.Bucket(this, 'flowerImageBucket', {
@@ -37,14 +66,14 @@ export class Flower extends Construct {
         },
       }),
       environment: {
-        DIARY_TABLE_NAME: props.table.tableName,
-        GENERATIVE_AI_TABLE_NAME: props.generativeAiTable.tableName,
+        DIARY_TABLE_NAME: table.tableName,
+        GENERATIVE_AI_TABLE_NAME: generativeAiTable.tableName,
         FLOWER_BUCKET_NAME: flowerImageBucket.bucketName,
       },
       timeout: cdk.Duration.seconds(60),
     })
-    props.generativeAiTable.grantWriteData(flowerGenerateFunction)
-    props.table.grantStreamRead(flowerGenerateFunction)
+    generativeAiTable.grantWriteData(flowerGenerateFunction)
+    table.grantStreamRead(flowerGenerateFunction)
     flowerImageBucket.grantPut(flowerGenerateFunction)
     flowerGenerateFunction.addToRolePolicy(
       new iam.PolicyStatement({
@@ -103,5 +132,7 @@ export class Flower extends Construct {
     })
 
     this.flowerImageBucket = flowerImageBucket
+    this.table = table
+    this.generativeAiTable = generativeAiTable
   }
 }

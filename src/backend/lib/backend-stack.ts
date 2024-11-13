@@ -45,26 +45,26 @@ export class BackendStack extends cdk.Stack {
     const api = new Api(this, 'Api', {
       userPool: auth.userPool,
     })
+
+    const flower = new Flower(this, 'Flower', {
+      userPool: auth.userPool,
+      api: api.api,
+      cognitoAuthorizer: api.cognitoAuthorizer,
+    })
     // Diary機能コンストラクトのスタック化
     const diary = new Diary(this, 'Diary', {
       userPool: auth.userPool,
       api: api.api,
       cognitoAuthorizer: api.cognitoAuthorizer,
-    })
-
-    const flower = new Flower(this, 'Flower', {
-      userPool: auth.userPool,
-      table: diary.table,
-      api: api.api,
-      generativeAiTable: diary.generativeAiTable,
-      cognitoAuthorizer: api.cognitoAuthorizer,
+      table: flower.table,
+      generativeAiTable: flower.generativeAiTable,
     })
 
     const bouquet = new Bouquet(this, 'Bouquet', {
       userPool: auth.userPool,
-      table: diary.table,
+      table: flower.table,
       api: api.api,
-      generativeAiTable: diary.generativeAiTable,
+      generativeAiTable: flower.generativeAiTable,
       cognitoAuthorizer: api.cognitoAuthorizer,
       flowerImageBucket: flower.flowerImageBucket,
     })
