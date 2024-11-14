@@ -1,11 +1,12 @@
+import base64
 import json
 import logging
 import os
 import uuid
 from datetime import datetime
-import base64
-from botocore.exceptions import ClientError
+
 import boto3
+from botocore.exceptions import ClientError
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -52,8 +53,9 @@ def get_img_from_s3(flower_id):
     try:
         response = s3.get_object(Bucket=bucket_name, Key=s3_key)
         body = response["Body"].read()
-        logger.info(f"Image fetched from S3: {s3_key}")
-        return base64.b64encode(body).decode("utf-8")
+        if body != "":
+            logger.info(f"Image fetched from S3: {s3_key}")
+            return base64.b64encode(body).decode("utf-8")
     except ClientError as e:
         if e.response["Error"]["Code"] == "NoSuchKey":
             logger.info(f"Image not found: {s3_key}")
@@ -115,15 +117,13 @@ def invoke_flower_lambda(user_id, date, content):
     response = lambda_client.invoke(
         FunctionName=os.getenv("FLOWER_SELECT_FUNCTION_NAME"),
         InvocationType="RequestResponse",
-        Payload=json.dumps({
-            "user_id": user_id,
-            "date": date,
-            "diary_content": content
-        })
+        Payload=json.dumps(
+            {"user_id": user_id, "date": date, "diary_content": content}
+        ),
     )
 
     logger.info(f"response: {response['Payload']}")
-    response_payload = json.loads(response['Payload'].read())
+    response_payload = json.loads(response["Payload"].read())
     body = json.loads(response_payload["body"])
     return body["flower_id"]
 
@@ -158,11 +158,13 @@ def lambda_handler(event, context):
         # 成功レスポンスの返却
         return {
             "statusCode": 201,
-            "body": json.dumps({
-                "message": "Success",
-                "flower_id": flower_id,
-                "flower_image": flower_image
-            }),
+            "body": json.dumps(
+                {
+                    "message": "Success",
+                    "flower_id": flower_id,
+                    "flower_image": flower_image,
+                }
+            ),
             "headers": {
                 "Content-Type": "application/json",
                 "Access-Control-Allow-Origin": "*",
