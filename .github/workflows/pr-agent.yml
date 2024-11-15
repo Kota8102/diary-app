@@ -1,7 +1,10 @@
 name: PR Agent
 
-# ワークフローが呼び出された場合にのみ実行
 on:
+  pull_request:
+    types: [opened, reopened, ready_for_review]
+  issue_comment:
+    types: [created]
   workflow_call:
 
 # デフォルトのシェルをbashに設定

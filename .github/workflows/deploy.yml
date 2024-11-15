@@ -39,16 +39,15 @@ jobs:
           ENVIRONMENT=$([[ "${{ github.ref }}" == "refs/heads/main" ]] && echo "prod" || echo "dev")
           echo "environment=$ENVIRONMENT" >> $GITHUB_OUTPUT
 
-  # python-lint:
-  #   uses: ./.github/workflows/python-lint.yml
-  #   with:
-  #     python-version: ${{ env.PYTHON_VERSION }}
-
-  # python-test:
-  #   needs: python-lint
-  #   uses: ./.github/workflows/python-test.yml
-  #   with:
-  #     python-version: ${{ env.PYTHON_VERSION }}
+  python-lint:
+    uses: ./.github/workflows/python-lint.yml
+    with:
+      python-version: 3.12
+  python-test:
+    needs: python-lint
+    uses: ./.github/workflows/python-test.yml
+    with:
+      python-version: 3.12
 
   node-lint:
     uses: ./.github/workflows/node-lint.yml
@@ -61,17 +60,8 @@ jobs:
     with:
       node-version: 20
 
-  pr-agent:
-    if: github.event_name == 'pull_request'
-    needs: [node-test]
-    uses: ./.github/workflows/pr-agent.yml
-    permissions:
-      contents: write
-      issues: write
-      pull-requests: write
-
   deploy:
-    needs: [set-environment, node-test]
+    needs: [set-environment, node-test, python-test]
     runs-on: ubuntu-latest
     # メインブランチの場合は90分、それ以外は60分
     timeout-minutes: ${{ github.ref == 'refs/heads/main' && 90 || 60 }}
@@ -120,7 +110,7 @@ jobs:
 
   actions-timeline:
     if: always()
-    needs: [node-lint, node-test, deploy]
+    needs: [deploy]
     runs-on: ubuntu-latest
     steps:
       - uses: Kesin11/actions-timeline@v2
