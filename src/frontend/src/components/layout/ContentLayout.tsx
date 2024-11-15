@@ -1,6 +1,7 @@
 import type React from 'react'
 import { Header } from '../Elements/Header'
-import { Tab } from '../Elements/Tab'
+import { Tab } from '../ui/Tab'
+
 type ContentLayoutProps = {
   children: React.ReactNode
   pagetitle: string
