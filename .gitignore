@@ -30,3 +30,9 @@ src/backend/test/pytest/__pycache__/**
 
 .DS_Store
 node_modules
+.pytest_cache/
+.ruff_cache/
+.tox/
+.coverage
+.cache/
+pytestdebug.log
