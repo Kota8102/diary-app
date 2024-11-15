@@ -1,11 +1,9 @@
-import json
 import os
 from unittest.mock import MagicMock, patch
 
 import pytest
 from flower_select.flower_select import (
     get_parameter_from_parameter_store,
-    lambda_handler,
     save_to_dynamodb,
     select_flower,
     select_flower_using_api,
@@ -34,12 +32,18 @@ def lambda_event():
 def test_select_flower():
     """select_flower関数のテスト"""
     diary_content = "今日は楽しい一日でした"
-    with patch("flower_select.flower_select.get_parameter_from_parameter_store", return_value="fake-api-key"), \
-            patch("flower_select.flower_select.select_flower_using_api", return_value="flower-id-123") as mock_select_flower_using_api:
+    with patch(
+        "flower_select.flower_select.get_parameter_from_parameter_store",
+        return_value="fake-api-key",
+    ), patch(
+        "flower_select.flower_select.select_flower_using_api",
+        return_value="flower-id-123",
+    ) as mock_select_flower_using_api:
         flower_id = select_flower(diary_content)
         assert flower_id == "flower-id-123"
         mock_select_flower_using_api.assert_called_once_with(
-            "fake-api-key", diary_content)
+            "fake-api-key", diary_content
+        )
 
 
 # Test for save_to_dynamodb
@@ -49,7 +53,9 @@ def test_save_to_dynamodb():
     date = "2024-03-15"
     flower_id = "flower-id-123"
 
-    with patch("boto3.resource") as mock_dynamodb_resource, patch.dict(os.environ, {"GENERATIVE_AI_TABLE_NAME": "test-table"}):
+    with patch("boto3.resource") as mock_dynamodb_resource, patch.dict(
+        os.environ, {"GENERATIVE_AI_TABLE_NAME": "test-table"}
+    ):
         table = mock_dynamodb_resource.return_value.Table.return_value
         save_to_dynamodb(user_id, date, flower_id)
 
@@ -69,7 +75,8 @@ def test_get_parameter_from_parameter_store():
 
     with patch("boto3.client") as mock_ssm_client:
         mock_ssm_client.return_value.get_parameter.return_value = {
-            "Parameter": {"Value": expected_value}}
+            "Parameter": {"Value": expected_value}
+        }
         api_key = get_parameter_from_parameter_store(parameter_name)
         assert api_key == expected_value
 
@@ -91,14 +98,16 @@ def test_select_flower_using_api():
 
         # リクエストの内容を確認
         mock_post.assert_called_once_with(
-            'https://api.dify.ai/v1/chat-messages',
-            headers={'Authorization': f'Bearer {api_key}',
-                     'Content-Type': 'application/json'},
+            "https://api.dify.ai/v1/chat-messages",
+            headers={
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json",
+            },
             json={
-                'query': query,
-                'inputs': {},
-                'response_mode': 'blocking',
-                'user': "user",
-                'auto_generate_name': True
-            }
+                "query": query,
+                "inputs": {},
+                "response_mode": "blocking",
+                "user": "user",
+                "auto_generate_name": True,
+            },
         )
