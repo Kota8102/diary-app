@@ -59,6 +59,8 @@ requests==2.32.3
     # via responses
 responses==0.25.3
     # via moto
+ruff==0.7.3
+    # via backend
 s3transfer==0.10.3
     # via boto3
 six==1.16.0
