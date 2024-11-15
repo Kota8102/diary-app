@@ -110,7 +110,7 @@ jobs:
 
   actions-timeline:
     if: always()
-    needs: [node-lint, node-test, python-lint, python-test, deploy]
+    needs: [deploy]
     runs-on: ubuntu-latest
     steps:
       - uses: Kesin11/actions-timeline@v2
