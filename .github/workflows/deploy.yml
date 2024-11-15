@@ -60,15 +60,6 @@ jobs:
     with:
       node-version: 20
 
-  pr-agent:
-    if: github.event_name == 'pull_request'
-    needs: [node-test, python-test]
-    uses: ./.github/workflows/pr-agent.yml
-    permissions:
-      contents: write
-      issues: write
-      pull-requests: write
-
   deploy:
     needs: [set-environment, node-test, python-test]
     runs-on: ubuntu-latest
