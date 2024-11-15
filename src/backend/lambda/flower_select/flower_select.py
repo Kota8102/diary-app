@@ -49,10 +49,9 @@ def lambda_handler(event, context):
 
         return {
             "statusCode": 200,
-            "body": json.dumps({
-                "message": "Flower ID saved to DynamoDB.",
-                "flower_id": flower_id  
-            }),
+            "body": json.dumps(
+                {"message": "Flower ID saved to DynamoDB.", "flower_id": flower_id}
+            ),
             "headers": {
                 "Content-Type": "application/json",
                 "Access-Control-Allow-Origin": "*",
@@ -110,15 +109,13 @@ def save_to_dynamodb(user_id, date, flower_id):
     }
 
     update_expression = "set flower_id = :flower"
-    expression_attribute_values = {
-        ':flower': flower_id
-    }
+    expression_attribute_values = {":flower": flower_id}
 
     try:
-        response = table.update_item(
+        table.update_item(
             Key=item,
             UpdateExpression=update_expression,
-            ExpressionAttributeValues=expression_attribute_values
+            ExpressionAttributeValues=expression_attribute_values,
         )
 
     except Exception as e:
@@ -161,20 +158,17 @@ def select_flower_using_api(api_key, query):
         Exception: API呼び出しが失敗またはエラーを返した場合。
     """
     logger.info("select flower using api")
-    BASE_URL = 'https://api.dify.ai/v1'
+    BASE_URL = "https://api.dify.ai/v1"
 
-    headers = {
-        'Authorization': f'Bearer {api_key}',
-        'Content-Type': 'application/json'
-    }
-    url = f'{BASE_URL}/chat-messages'
+    headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
+    url = f"{BASE_URL}/chat-messages"
 
     data = {
-        'query': query,
-        'inputs': {},
-        'response_mode': 'blocking',
-        'user': "user",
-        'auto_generate_name': True
+        "query": query,
+        "inputs": {},
+        "response_mode": "blocking",
+        "user": "user",
+        "auto_generate_name": True,
     }
     try:
         response = requests.post(url, headers=headers, json=data)

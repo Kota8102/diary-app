@@ -149,7 +149,7 @@ def lambda_handler(event, context):
         content = body["content"]
 
         # DynamoDB にアイテムを保存
-        diary_id = save_to_dynamodb(user_id, date, content)
+        save_to_dynamodb(user_id, date, content)
 
         # Flower Lambda を呼び出して花の ID を取得
         flower_id = invoke_flower_lambda(user_id, date, content)
