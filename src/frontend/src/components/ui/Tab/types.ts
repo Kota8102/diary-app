@@ -3,4 +3,4 @@ export type TabConfig = {
   label: string
   activeIcon: string
   inactiveIcon: string
-} 
+}
