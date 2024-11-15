@@ -10,10 +10,14 @@ export const TabItem = ({ path, label: text, activeIcon, inactiveIcon }: TabConf
   // 現在のパス情報を取得
   const { pathname } = useLocation()
 
+  // パスからベースパスを抽出する関数
+  const extractBasePath = (url: string) => {
+    return `/${url.split('/').slice(1, 3).join('/')}`
+  }
+
   // 現在のパスとリンク先パスから、ベースパスを抽出
-  // 例: /app/flower/2023-12-25 -> /app/flower
-  const basePath = `/${pathname.split('/').slice(1, 3).join('/')}`
-  const linkBasePath = `/${path.split('/').slice(1, 3).join('/')}`
+  const basePath = extractBasePath(pathname)
+  const linkBasePath = extractBasePath(path)
 
   // 現在のタブがアクティブかどうかを判定
   const isActive = basePath === linkBasePath
