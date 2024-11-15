@@ -1,31 +1,30 @@
 import { Link, useLocation } from 'react-router-dom'
 
-type TabItemProps = {
-  linkPath: string // タブのリンク先パス
-  label: string // タブのラベルテキスト
-  activeIcon: string // アクティブ時のアイコン画像パス
-  inactiveIcon: string // 非アクティブ時のアイコン画像パス
-}
+import type { TabConfig } from './types'
 
 /**
  * タブアイテムコンポーネント
  * ナビゲーションタブの各項目を表示する
  */
-export const TabItem = ({ linkPath, label: text, activeIcon, inactiveIcon }: TabItemProps) => {
+export const TabItem = ({ path, label: text, activeIcon, inactiveIcon }: TabConfig) => {
   // 現在のパス情報を取得
   const { pathname } = useLocation()
 
+  // パスからベースパスを抽出する関数
+  const extractBasePath = (url: string) => {
+    return `/${url.split('/').slice(1, 3).join('/')}`
+  }
+
   // 現在のパスとリンク先パスから、ベースパスを抽出
-  // 例: /flower/2023-12-25 -> /flower
-  const basePath = `/${pathname.split('/')[1]}`
-  const linkBasePath = `/${linkPath.split('/')[1]}`
+  const basePath = extractBasePath(pathname)
+  const linkBasePath = extractBasePath(path)
 
   // 現在のタブがアクティブかどうかを判定
   const isActive = basePath === linkBasePath
 
   return (
     // タブアイテムのリンク要素
-    <Link to={linkPath} className="flex flex-col items-center py-2 gap-1 w-1/5">
+    <Link to={path} className="flex flex-col items-center py-2 gap-1 w-1/5">
       {/* アクティブ状態に応じてアイコンを切り替え */}
       {isActive ? (
         <img src={activeIcon} alt="Active Icon" width="32" height="32" />

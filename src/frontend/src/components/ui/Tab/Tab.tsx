@@ -13,13 +13,7 @@ import {
 
 import { getToday } from '@/utils/dateUtils'
 import { TabItem } from './TabItem'
-
-type TabConfig = {
-  path: string
-  label: string
-  activeIcon: string
-  inactiveIcon: string
-}
+import type { TabConfig } from './types'
 
 const TAB_ITEMS: TabConfig[] = [
   {
@@ -61,10 +55,10 @@ const TAB_ITEMS: TabConfig[] = [
 export const Tab = () => {
   return (
     // タブナビゲーションのコンテナ要素
-    <nav className="flex justify-between items-center bg-light-bgTab">
+    <nav className="flex justify-between items-center bg-light-bgFooter">
       {/* 定義済みのタブ項目をマッピングして表示 */}
       {TAB_ITEMS.map(({ path, label, activeIcon, inactiveIcon }) => (
-        <TabItem key={path} linkPath={path} label={label} activeIcon={activeIcon} inactiveIcon={inactiveIcon} />
+        <TabItem key={path} path={path} label={label} activeIcon={activeIcon} inactiveIcon={inactiveIcon} />
       ))}
     </nav>
   )
