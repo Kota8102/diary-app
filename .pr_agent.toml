@@ -13,7 +13,7 @@ generate_ai_title = true
 final_update_message = true
 extra_instructions = """\
 Emphasize the following:
-- Please use Japanese for everything.
+- answer in Japanese,
 - Titles should have a prefix following the commitlint pattern, such as feat:, chore:, test:, fix:, docs:, style:, refactor:, perf:, etc.
 """
 
@@ -26,7 +26,7 @@ enable_auto_approval = true
 maximal_review_effort = 3
 extra_instructions = """\
 Emphasize the following:
-- Please use Japanese for everything.
+- answer in Japanese,
 """
 
 [pr_code_suggestions]
@@ -36,5 +36,5 @@ commitable_code_suggestions = true
 demand_code_suggestions_self_review = true
 extra_instructions = """\
 Emphasize the following:
-- Please use Japanese for everything.
+- answer in Japanese,
 """
