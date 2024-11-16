@@ -1,0 +1,50 @@
+name: Tests
+
+# ワークフローが呼び出された場合にのみ実行
+on:
+  workflow_call:
+
+# デフォルトのシェルをbashに設定
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  test:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      # チェックアウト
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Pythonの依存関係の復元
+      - name: Restore pip dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            venv
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+
+      # pytestでテスト
+      - name: Test with pytest
+        run: |
+          pytest
+
+      # npmキャッシュの復元
+      - name: Restore npm dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.npm
+            node_modules
+            packages/*/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json', 'packages/*/package-lock.json') }}
+
+      # CDKのテスト
+      - name: CDK Test
+        if: startsWith(github.ref, 'refs/heads/feature/')
+        run: npx -w src/backend npm run test

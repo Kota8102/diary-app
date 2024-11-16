@@ -1,3 +1,32 @@
+[project]
+name = "backend"
+version = "0.1.0"
+description = "Add your description here"
+dependencies = [
+  "pytest>=8.3.3",
+  "boto3>=1.35.57",
+  "moto>=5.0.20",
+  "ruff>=0.7.3",
+]
+readme = "README.md"
+requires-python = ">= 3.8"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.rye]
+managed = true
+dev-dependencies = []
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.rye.scripts]
+ruff = "ruff"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/backend"]
 
 [tool.ruff]
 # 1行の最大文字数
@@ -30,3 +59,7 @@ ignore = [
 # isort の設定
 [tool.ruff.lint.isort]
 known-third-party = ["fastapi", "pydantic", "starlette"]
+
+[tool.pytest.ini_options]
+pythonpath = "src/backend/lambda"
+testpaths = ["src/backend/test/pytest"]

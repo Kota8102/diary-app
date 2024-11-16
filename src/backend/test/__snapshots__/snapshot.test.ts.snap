@@ -217,6 +217,10 @@ exports[`Snapshot test 1`] = `
       "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]",
       "Type": "AWS::SSM::Parameter::Value<String>",
     },
+    "FlowerDifyApiKeyParameterC587C4DC": {
+      "Default": "DIFY_API_KEY",
+      "Type": "AWS::SSM::Parameter::Value<String>",
+    },
   },
   "Resources": {
     "ApiAPIGatewayCloudWatchLogsRole38DC415F": {
@@ -256,43 +260,6 @@ exports[`Snapshot test 1`] = `
         "RetentionInDays": 14,
       },
       "Type": "AWS::Logs::LogGroup",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "ApiBouquetTable92B8B9AD": {
-      "DeletionPolicy": "Delete",
-      "Properties": {
-        "AttributeDefinitions": [
-          {
-            "AttributeName": "user_id",
-            "AttributeType": "S",
-          },
-          {
-            "AttributeName": "year_week",
-            "AttributeType": "S",
-          },
-        ],
-        "KeySchema": [
-          {
-            "AttributeName": "user_id",
-            "KeyType": "HASH",
-          },
-          {
-            "AttributeName": "year_week",
-            "KeyType": "RANGE",
-          },
-        ],
-        "PointInTimeRecoverySpecification": {
-          "PointInTimeRecoveryEnabled": true,
-        },
-        "ProvisionedThroughput": {
-          "ReadCapacityUnits": 5,
-          "WriteCapacityUnits": 5,
-        },
-        "StreamSpecification": {
-          "StreamViewType": "NEW_AND_OLD_IMAGES",
-        },
-      },
-      "Type": "AWS::DynamoDB::Table",
       "UpdateReplacePolicy": "Delete",
     },
     "ApiDiaryApi1E03348A": {
@@ -350,20 +317,21 @@ exports[`Snapshot test 1`] = `
       "Type": "AWS::IAM::Role",
       "UpdateReplacePolicy": "Delete",
     },
-    "ApiDiaryApiDeploymentCA0DCBF5f116b07bd20fde33af0df4502f6c960d": {
+    "ApiDiaryApiDeploymentCA0DCBF56ca46744c44b22fa78fcdf1bf5eb6d83": {
       "DependsOn": [
-        "ApiDiaryApibouquetGET7AC93032",
-        "ApiDiaryApibouquet8BAEBF58",
         "ApiDiaryApidiaryDELETE81EA9C37",
         "ApiDiaryApidiaryGET9A212B54",
+        "ApiDiaryApidiaryOPTIONS118FD5D0",
         "ApiDiaryApidiaryPOST0B03467C",
         "ApiDiaryApidiaryPUT140468F7",
         "ApiDiaryApidiary4B91FACA",
         "ApiDiaryApiflowerGETEAC01B09",
+        "ApiDiaryApiflowerOPTIONS2A81112B",
         "ApiDiaryApiflower7C61878D",
         "ApiDiaryApititleGET40FCE039",
         "ApiDiaryApititle5FEB75D0",
         "ApiDiaryApiRequestValidator4DFB42AA",
+        "ApiDiaryApivalidator04323B87",
       ],
       "Properties": {
         "Description": "Automatically created by the RestApi construct",
@@ -388,7 +356,7 @@ exports[`Snapshot test 1`] = `
           "Format": "{"requestId":"$context.requestId","ip":"$context.identity.sourceIp","user":"$context.identity.user","caller":"$context.identity.caller","requestTime":"$context.requestTime","httpMethod":"$context.httpMethod","resourcePath":"$context.resourcePath","status":"$context.status","protocol":"$context.protocol","responseLength":"$context.responseLength"}",
         },
         "DeploymentId": {
-          "Ref": "ApiDiaryApiDeploymentCA0DCBF5f116b07bd20fde33af0df4502f6c960d",
+          "Ref": "ApiDiaryApiDeploymentCA0DCBF56ca46744c44b22fa78fcdf1bf5eb6d83",
         },
         "MethodSettings": [
           {
@@ -415,142 +383,6 @@ exports[`Snapshot test 1`] = `
       },
       "Type": "AWS::ApiGateway::RequestValidator",
     },
-    "ApiDiaryApibouquet8BAEBF58": {
-      "Properties": {
-        "ParentId": {
-          "Fn::GetAtt": [
-            "ApiDiaryApi1E03348A",
-            "RootResourceId",
-          ],
-        },
-        "PathPart": "bouquet",
-        "RestApiId": {
-          "Ref": "ApiDiaryApi1E03348A",
-        },
-      },
-      "Type": "AWS::ApiGateway::Resource",
-    },
-    "ApiDiaryApibouquetGET7AC93032": {
-      "Properties": {
-        "AuthorizationType": "COGNITO_USER_POOLS",
-        "AuthorizerId": {
-          "Ref": "ApicognitoAuthorizer96AE9311",
-        },
-        "HttpMethod": "GET",
-        "Integration": {
-          "IntegrationHttpMethod": "POST",
-          "Type": "AWS_PROXY",
-          "Uri": {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition",
-                },
-                ":apigateway:",
-                {
-                  "Ref": "AWS::Region",
-                },
-                ":lambda:path/2015-03-31/functions/",
-                {
-                  "Fn::GetAtt": [
-                    "ApicanCreateBouquet7959C138",
-                    "Arn",
-                  ],
-                },
-                "/invocations",
-              ],
-            ],
-          },
-        },
-        "ResourceId": {
-          "Ref": "ApiDiaryApibouquet8BAEBF58",
-        },
-        "RestApiId": {
-          "Ref": "ApiDiaryApi1E03348A",
-        },
-      },
-      "Type": "AWS::ApiGateway::Method",
-    },
-    "ApiDiaryApibouquetGETApiPermissionCdkSampleStackApiDiaryApi4AB3EF3AGETbouquetBD41F27D": {
-      "Properties": {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "ApicanCreateBouquet7959C138",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": {
-          "Fn::Join": [
-            "",
-            [
-              "arn:",
-              {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              {
-                "Ref": "ApiDiaryApi1E03348A",
-              },
-              "/",
-              {
-                "Ref": "ApiDiaryApiDeploymentStageprodD9912276",
-              },
-              "/GET/bouquet",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
-    "ApiDiaryApibouquetGETApiPermissionTestCdkSampleStackApiDiaryApi4AB3EF3AGETbouquet2E881FDA": {
-      "Properties": {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "ApicanCreateBouquet7959C138",
-            "Arn",
-          ],
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": {
-          "Fn::Join": [
-            "",
-            [
-              "arn:",
-              {
-                "Ref": "AWS::Partition",
-              },
-              ":execute-api:",
-              {
-                "Ref": "AWS::Region",
-              },
-              ":",
-              {
-                "Ref": "AWS::AccountId",
-              },
-              ":",
-              {
-                "Ref": "ApiDiaryApi1E03348A",
-              },
-              "/test-invoke-stage/GET/bouquet",
-            ],
-          ],
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
     "ApiDiaryApidiary4B91FACA": {
       "Properties": {
         "ParentId": {
@@ -570,7 +402,7 @@ exports[`Snapshot test 1`] = `
       "Properties": {
         "AuthorizationType": "COGNITO_USER_POOLS",
         "AuthorizerId": {
-          "Ref": "ApicognitoAuthorizer96AE9311",
+          "Ref": "ApiCognitoAuthorizer23B91BA2",
         },
         "HttpMethod": "DELETE",
         "Integration": {
@@ -591,7 +423,7 @@ exports[`Snapshot test 1`] = `
                 ":lambda:path/2015-03-31/functions/",
                 {
                   "Fn::GetAtt": [
-                    "ApidiaryDeleteLambdaC3EB15FB",
+                    "DiarydiaryDeleteLambda7D51A24F",
                     "Arn",
                   ],
                 },
@@ -614,7 +446,7 @@ exports[`Snapshot test 1`] = `
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
           "Fn::GetAtt": [
-            "ApidiaryDeleteLambdaC3EB15FB",
+            "DiarydiaryDeleteLambda7D51A24F",
             "Arn",
           ],
         },
@@ -655,7 +487,7 @@ exports[`Snapshot test 1`] = `
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
           "Fn::GetAtt": [
-            "ApidiaryDeleteLambdaC3EB15FB",
+            "DiarydiaryDeleteLambda7D51A24F",
             "Arn",
           ],
         },
@@ -691,7 +523,7 @@ exports[`Snapshot test 1`] = `
       "Properties": {
         "AuthorizationType": "COGNITO_USER_POOLS",
         "AuthorizerId": {
-          "Ref": "ApicognitoAuthorizer96AE9311",
+          "Ref": "ApiCognitoAuthorizer23B91BA2",
         },
         "HttpMethod": "GET",
         "Integration": {
@@ -712,7 +544,7 @@ exports[`Snapshot test 1`] = `
                 ":lambda:path/2015-03-31/functions/",
                 {
                   "Fn::GetAtt": [
-                    "ApidiaryReadLambda4CD9146E",
+                    "DiarydiaryReadLambda86C35E76",
                     "Arn",
                   ],
                 },
@@ -735,7 +567,7 @@ exports[`Snapshot test 1`] = `
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
           "Fn::GetAtt": [
-            "ApidiaryReadLambda4CD9146E",
+            "DiarydiaryReadLambda86C35E76",
             "Arn",
           ],
         },
@@ -776,7 +608,7 @@ exports[`Snapshot test 1`] = `
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
           "Fn::GetAtt": [
-            "ApidiaryReadLambda4CD9146E",
+            "DiarydiaryReadLambda86C35E76",
             "Arn",
           ],
         },
@@ -808,11 +640,51 @@ exports[`Snapshot test 1`] = `
       },
       "Type": "AWS::Lambda::Permission",
     },
+    "ApiDiaryApidiaryOPTIONS118FD5D0": {
+      "Properties": {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "Integration": {
+          "IntegrationResponses": [
+            {
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,DELETE'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+              },
+              "StatusCode": "200",
+            },
+          ],
+          "PassthroughBehavior": "NEVER",
+          "RequestTemplates": {
+            "application/json": "{"statusCode": 200}",
+          },
+          "Type": "MOCK",
+        },
+        "MethodResponses": [
+          {
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Allow-Origin": true,
+            },
+            "StatusCode": "200",
+          },
+        ],
+        "ResourceId": {
+          "Ref": "ApiDiaryApidiary4B91FACA",
+        },
+        "RestApiId": {
+          "Ref": "ApiDiaryApi1E03348A",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
     "ApiDiaryApidiaryPOST0B03467C": {
       "Properties": {
         "AuthorizationType": "COGNITO_USER_POOLS",
         "AuthorizerId": {
-          "Ref": "ApicognitoAuthorizer96AE9311",
+          "Ref": "ApiCognitoAuthorizer23B91BA2",
         },
         "HttpMethod": "POST",
         "Integration": {
@@ -833,7 +705,7 @@ exports[`Snapshot test 1`] = `
                 ":lambda:path/2015-03-31/functions/",
                 {
                   "Fn::GetAtt": [
-                    "ApidiaryCreateLambda110A058E",
+                    "DiarydiaryCreateLambda0AD0EFFF",
                     "Arn",
                   ],
                 },
@@ -856,7 +728,7 @@ exports[`Snapshot test 1`] = `
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
           "Fn::GetAtt": [
-            "ApidiaryCreateLambda110A058E",
+            "DiarydiaryCreateLambda0AD0EFFF",
             "Arn",
           ],
         },
@@ -897,7 +769,7 @@ exports[`Snapshot test 1`] = `
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
           "Fn::GetAtt": [
-            "ApidiaryCreateLambda110A058E",
+            "DiarydiaryCreateLambda0AD0EFFF",
             "Arn",
           ],
         },
@@ -933,7 +805,7 @@ exports[`Snapshot test 1`] = `
       "Properties": {
         "AuthorizationType": "COGNITO_USER_POOLS",
         "AuthorizerId": {
-          "Ref": "ApicognitoAuthorizer96AE9311",
+          "Ref": "ApiCognitoAuthorizer23B91BA2",
         },
         "HttpMethod": "PUT",
         "Integration": {
@@ -954,7 +826,7 @@ exports[`Snapshot test 1`] = `
                 ":lambda:path/2015-03-31/functions/",
                 {
                   "Fn::GetAtt": [
-                    "ApidiaryEditLambdaB302081D",
+                    "DiarydiaryEditLambda0E053A05",
                     "Arn",
                   ],
                 },
@@ -977,7 +849,7 @@ exports[`Snapshot test 1`] = `
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
           "Fn::GetAtt": [
-            "ApidiaryEditLambdaB302081D",
+            "DiarydiaryEditLambda0E053A05",
             "Arn",
           ],
         },
@@ -1018,7 +890,7 @@ exports[`Snapshot test 1`] = `
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
           "Fn::GetAtt": [
-            "ApidiaryEditLambdaB302081D",
+            "DiarydiaryEditLambda0E053A05",
             "Arn",
           ],
         },
@@ -1070,7 +942,7 @@ exports[`Snapshot test 1`] = `
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
           "Fn::GetAtt": [
-            "ApiflowerGetFunctionDEFFEDFA",
+            "FlowerflowerGetFunctionA4C511EA",
             "Arn",
           ],
         },
@@ -1111,7 +983,7 @@ exports[`Snapshot test 1`] = `
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
           "Fn::GetAtt": [
-            "ApiflowerGetFunctionDEFFEDFA",
+            "FlowerflowerGetFunctionA4C511EA",
             "Arn",
           ],
         },
@@ -1147,7 +1019,7 @@ exports[`Snapshot test 1`] = `
       "Properties": {
         "AuthorizationType": "COGNITO_USER_POOLS",
         "AuthorizerId": {
-          "Ref": "ApicognitoAuthorizer96AE9311",
+          "Ref": "ApiCognitoAuthorizer23B91BA2",
         },
         "HttpMethod": "GET",
         "Integration": {
@@ -1168,7 +1040,7 @@ exports[`Snapshot test 1`] = `
                 ":lambda:path/2015-03-31/functions/",
                 {
                   "Fn::GetAtt": [
-                    "ApiflowerGetFunctionDEFFEDFA",
+                    "FlowerflowerGetFunctionA4C511EA",
                     "Arn",
                   ],
                 },
@@ -1177,6 +1049,46 @@ exports[`Snapshot test 1`] = `
             ],
           },
         },
+        "ResourceId": {
+          "Ref": "ApiDiaryApiflower7C61878D",
+        },
+        "RestApiId": {
+          "Ref": "ApiDiaryApi1E03348A",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "ApiDiaryApiflowerOPTIONS2A81112B": {
+      "Properties": {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "Integration": {
+          "IntegrationResponses": [
+            {
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST,PUT,DELETE'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+              },
+              "StatusCode": "200",
+            },
+          ],
+          "PassthroughBehavior": "NEVER",
+          "RequestTemplates": {
+            "application/json": "{"statusCode": 200}",
+          },
+          "Type": "MOCK",
+        },
+        "MethodResponses": [
+          {
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Allow-Origin": true,
+            },
+            "StatusCode": "200",
+          },
+        ],
         "ResourceId": {
           "Ref": "ApiDiaryApiflower7C61878D",
         },
@@ -1205,7 +1117,7 @@ exports[`Snapshot test 1`] = `
       "Properties": {
         "AuthorizationType": "COGNITO_USER_POOLS",
         "AuthorizerId": {
-          "Ref": "ApicognitoAuthorizer96AE9311",
+          "Ref": "ApiCognitoAuthorizer23B91BA2",
         },
         "HttpMethod": "GET",
         "Integration": {
@@ -1226,7 +1138,7 @@ exports[`Snapshot test 1`] = `
                 ":lambda:path/2015-03-31/functions/",
                 {
                   "Fn::GetAtt": [
-                    "ApititleGetFunction28017ABF",
+                    "DiarytitleGetFunction90C2A326",
                     "Arn",
                   ],
                 },
@@ -1249,7 +1161,7 @@ exports[`Snapshot test 1`] = `
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
           "Fn::GetAtt": [
-            "ApititleGetFunction28017ABF",
+            "DiarytitleGetFunction90C2A326",
             "Arn",
           ],
         },
@@ -1290,7 +1202,7 @@ exports[`Snapshot test 1`] = `
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
           "Fn::GetAtt": [
-            "ApititleGetFunction28017ABF",
+            "DiarytitleGetFunction90C2A326",
             "Arn",
           ],
         },
@@ -1322,1291 +1234,15 @@ exports[`Snapshot test 1`] = `
       },
       "Type": "AWS::Lambda::Permission",
     },
-    "ApicanCreateBouquet7959C138": {
-      "DependsOn": [
-        "ApicanCreateBouquetServiceRoleDefaultPolicy8087FA3E",
-        "ApicanCreateBouquetServiceRole41A227B4",
-      ],
-      "Properties": {
-        "Code": {
-          "S3Bucket": {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
-          },
-          "S3Key": "HASH_REPLACED.zip",
-        },
-        "Environment": {
-          "Variables": {
-            "BOUQUET_TABLE_NAME": {
-              "Ref": "ApiBouquetTable92B8B9AD",
-            },
-            "GENERATIVE_AI_TABLE_NAME": {
-              "Ref": "ApigenerativeAiTableB5975AA2",
-            },
-          },
-        },
-        "Handler": "can_create_bouquet.lambda_handler",
-        "Role": {
-          "Fn::GetAtt": [
-            "ApicanCreateBouquetServiceRole41A227B4",
-            "Arn",
-          ],
-        },
-        "Runtime": "python3.11",
-      },
-      "Type": "AWS::Lambda::Function",
-    },
-    "ApicanCreateBouquetServiceRole41A227B4": {
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "lambda.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "ManagedPolicyArns": [
-          {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition",
-                },
-                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
-              ],
-            ],
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Role",
-    },
-    "ApicanCreateBouquetServiceRoleDefaultPolicy8087FA3E": {
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": [
-                "dynamodb:BatchGetItem",
-                "dynamodb:GetRecords",
-                "dynamodb:GetShardIterator",
-                "dynamodb:Query",
-                "dynamodb:GetItem",
-                "dynamodb:Scan",
-                "dynamodb:ConditionCheckItem",
-                "dynamodb:DescribeTable",
-              ],
-              "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "ApigenerativeAiTableB5975AA2",
-                    "Arn",
-                  ],
-                },
-                {
-                  "Ref": "AWS::NoValue",
-                },
-              ],
-            },
-            {
-              "Action": [
-                "dynamodb:BatchGetItem",
-                "dynamodb:GetRecords",
-                "dynamodb:GetShardIterator",
-                "dynamodb:Query",
-                "dynamodb:GetItem",
-                "dynamodb:Scan",
-                "dynamodb:ConditionCheckItem",
-                "dynamodb:DescribeTable",
-              ],
-              "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "ApiBouquetTable92B8B9AD",
-                    "Arn",
-                  ],
-                },
-                {
-                  "Ref": "AWS::NoValue",
-                },
-              ],
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "ApicanCreateBouquetServiceRoleDefaultPolicy8087FA3E",
-        "Roles": [
-          {
-            "Ref": "ApicanCreateBouquetServiceRole41A227B4",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
     "ApicognitoAuthorizer96AE9311": {
       "Properties": {
-        "IdentitySource": "method.request.header.Authorization",
-        "Name": "CdkSampleStackApicognitoAuthorizerF1A6BB42",
-        "ProviderARNs": [
-          {
-            "Fn::GetAtt": [
-              "AuthUserPool8115E87F",
-              "Arn",
-            ],
-          },
-        ],
+        "Name": "ValidateQueryString",
         "RestApiId": {
           "Ref": "ApiDiaryApi1E03348A",
         },
-        "Type": "COGNITO_USER_POOLS",
+        "ValidateRequestParameters": true,
       },
-      "Type": "AWS::ApiGateway::Authorizer",
-    },
-    "ApidiaryContentsTable7C5DA356": {
-      "DeletionPolicy": "Delete",
-      "Properties": {
-        "AttributeDefinitions": [
-          {
-            "AttributeName": "user_id",
-            "AttributeType": "S",
-          },
-          {
-            "AttributeName": "date",
-            "AttributeType": "S",
-          },
-        ],
-        "KeySchema": [
-          {
-            "AttributeName": "user_id",
-            "KeyType": "HASH",
-          },
-          {
-            "AttributeName": "date",
-            "KeyType": "RANGE",
-          },
-        ],
-        "PointInTimeRecoverySpecification": {
-          "PointInTimeRecoveryEnabled": true,
-        },
-        "ProvisionedThroughput": {
-          "ReadCapacityUnits": 5,
-          "WriteCapacityUnits": 5,
-        },
-        "StreamSpecification": {
-          "StreamViewType": "NEW_AND_OLD_IMAGES",
-        },
-      },
-      "Type": "AWS::DynamoDB::Table",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "ApidiaryCreateLambda110A058E": {
-      "DependsOn": [
-        "ApidiaryCreateLambdaServiceRoleDefaultPolicy86310C5D",
-        "ApidiaryCreateLambdaServiceRole9DCC9301",
-      ],
-      "Properties": {
-        "Code": {
-          "S3Bucket": {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
-          },
-          "S3Key": "HASH_REPLACED.zip",
-        },
-        "Environment": {
-          "Variables": {
-            "TABLE_NAME": {
-              "Ref": "ApidiaryContentsTable7C5DA356",
-            },
-          },
-        },
-        "Handler": "diary_create.lambda_handler",
-        "Role": {
-          "Fn::GetAtt": [
-            "ApidiaryCreateLambdaServiceRole9DCC9301",
-            "Arn",
-          ],
-        },
-        "Runtime": "python3.11",
-      },
-      "Type": "AWS::Lambda::Function",
-    },
-    "ApidiaryCreateLambdaLogRetention9101BA91": {
-      "Properties": {
-        "LogGroupName": {
-          "Fn::Join": [
-            "",
-            [
-              "/aws/lambda/",
-              {
-                "Ref": "ApidiaryCreateLambda110A058E",
-              },
-            ],
-          ],
-        },
-        "RetentionInDays": 14,
-        "ServiceToken": {
-          "Fn::GetAtt": [
-            "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
-            "Arn",
-          ],
-        },
-      },
-      "Type": "Custom::LogRetention",
-    },
-    "ApidiaryCreateLambdaServiceRole9DCC9301": {
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "lambda.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "ManagedPolicyArns": [
-          {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition",
-                },
-                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
-              ],
-            ],
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Role",
-    },
-    "ApidiaryCreateLambdaServiceRoleDefaultPolicy86310C5D": {
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": [
-                "dynamodb:BatchWriteItem",
-                "dynamodb:PutItem",
-                "dynamodb:UpdateItem",
-                "dynamodb:DeleteItem",
-                "dynamodb:DescribeTable",
-              ],
-              "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "ApidiaryContentsTable7C5DA356",
-                    "Arn",
-                  ],
-                },
-                {
-                  "Ref": "AWS::NoValue",
-                },
-              ],
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "ApidiaryCreateLambdaServiceRoleDefaultPolicy86310C5D",
-        "Roles": [
-          {
-            "Ref": "ApidiaryCreateLambdaServiceRole9DCC9301",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "ApidiaryDeleteLambdaC3EB15FB": {
-      "DependsOn": [
-        "ApidiaryDeleteLambdaServiceRoleDefaultPolicy5BC51CF1",
-        "ApidiaryDeleteLambdaServiceRole7E2B6555",
-      ],
-      "Properties": {
-        "Code": {
-          "S3Bucket": {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
-          },
-          "S3Key": "HASH_REPLACED.zip",
-        },
-        "Environment": {
-          "Variables": {
-            "TABLE_NAME": {
-              "Ref": "ApidiaryContentsTable7C5DA356",
-            },
-          },
-        },
-        "Handler": "diary_delete.lambda_handler",
-        "Role": {
-          "Fn::GetAtt": [
-            "ApidiaryDeleteLambdaServiceRole7E2B6555",
-            "Arn",
-          ],
-        },
-        "Runtime": "python3.11",
-      },
-      "Type": "AWS::Lambda::Function",
-    },
-    "ApidiaryDeleteLambdaLogRetention97E6A8C7": {
-      "Properties": {
-        "LogGroupName": {
-          "Fn::Join": [
-            "",
-            [
-              "/aws/lambda/",
-              {
-                "Ref": "ApidiaryDeleteLambdaC3EB15FB",
-              },
-            ],
-          ],
-        },
-        "RetentionInDays": 14,
-        "ServiceToken": {
-          "Fn::GetAtt": [
-            "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
-            "Arn",
-          ],
-        },
-      },
-      "Type": "Custom::LogRetention",
-    },
-    "ApidiaryDeleteLambdaServiceRole7E2B6555": {
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "lambda.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "ManagedPolicyArns": [
-          {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition",
-                },
-                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
-              ],
-            ],
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Role",
-    },
-    "ApidiaryDeleteLambdaServiceRoleDefaultPolicy5BC51CF1": {
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": "dynamodb:DeleteItem",
-              "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "ApidiaryContentsTable7C5DA356",
-                    "Arn",
-                  ],
-                },
-                {
-                  "Ref": "AWS::NoValue",
-                },
-              ],
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "ApidiaryDeleteLambdaServiceRoleDefaultPolicy5BC51CF1",
-        "Roles": [
-          {
-            "Ref": "ApidiaryDeleteLambdaServiceRole7E2B6555",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "ApidiaryEditLambdaB302081D": {
-      "DependsOn": [
-        "ApidiaryEditLambdaServiceRoleDefaultPolicyEC8C0E8B",
-        "ApidiaryEditLambdaServiceRole436FB859",
-      ],
-      "Properties": {
-        "Code": {
-          "S3Bucket": {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
-          },
-          "S3Key": "HASH_REPLACED.zip",
-        },
-        "Environment": {
-          "Variables": {
-            "TABLE_NAME": {
-              "Ref": "ApidiaryContentsTable7C5DA356",
-            },
-          },
-        },
-        "Handler": "diary_edit.lambda_handler",
-        "Role": {
-          "Fn::GetAtt": [
-            "ApidiaryEditLambdaServiceRole436FB859",
-            "Arn",
-          ],
-        },
-        "Runtime": "python3.11",
-      },
-      "Type": "AWS::Lambda::Function",
-    },
-    "ApidiaryEditLambdaLogRetention81B077A5": {
-      "Properties": {
-        "LogGroupName": {
-          "Fn::Join": [
-            "",
-            [
-              "/aws/lambda/",
-              {
-                "Ref": "ApidiaryEditLambdaB302081D",
-              },
-            ],
-          ],
-        },
-        "RetentionInDays": 14,
-        "ServiceToken": {
-          "Fn::GetAtt": [
-            "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
-            "Arn",
-          ],
-        },
-      },
-      "Type": "Custom::LogRetention",
-    },
-    "ApidiaryEditLambdaServiceRole436FB859": {
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "lambda.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "ManagedPolicyArns": [
-          {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition",
-                },
-                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
-              ],
-            ],
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Role",
-    },
-    "ApidiaryEditLambdaServiceRoleDefaultPolicyEC8C0E8B": {
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": [
-                "dynamodb:BatchGetItem",
-                "dynamodb:GetRecords",
-                "dynamodb:GetShardIterator",
-                "dynamodb:Query",
-                "dynamodb:GetItem",
-                "dynamodb:Scan",
-                "dynamodb:ConditionCheckItem",
-                "dynamodb:BatchWriteItem",
-                "dynamodb:PutItem",
-                "dynamodb:UpdateItem",
-                "dynamodb:DeleteItem",
-                "dynamodb:DescribeTable",
-              ],
-              "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "ApidiaryContentsTable7C5DA356",
-                    "Arn",
-                  ],
-                },
-                {
-                  "Ref": "AWS::NoValue",
-                },
-              ],
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "ApidiaryEditLambdaServiceRoleDefaultPolicyEC8C0E8B",
-        "Roles": [
-          {
-            "Ref": "ApidiaryEditLambdaServiceRole436FB859",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "ApidiaryGenerateTitleCreateLambda6D20C0C6": {
-      "DependsOn": [
-        "ApigenerativeAiLambdaRoleDefaultPolicyF9D416C8",
-        "ApigenerativeAiLambdaRoleEE46A380",
-      ],
-      "Properties": {
-        "Code": {
-          "S3Bucket": {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
-          },
-          "S3Key": "HASH_REPLACED.zip",
-        },
-        "Environment": {
-          "Variables": {
-            "TABLE_NAME": {
-              "Ref": "ApigenerativeAiTableB5975AA2",
-            },
-          },
-        },
-        "Handler": "diary_generate_title_create.lambda_handler",
-        "Role": {
-          "Fn::GetAtt": [
-            "ApigenerativeAiLambdaRoleEE46A380",
-            "Arn",
-          ],
-        },
-        "Runtime": "python3.11",
-        "Timeout": 30,
-      },
-      "Type": "AWS::Lambda::Function",
-    },
-    "ApidiaryGenerateTitleCreateLambdaDynamoDBEventSourceCdkSampleStackApidiaryContentsTable227606F1223C5CD2": {
-      "Properties": {
-        "BatchSize": 100,
-        "EventSourceArn": {
-          "Fn::GetAtt": [
-            "ApidiaryContentsTable7C5DA356",
-            "StreamArn",
-          ],
-        },
-        "FunctionName": {
-          "Ref": "ApidiaryGenerateTitleCreateLambda6D20C0C6",
-        },
-        "StartingPosition": "LATEST",
-      },
-      "Type": "AWS::Lambda::EventSourceMapping",
-    },
-    "ApidiaryReadLambda4CD9146E": {
-      "DependsOn": [
-        "ApidiaryReadLambdaServiceRoleDefaultPolicy51B2B68F",
-        "ApidiaryReadLambdaServiceRole591AE570",
-      ],
-      "Properties": {
-        "Code": {
-          "S3Bucket": {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
-          },
-          "S3Key": "HASH_REPLACED.zip",
-        },
-        "Environment": {
-          "Variables": {
-            "TABLE_NAME": {
-              "Ref": "ApidiaryContentsTable7C5DA356",
-            },
-          },
-        },
-        "Handler": "diary_read.lambda_handler",
-        "Role": {
-          "Fn::GetAtt": [
-            "ApidiaryReadLambdaServiceRole591AE570",
-            "Arn",
-          ],
-        },
-        "Runtime": "python3.11",
-      },
-      "Type": "AWS::Lambda::Function",
-    },
-    "ApidiaryReadLambdaLogRetention27F9E279": {
-      "Properties": {
-        "LogGroupName": {
-          "Fn::Join": [
-            "",
-            [
-              "/aws/lambda/",
-              {
-                "Ref": "ApidiaryReadLambda4CD9146E",
-              },
-            ],
-          ],
-        },
-        "RetentionInDays": 14,
-        "ServiceToken": {
-          "Fn::GetAtt": [
-            "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
-            "Arn",
-          ],
-        },
-      },
-      "Type": "Custom::LogRetention",
-    },
-    "ApidiaryReadLambdaServiceRole591AE570": {
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "lambda.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "ManagedPolicyArns": [
-          {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition",
-                },
-                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
-              ],
-            ],
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Role",
-    },
-    "ApidiaryReadLambdaServiceRoleDefaultPolicy51B2B68F": {
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": [
-                "dynamodb:BatchGetItem",
-                "dynamodb:GetRecords",
-                "dynamodb:GetShardIterator",
-                "dynamodb:Query",
-                "dynamodb:GetItem",
-                "dynamodb:Scan",
-                "dynamodb:ConditionCheckItem",
-                "dynamodb:DescribeTable",
-              ],
-              "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "ApidiaryContentsTable7C5DA356",
-                    "Arn",
-                  ],
-                },
-                {
-                  "Ref": "AWS::NoValue",
-                },
-              ],
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "ApidiaryReadLambdaServiceRoleDefaultPolicy51B2B68F",
-        "Roles": [
-          {
-            "Ref": "ApidiaryReadLambdaServiceRole591AE570",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "ApiflowerGenerateFunction44F41D90": {
-      "DependsOn": [
-        "ApiflowerGenerateFunctionServiceRoleDefaultPolicyB3113527",
-        "ApiflowerGenerateFunctionServiceRoleB104E85C",
-      ],
-      "Properties": {
-        "Code": {
-          "S3Bucket": {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
-          },
-          "S3Key": "HASH_REPLACED.zip",
-        },
-        "Environment": {
-          "Variables": {
-            "DIARY_TABLE_NAME": {
-              "Ref": "ApidiaryContentsTable7C5DA356",
-            },
-            "FLOWER_BUCKET_NAME": {
-              "Ref": "ApiflowerImageBucket5AC81E41",
-            },
-            "GENERATIVE_AI_TABLE_NAME": {
-              "Ref": "ApigenerativeAiTableB5975AA2",
-            },
-          },
-        },
-        "Handler": "flower_generate.lambda_handler",
-        "Role": {
-          "Fn::GetAtt": [
-            "ApiflowerGenerateFunctionServiceRoleB104E85C",
-            "Arn",
-          ],
-        },
-        "Runtime": "python3.11",
-        "Timeout": 60,
-      },
-      "Type": "AWS::Lambda::Function",
-    },
-    "ApiflowerGenerateFunctionDynamoDBEventSourceCdkSampleStackApidiaryContentsTable227606F1C3F936A3": {
-      "Properties": {
-        "BatchSize": 100,
-        "EventSourceArn": {
-          "Fn::GetAtt": [
-            "ApidiaryContentsTable7C5DA356",
-            "StreamArn",
-          ],
-        },
-        "FunctionName": {
-          "Ref": "ApiflowerGenerateFunction44F41D90",
-        },
-        "StartingPosition": "LATEST",
-      },
-      "Type": "AWS::Lambda::EventSourceMapping",
-    },
-    "ApiflowerGenerateFunctionServiceRoleB104E85C": {
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "lambda.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "ManagedPolicyArns": [
-          {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition",
-                },
-                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
-              ],
-            ],
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Role",
-    },
-    "ApiflowerGenerateFunctionServiceRoleDefaultPolicyB3113527": {
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": [
-                "dynamodb:BatchWriteItem",
-                "dynamodb:PutItem",
-                "dynamodb:UpdateItem",
-                "dynamodb:DeleteItem",
-                "dynamodb:DescribeTable",
-              ],
-              "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "ApigenerativeAiTableB5975AA2",
-                    "Arn",
-                  ],
-                },
-                {
-                  "Ref": "AWS::NoValue",
-                },
-              ],
-            },
-            {
-              "Action": "dynamodb:ListStreams",
-              "Effect": "Allow",
-              "Resource": "*",
-            },
-            {
-              "Action": [
-                "dynamodb:DescribeStream",
-                "dynamodb:GetRecords",
-                "dynamodb:GetShardIterator",
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "ApidiaryContentsTable7C5DA356",
-                  "StreamArn",
-                ],
-              },
-            },
-            {
-              "Action": [
-                "s3:PutObject",
-                "s3:PutObjectLegalHold",
-                "s3:PutObjectRetention",
-                "s3:PutObjectTagging",
-                "s3:PutObjectVersionTagging",
-                "s3:Abort*",
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::Join": [
-                  "",
-                  [
-                    {
-                      "Fn::GetAtt": [
-                        "ApiflowerImageBucket5AC81E41",
-                        "Arn",
-                      ],
-                    },
-                    "/*",
-                  ],
-                ],
-              },
-            },
-            {
-              "Action": "ssm:GetParameter",
-              "Effect": "Allow",
-              "Resource": "arn:aws:ssm:ap-northeast-1:851725642854:parameter/OpenAI_API_KEY",
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "ApiflowerGenerateFunctionServiceRoleDefaultPolicyB3113527",
-        "Roles": [
-          {
-            "Ref": "ApiflowerGenerateFunctionServiceRoleB104E85C",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "ApiflowerGetFunctionDEFFEDFA": {
-      "DependsOn": [
-        "ApiflowerGetFunctionServiceRoleDefaultPolicy9CAD1CFF",
-        "ApiflowerGetFunctionServiceRole548D226E",
-      ],
-      "Properties": {
-        "Code": {
-          "S3Bucket": {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
-          },
-          "S3Key": "HASH_REPLACED.zip",
-        },
-        "Environment": {
-          "Variables": {
-            "BUCKET_NAME": {
-              "Ref": "ApiflowerImageBucket5AC81E41",
-            },
-          },
-        },
-        "Handler": "flower_get.lambda_handler",
-        "Role": {
-          "Fn::GetAtt": [
-            "ApiflowerGetFunctionServiceRole548D226E",
-            "Arn",
-          ],
-        },
-        "Runtime": "python3.11",
-        "Timeout": 10,
-      },
-      "Type": "AWS::Lambda::Function",
-    },
-    "ApiflowerGetFunctionServiceRole548D226E": {
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "lambda.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "ManagedPolicyArns": [
-          {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition",
-                },
-                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
-              ],
-            ],
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Role",
-    },
-    "ApiflowerGetFunctionServiceRoleDefaultPolicy9CAD1CFF": {
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*",
-              ],
-              "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "ApiflowerImageBucket5AC81E41",
-                    "Arn",
-                  ],
-                },
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      {
-                        "Fn::GetAtt": [
-                          "ApiflowerImageBucket5AC81E41",
-                          "Arn",
-                        ],
-                      },
-                      "/*",
-                    ],
-                  ],
-                },
-              ],
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "ApiflowerGetFunctionServiceRoleDefaultPolicy9CAD1CFF",
-        "Roles": [
-          {
-            "Ref": "ApiflowerGetFunctionServiceRole548D226E",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "ApiflowerImageBucket5AC81E41": {
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "AccessControl": "LogDeliveryWrite",
-        "LoggingConfiguration": {
-          "LogFilePrefix": "log/",
-        },
-        "OwnershipControls": {
-          "Rules": [
-            {
-              "ObjectOwnership": "ObjectWriter",
-            },
-          ],
-        },
-      },
-      "Type": "AWS::S3::Bucket",
-      "UpdateReplacePolicy": "Retain",
-    },
-    "ApiflowerImageBucketPolicy7CE9FFF2": {
-      "Properties": {
-        "Bucket": {
-          "Ref": "ApiflowerImageBucket5AC81E41",
-        },
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": "s3:*",
-              "Condition": {
-                "Bool": {
-                  "aws:SecureTransport": "false",
-                },
-              },
-              "Effect": "Deny",
-              "Principal": {
-                "AWS": "*",
-              },
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "ApiflowerImageBucket5AC81E41",
-                    "Arn",
-                  ],
-                },
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      {
-                        "Fn::GetAtt": [
-                          "ApiflowerImageBucket5AC81E41",
-                          "Arn",
-                        ],
-                      },
-                      "/*",
-                    ],
-                  ],
-                },
-              ],
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-      },
-      "Type": "AWS::S3::BucketPolicy",
-    },
-    "ApigenerativeAiLambdaRoleDefaultPolicyF9D416C8": {
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": "ssm:GetParameter",
-              "Effect": "Allow",
-              "Resource": "*",
-            },
-            {
-              "Action": [
-                "logs:DeleteRetentionPolicy",
-                "logs:PutRetentionPolicy",
-                "logs:CreateLogGroup",
-                "logs:CreateLogStream",
-                "logs:PutLogEvents",
-              ],
-              "Effect": "Allow",
-              "Resource": "*",
-            },
-            {
-              "Action": [
-                "dynamodb:BatchWriteItem",
-                "dynamodb:PutItem",
-                "dynamodb:UpdateItem",
-                "dynamodb:DeleteItem",
-                "dynamodb:DescribeTable",
-              ],
-              "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "ApigenerativeAiTableB5975AA2",
-                    "Arn",
-                  ],
-                },
-                {
-                  "Ref": "AWS::NoValue",
-                },
-              ],
-            },
-            {
-              "Action": "dynamodb:ListStreams",
-              "Effect": "Allow",
-              "Resource": "*",
-            },
-            {
-              "Action": [
-                "dynamodb:DescribeStream",
-                "dynamodb:GetRecords",
-                "dynamodb:GetShardIterator",
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "ApidiaryContentsTable7C5DA356",
-                  "StreamArn",
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "ApigenerativeAiLambdaRoleDefaultPolicyF9D416C8",
-        "Roles": [
-          {
-            "Ref": "ApigenerativeAiLambdaRoleEE46A380",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "ApigenerativeAiLambdaRoleEE46A380": {
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "lambda.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-      },
-      "Type": "AWS::IAM::Role",
-    },
-    "ApigenerativeAiTableB5975AA2": {
-      "DeletionPolicy": "Delete",
-      "Properties": {
-        "AttributeDefinitions": [
-          {
-            "AttributeName": "user_id",
-            "AttributeType": "S",
-          },
-          {
-            "AttributeName": "date",
-            "AttributeType": "S",
-          },
-        ],
-        "KeySchema": [
-          {
-            "AttributeName": "user_id",
-            "KeyType": "HASH",
-          },
-          {
-            "AttributeName": "date",
-            "KeyType": "RANGE",
-          },
-        ],
-        "PointInTimeRecoverySpecification": {
-          "PointInTimeRecoveryEnabled": true,
-        },
-        "ProvisionedThroughput": {
-          "ReadCapacityUnits": 5,
-          "WriteCapacityUnits": 5,
-        },
-      },
-      "Type": "AWS::DynamoDB::Table",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "ApititleGetFunction28017ABF": {
-      "DependsOn": [
-        "ApititleGetFunctionServiceRoleDefaultPolicyA4A7364B",
-        "ApititleGetFunctionServiceRoleB2925BBB",
-      ],
-      "Properties": {
-        "Code": {
-          "S3Bucket": {
-            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
-          },
-          "S3Key": "HASH_REPLACED.zip",
-        },
-        "Environment": {
-          "Variables": {
-            "TABLE_NAME": {
-              "Ref": "ApigenerativeAiTableB5975AA2",
-            },
-          },
-        },
-        "Handler": "title_get.lambda_handler",
-        "Role": {
-          "Fn::GetAtt": [
-            "ApititleGetFunctionServiceRoleB2925BBB",
-            "Arn",
-          ],
-        },
-        "Runtime": "python3.11",
-      },
-      "Type": "AWS::Lambda::Function",
-    },
-    "ApititleGetFunctionServiceRoleB2925BBB": {
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "lambda.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "ManagedPolicyArns": [
-          {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition",
-                },
-                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
-              ],
-            ],
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Role",
-    },
-    "ApititleGetFunctionServiceRoleDefaultPolicyA4A7364B": {
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": [
-                "dynamodb:BatchGetItem",
-                "dynamodb:GetRecords",
-                "dynamodb:GetShardIterator",
-                "dynamodb:Query",
-                "dynamodb:GetItem",
-                "dynamodb:Scan",
-                "dynamodb:ConditionCheckItem",
-                "dynamodb:DescribeTable",
-              ],
-              "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "ApigenerativeAiTableB5975AA2",
-                    "Arn",
-                  ],
-                },
-                {
-                  "Ref": "AWS::NoValue",
-                },
-              ],
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "ApititleGetFunctionServiceRoleDefaultPolicyA4A7364B",
-        "Roles": [
-          {
-            "Ref": "ApititleGetFunctionServiceRoleB2925BBB",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
+      "Type": "AWS::ApiGateway::RequestValidator",
     },
     "AuthDiaryUserPoolClientC42D6E78": {
       "Properties": {
@@ -2738,6 +1374,403 @@ exports[`Snapshot test 1`] = `
         ],
       },
       "Type": "AWS::IAM::Role",
+    },
+    "BouquetBouquetCreateF1E294AE": {
+      "DependsOn": [
+        "BouquetBouquetCreateServiceRoleDefaultPolicyDEB4D82F",
+        "BouquetBouquetCreateServiceRole0729B026",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "S3Key": "HASH_REPLACED.zip",
+        },
+        "Environment": {
+          "Variables": {
+            "BOUQUET_BUCKET_NAME": {
+              "Ref": "BouquetbouquetBucket080B429F",
+            },
+            "BOUQUET_TABLE_NAME": {
+              "Ref": "BouquetBouquetTableE43AF35D",
+            },
+            "FLOWER_BUCKET_NAME": {
+              "Ref": "FlowerflowerImageBucket46E60C76",
+            },
+            "GENERATIVE_AI_TABLE_NAME": {
+              "Ref": "FlowergenerativeAiTable021268D8",
+            },
+          },
+        },
+        "Handler": "bouquet_create.lambda_handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "BouquetBouquetCreateServiceRole0729B026",
+            "Arn",
+          ],
+        },
+        "Runtime": "python3.11",
+        "Timeout": 15,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "BouquetBouquetCreateServiceRole0729B026": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "BouquetBouquetCreateServiceRoleDefaultPolicyDEB4D82F": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "dynamodb:BatchGetItem",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+                "dynamodb:Query",
+                "dynamodb:GetItem",
+                "dynamodb:Scan",
+                "dynamodb:ConditionCheckItem",
+                "dynamodb:DescribeTable",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "FlowergenerativeAiTable021268D8",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Ref": "AWS::NoValue",
+                },
+              ],
+            },
+            {
+              "Action": [
+                "dynamodb:BatchWriteItem",
+                "dynamodb:PutItem",
+                "dynamodb:UpdateItem",
+                "dynamodb:DeleteItem",
+                "dynamodb:DescribeTable",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "BouquetBouquetTableE43AF35D",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Ref": "AWS::NoValue",
+                },
+              ],
+            },
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "FlowerflowerImageBucket46E60C76",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "FlowerflowerImageBucket46E60C76",
+                          "Arn",
+                        ],
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+            {
+              "Action": [
+                "s3:PutObject",
+                "s3:PutObjectLegalHold",
+                "s3:PutObjectRetention",
+                "s3:PutObjectTagging",
+                "s3:PutObjectVersionTagging",
+                "s3:Abort*",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    {
+                      "Fn::GetAtt": [
+                        "BouquetbouquetBucket080B429F",
+                        "Arn",
+                      ],
+                    },
+                    "/*",
+                  ],
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "BouquetBouquetCreateServiceRoleDefaultPolicyDEB4D82F",
+        "Roles": [
+          {
+            "Ref": "BouquetBouquetCreateServiceRole0729B026",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "BouquetBouquetTableE43AF35D": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "user_id",
+            "AttributeType": "S",
+          },
+          {
+            "AttributeName": "year_week",
+            "AttributeType": "S",
+          },
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "user_id",
+            "KeyType": "HASH",
+          },
+          {
+            "AttributeName": "year_week",
+            "KeyType": "RANGE",
+          },
+        ],
+        "PointInTimeRecoverySpecification": {
+          "PointInTimeRecoveryEnabled": true,
+        },
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5,
+        },
+        "StreamSpecification": {
+          "StreamViewType": "NEW_AND_OLD_IMAGES",
+        },
+      },
+      "Type": "AWS::DynamoDB::Table",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "BouquetbouquetBucket080B429F": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "AccessControl": "LogDeliveryWrite",
+        "LoggingConfiguration": {
+          "LogFilePrefix": "log/",
+        },
+        "OwnershipControls": {
+          "Rules": [
+            {
+              "ObjectOwnership": "ObjectWriter",
+            },
+          ],
+        },
+      },
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "BouquetbouquetBucketPolicy1552A5FD": {
+      "Properties": {
+        "Bucket": {
+          "Ref": "BouquetbouquetBucket080B429F",
+        },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:*",
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false",
+                },
+              },
+              "Effect": "Deny",
+              "Principal": {
+                "AWS": "*",
+              },
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "BouquetbouquetBucket080B429F",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "BouquetbouquetBucket080B429F",
+                          "Arn",
+                        ],
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::S3::BucketPolicy",
+    },
+    "BouquetbouquetGetFunction4A58F67E": {
+      "DependsOn": [
+        "BouquetbouquetGetFunctionServiceRoleDefaultPolicyC0CCF037",
+        "BouquetbouquetGetFunctionServiceRole6DD6BC61",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "S3Key": "HASH_REPLACED.zip",
+        },
+        "Environment": {
+          "Variables": {
+            "BUCKET_NAME": {
+              "Ref": "BouquetbouquetBucket080B429F",
+            },
+          },
+        },
+        "Handler": "bouquet_get.lambda_handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "BouquetbouquetGetFunctionServiceRole6DD6BC61",
+            "Arn",
+          ],
+        },
+        "Runtime": "python3.11",
+        "Timeout": 10,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "BouquetbouquetGetFunctionServiceRole6DD6BC61": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "BouquetbouquetGetFunctionServiceRoleDefaultPolicyC0CCF037": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "BouquetbouquetBucket080B429F",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "BouquetbouquetBucket080B429F",
+                          "Arn",
+                        ],
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "BouquetbouquetGetFunctionServiceRoleDefaultPolicyC0CCF037",
+        "Roles": [
+          {
+            "Ref": "BouquetbouquetGetFunctionServiceRole6DD6BC61",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
     },
     "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536": {
       "DependsOn": [
@@ -2971,6 +2004,1211 @@ exports[`Snapshot test 1`] = `
         ],
       },
       "Type": "AWS::IAM::Role",
+    },
+    "DiaryTitleGenerateLambda7612098A": {
+      "DependsOn": [
+        "DiarygenerativeAiLambdaRoleDefaultPolicy5FC5F15D",
+        "DiarygenerativeAiLambdaRole98507273",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "S3Key": "HASH_REPLACED.zip",
+        },
+        "Environment": {
+          "Variables": {
+            "TABLE_NAME": {
+              "Ref": "FlowergenerativeAiTable021268D8",
+            },
+          },
+        },
+        "Handler": "title_generate.lambda_handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "DiarygenerativeAiLambdaRole98507273",
+            "Arn",
+          ],
+        },
+        "Runtime": "python3.11",
+        "Timeout": 30,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "DiaryTitleGenerateLambdaDynamoDBEventSourceCdkSampleStackFlowerdiaryContentsTableA7A89C39CFB03C27": {
+      "Properties": {
+        "BatchSize": 100,
+        "EventSourceArn": {
+          "Fn::GetAtt": [
+            "FlowerdiaryContentsTableCA7C6940",
+            "StreamArn",
+          ],
+        },
+        "FunctionName": {
+          "Ref": "DiaryTitleGenerateLambda7612098A",
+        },
+        "StartingPosition": "LATEST",
+      },
+      "Type": "AWS::Lambda::EventSourceMapping",
+    },
+    "DiarydiaryCreateLambda0AD0EFFF": {
+      "DependsOn": [
+        "DiarydiaryCreateLambdaServiceRoleDefaultPolicy0A19DF93",
+        "DiarydiaryCreateLambdaServiceRole86C8152B",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "S3Key": "HASH_REPLACED.zip",
+        },
+        "Environment": {
+          "Variables": {
+            "FLOWER_IMAGE_BUCKET_NAME": {
+              "Ref": "FlowerflowerImageBucket46E60C76",
+            },
+            "FLOWER_SELECT_FUNCTION_NAME": {
+              "Ref": "FlowerflowerSelectFunctionD7EEBADA",
+            },
+            "TABLE_NAME": {
+              "Ref": "FlowerdiaryContentsTableCA7C6940",
+            },
+          },
+        },
+        "Handler": "diary_create.lambda_handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "DiarydiaryCreateLambdaServiceRole86C8152B",
+            "Arn",
+          ],
+        },
+        "Runtime": "python3.11",
+        "Timeout": 30,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "DiarydiaryCreateLambdaLogRetentionAE4FD8CA": {
+      "Properties": {
+        "LogGroupName": {
+          "Fn::Join": [
+            "",
+            [
+              "/aws/lambda/",
+              {
+                "Ref": "DiarydiaryCreateLambda0AD0EFFF",
+              },
+            ],
+          ],
+        },
+        "RetentionInDays": 14,
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "Custom::LogRetention",
+    },
+    "DiarydiaryCreateLambdaServiceRole86C8152B": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "DiarydiaryCreateLambdaServiceRoleDefaultPolicy0A19DF93": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "dynamodb:BatchWriteItem",
+                "dynamodb:PutItem",
+                "dynamodb:UpdateItem",
+                "dynamodb:DeleteItem",
+                "dynamodb:DescribeTable",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "FlowerdiaryContentsTableCA7C6940",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Ref": "AWS::NoValue",
+                },
+              ],
+            },
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "FlowerflowerSelectFunctionD7EEBADA",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "FlowerflowerSelectFunctionD7EEBADA",
+                          "Arn",
+                        ],
+                      },
+                      ":*",
+                    ],
+                  ],
+                },
+              ],
+            },
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "FlowerflowerImageBucket46E60C76",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "FlowerflowerImageBucket46E60C76",
+                          "Arn",
+                        ],
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "DiarydiaryCreateLambdaServiceRoleDefaultPolicy0A19DF93",
+        "Roles": [
+          {
+            "Ref": "DiarydiaryCreateLambdaServiceRole86C8152B",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "DiarydiaryDeleteLambda7D51A24F": {
+      "DependsOn": [
+        "DiarydiaryDeleteLambdaServiceRoleDefaultPolicyCB143309",
+        "DiarydiaryDeleteLambdaServiceRole070CBD97",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "S3Key": "HASH_REPLACED.zip",
+        },
+        "Environment": {
+          "Variables": {
+            "TABLE_NAME": {
+              "Ref": "FlowerdiaryContentsTableCA7C6940",
+            },
+          },
+        },
+        "Handler": "diary_delete.lambda_handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "DiarydiaryDeleteLambdaServiceRole070CBD97",
+            "Arn",
+          ],
+        },
+        "Runtime": "python3.11",
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "DiarydiaryDeleteLambdaLogRetention162BA2D5": {
+      "Properties": {
+        "LogGroupName": {
+          "Fn::Join": [
+            "",
+            [
+              "/aws/lambda/",
+              {
+                "Ref": "DiarydiaryDeleteLambda7D51A24F",
+              },
+            ],
+          ],
+        },
+        "RetentionInDays": 14,
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "Custom::LogRetention",
+    },
+    "DiarydiaryDeleteLambdaServiceRole070CBD97": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "DiarydiaryDeleteLambdaServiceRoleDefaultPolicyCB143309": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "dynamodb:DeleteItem",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "FlowerdiaryContentsTableCA7C6940",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Ref": "AWS::NoValue",
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "DiarydiaryDeleteLambdaServiceRoleDefaultPolicyCB143309",
+        "Roles": [
+          {
+            "Ref": "DiarydiaryDeleteLambdaServiceRole070CBD97",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "DiarydiaryEditLambda0E053A05": {
+      "DependsOn": [
+        "DiarydiaryEditLambdaServiceRoleDefaultPolicy02DD86CA",
+        "DiarydiaryEditLambdaServiceRoleD8A73601",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "S3Key": "HASH_REPLACED.zip",
+        },
+        "Environment": {
+          "Variables": {
+            "TABLE_NAME": {
+              "Ref": "FlowerdiaryContentsTableCA7C6940",
+            },
+          },
+        },
+        "Handler": "diary_edit.lambda_handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "DiarydiaryEditLambdaServiceRoleD8A73601",
+            "Arn",
+          ],
+        },
+        "Runtime": "python3.11",
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "DiarydiaryEditLambdaLogRetention9304FA42": {
+      "Properties": {
+        "LogGroupName": {
+          "Fn::Join": [
+            "",
+            [
+              "/aws/lambda/",
+              {
+                "Ref": "DiarydiaryEditLambda0E053A05",
+              },
+            ],
+          ],
+        },
+        "RetentionInDays": 14,
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "Custom::LogRetention",
+    },
+    "DiarydiaryEditLambdaServiceRoleD8A73601": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "DiarydiaryEditLambdaServiceRoleDefaultPolicy02DD86CA": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "dynamodb:BatchGetItem",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+                "dynamodb:Query",
+                "dynamodb:GetItem",
+                "dynamodb:Scan",
+                "dynamodb:ConditionCheckItem",
+                "dynamodb:BatchWriteItem",
+                "dynamodb:PutItem",
+                "dynamodb:UpdateItem",
+                "dynamodb:DeleteItem",
+                "dynamodb:DescribeTable",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "FlowerdiaryContentsTableCA7C6940",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Ref": "AWS::NoValue",
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "DiarydiaryEditLambdaServiceRoleDefaultPolicy02DD86CA",
+        "Roles": [
+          {
+            "Ref": "DiarydiaryEditLambdaServiceRoleD8A73601",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "DiarydiaryReadLambda86C35E76": {
+      "DependsOn": [
+        "DiarydiaryReadLambdaServiceRoleDefaultPolicy5BD63C5D",
+        "DiarydiaryReadLambdaServiceRoleE103EA75",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "S3Key": "HASH_REPLACED.zip",
+        },
+        "Environment": {
+          "Variables": {
+            "TABLE_NAME": {
+              "Ref": "FlowerdiaryContentsTableCA7C6940",
+            },
+          },
+        },
+        "Handler": "diary_read.lambda_handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "DiarydiaryReadLambdaServiceRoleE103EA75",
+            "Arn",
+          ],
+        },
+        "Runtime": "python3.11",
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "DiarydiaryReadLambdaLogRetention3D1C85BD": {
+      "Properties": {
+        "LogGroupName": {
+          "Fn::Join": [
+            "",
+            [
+              "/aws/lambda/",
+              {
+                "Ref": "DiarydiaryReadLambda86C35E76",
+              },
+            ],
+          ],
+        },
+        "RetentionInDays": 14,
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "Custom::LogRetention",
+    },
+    "DiarydiaryReadLambdaServiceRoleDefaultPolicy5BD63C5D": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "dynamodb:BatchGetItem",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+                "dynamodb:Query",
+                "dynamodb:GetItem",
+                "dynamodb:Scan",
+                "dynamodb:ConditionCheckItem",
+                "dynamodb:DescribeTable",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "FlowerdiaryContentsTableCA7C6940",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Ref": "AWS::NoValue",
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "DiarydiaryReadLambdaServiceRoleDefaultPolicy5BD63C5D",
+        "Roles": [
+          {
+            "Ref": "DiarydiaryReadLambdaServiceRoleE103EA75",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "DiarydiaryReadLambdaServiceRoleE103EA75": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "DiarygenerativeAiLambdaRole98507273": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "DiarygenerativeAiLambdaRoleDefaultPolicy5FC5F15D": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "ssm:GetParameter",
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            {
+              "Action": [
+                "logs:DeleteRetentionPolicy",
+                "logs:PutRetentionPolicy",
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            {
+              "Action": [
+                "dynamodb:BatchWriteItem",
+                "dynamodb:PutItem",
+                "dynamodb:UpdateItem",
+                "dynamodb:DeleteItem",
+                "dynamodb:DescribeTable",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "FlowergenerativeAiTable021268D8",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Ref": "AWS::NoValue",
+                },
+              ],
+            },
+            {
+              "Action": "dynamodb:ListStreams",
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            {
+              "Action": [
+                "dynamodb:DescribeStream",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "FlowerdiaryContentsTableCA7C6940",
+                  "StreamArn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "DiarygenerativeAiLambdaRoleDefaultPolicy5FC5F15D",
+        "Roles": [
+          {
+            "Ref": "DiarygenerativeAiLambdaRole98507273",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "DiarytitleGetFunction90C2A326": {
+      "DependsOn": [
+        "DiarytitleGetFunctionServiceRoleDefaultPolicyF8576449",
+        "DiarytitleGetFunctionServiceRoleF818E903",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "S3Key": "HASH_REPLACED.zip",
+        },
+        "Environment": {
+          "Variables": {
+            "TABLE_NAME": {
+              "Ref": "FlowergenerativeAiTable021268D8",
+            },
+          },
+        },
+        "Handler": "title_get.lambda_handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "DiarytitleGetFunctionServiceRoleF818E903",
+            "Arn",
+          ],
+        },
+        "Runtime": "python3.11",
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "DiarytitleGetFunctionServiceRoleDefaultPolicyF8576449": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "dynamodb:BatchGetItem",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+                "dynamodb:Query",
+                "dynamodb:GetItem",
+                "dynamodb:Scan",
+                "dynamodb:ConditionCheckItem",
+                "dynamodb:DescribeTable",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "FlowergenerativeAiTable021268D8",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Ref": "AWS::NoValue",
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "DiarytitleGetFunctionServiceRoleDefaultPolicyF8576449",
+        "Roles": [
+          {
+            "Ref": "DiarytitleGetFunctionServiceRoleF818E903",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "DiarytitleGetFunctionServiceRoleF818E903": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "FlowerdiaryContentsTableCA7C6940": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "user_id",
+            "AttributeType": "S",
+          },
+          {
+            "AttributeName": "date",
+            "AttributeType": "S",
+          },
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "user_id",
+            "KeyType": "HASH",
+          },
+          {
+            "AttributeName": "date",
+            "KeyType": "RANGE",
+          },
+        ],
+        "PointInTimeRecoverySpecification": {
+          "PointInTimeRecoveryEnabled": true,
+        },
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5,
+        },
+        "StreamSpecification": {
+          "StreamViewType": "NEW_AND_OLD_IMAGES",
+        },
+      },
+      "Type": "AWS::DynamoDB::Table",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "FlowerflowerGetFunctionA4C511EA": {
+      "DependsOn": [
+        "FlowerflowerGetFunctionServiceRoleDefaultPolicy62A02DD7",
+        "FlowerflowerGetFunctionServiceRoleDBDC55E1",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "S3Key": "HASH_REPLACED.zip",
+        },
+        "Environment": {
+          "Variables": {
+            "BUCKET_NAME": {
+              "Ref": "FlowerflowerImageBucket46E60C76",
+            },
+          },
+        },
+        "Handler": "flower_get.lambda_handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "FlowerflowerGetFunctionServiceRoleDBDC55E1",
+            "Arn",
+          ],
+        },
+        "Runtime": "python3.11",
+        "Timeout": 10,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "FlowerflowerGetFunctionServiceRoleDBDC55E1": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "FlowerflowerGetFunctionServiceRoleDefaultPolicy62A02DD7": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "FlowerflowerImageBucket46E60C76",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "FlowerflowerImageBucket46E60C76",
+                          "Arn",
+                        ],
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "FlowerflowerGetFunctionServiceRoleDefaultPolicy62A02DD7",
+        "Roles": [
+          {
+            "Ref": "FlowerflowerGetFunctionServiceRoleDBDC55E1",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "FlowerflowerImageBucket46E60C76": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "AccessControl": "LogDeliveryWrite",
+        "LoggingConfiguration": {
+          "LogFilePrefix": "log/",
+        },
+        "OwnershipControls": {
+          "Rules": [
+            {
+              "ObjectOwnership": "ObjectWriter",
+            },
+          ],
+        },
+      },
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "FlowerflowerImageBucketPolicyD55EE863": {
+      "Properties": {
+        "Bucket": {
+          "Ref": "FlowerflowerImageBucket46E60C76",
+        },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:*",
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false",
+                },
+              },
+              "Effect": "Deny",
+              "Principal": {
+                "AWS": "*",
+              },
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "FlowerflowerImageBucket46E60C76",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "FlowerflowerImageBucket46E60C76",
+                          "Arn",
+                        ],
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::S3::BucketPolicy",
+    },
+    "FlowerflowerSelectFunctionD7EEBADA": {
+      "DependsOn": [
+        "FlowerflowerSelectFunctionServiceRoleDefaultPolicy7F8366A3",
+        "FlowerflowerSelectFunctionServiceRoleDF0A249F",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "S3Key": "HASH_REPLACED.zip",
+        },
+        "Environment": {
+          "Variables": {
+            "DIARY_TABLE_NAME": {
+              "Ref": "FlowerdiaryContentsTableCA7C6940",
+            },
+            "FLOWER_BUCKET_NAME": {
+              "Ref": "FlowerflowerImageBucket46E60C76",
+            },
+            "GENERATIVE_AI_TABLE_NAME": {
+              "Ref": "FlowergenerativeAiTable021268D8",
+            },
+          },
+        },
+        "Handler": "flower_select.lambda_handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "FlowerflowerSelectFunctionServiceRoleDF0A249F",
+            "Arn",
+          ],
+        },
+        "Runtime": "python3.11",
+        "Timeout": 60,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "FlowerflowerSelectFunctionServiceRoleDF0A249F": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "FlowerflowerSelectFunctionServiceRoleDefaultPolicy7F8366A3": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "dynamodb:BatchWriteItem",
+                "dynamodb:PutItem",
+                "dynamodb:UpdateItem",
+                "dynamodb:DeleteItem",
+                "dynamodb:DescribeTable",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "FlowergenerativeAiTable021268D8",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Ref": "AWS::NoValue",
+                },
+              ],
+            },
+            {
+              "Action": "dynamodb:ListStreams",
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            {
+              "Action": [
+                "dynamodb:DescribeStream",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "FlowerdiaryContentsTableCA7C6940",
+                  "StreamArn",
+                ],
+              },
+            },
+            {
+              "Action": [
+                "s3:PutObject",
+                "s3:PutObjectLegalHold",
+                "s3:PutObjectRetention",
+                "s3:PutObjectTagging",
+                "s3:PutObjectVersionTagging",
+                "s3:Abort*",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    {
+                      "Fn::GetAtt": [
+                        "FlowerflowerImageBucket46E60C76",
+                        "Arn",
+                      ],
+                    },
+                    "/*",
+                  ],
+                ],
+              },
+            },
+            {
+              "Action": "ssm:GetParameter",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition",
+                    },
+                    ":ssm:",
+                    {
+                      "Ref": "AWS::Region",
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId",
+                    },
+                    ":parameter/DIFY_API_KEY",
+                  ],
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "FlowerflowerSelectFunctionServiceRoleDefaultPolicy7F8366A3",
+        "Roles": [
+          {
+            "Ref": "FlowerflowerSelectFunctionServiceRoleDF0A249F",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "FlowergenerativeAiTable021268D8": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "user_id",
+            "AttributeType": "S",
+          },
+          {
+            "AttributeName": "date",
+            "AttributeType": "S",
+          },
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "user_id",
+            "KeyType": "HASH",
+          },
+          {
+            "AttributeName": "date",
+            "KeyType": "RANGE",
+          },
+        ],
+        "PointInTimeRecoverySpecification": {
+          "PointInTimeRecoveryEnabled": true,
+        },
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5,
+        },
+      },
+      "Type": "AWS::DynamoDB::Table",
+      "UpdateReplacePolicy": "Delete",
     },
     "IdentityIdentityPool01DA4AB2": {
       "DependsOn": [
