@@ -45,7 +45,24 @@ def lambda_handler(event, context):
         logger.info(f"flower_id: {flower_id}")
 
         # 選択した花のIDをDynamoDBに保存
-        save_to_dynamodb(user_id, date, flower_id)
+        try:
+            save_to_dynamodb(user_id, date, flower_id)
+            logger.info("Flower ID saved successfully to DynamoDB.")
+        except Exception as dynamodb_error:
+            logger.error(f"Error saving to DynamoDB: {str(dynamodb_error)}")
+            return {
+                "statusCode": 500,
+                "body": json.dumps(
+                    {
+                        "message": "Failed to save Flower ID to DynamoDB.",
+                        "error": str(dynamodb_error),
+                    }
+                ),
+                "headers": {
+                    "Content-Type": "application/json",
+                    "Access-Control-Allow-Origin": "*",
+                },
+            }
 
         return {
             "statusCode": 200,
@@ -58,6 +75,7 @@ def lambda_handler(event, context):
             },
         }
     except Exception as e:
+        logger.error(f"Unhandled exception: {str(e)}")
         return {
             "statusCode": 400,
             "body": json.dumps(f"An error occurred: {str(e)}"),
