@@ -1,4 +1,4 @@
 # requirements.txt
-openai == 1.41.0
+requests
 anyio>=4.4.0 # not directly required, pinned by Snyk to avoid a vulnerability
 zipp>=3.19.1 # not directly required, pinned by Snyk to avoid a vulnerability
