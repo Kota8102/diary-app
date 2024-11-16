@@ -153,7 +153,12 @@ def lambda_handler(event, context):
 
         # Flower Lambda を呼び出して花の ID を取得
         flower_id = invoke_flower_lambda(user_id, date, content)
+        if not flower_id:
+            raise ValueError("Invalid flower ID returned from flower Lambda")
+
         flower_image = get_img_from_s3(flower_id)
+        if not flower_image:
+            raise ValueError("flower Image not found")
 
         # 成功レスポンスの返却
         return {
