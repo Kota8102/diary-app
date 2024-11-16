@@ -122,10 +122,10 @@ def lambda_handler(event, context):
 
         logger.info(f"flower_count: {flower_count}")
         if flower_count >= 5:
-            logger.info("eq or gr 5")
+            logger.info("flower count eq or gr 5")
             return {"statusCode": 200, "body": json.dumps({"can_create_bouquet": True})}
         else:
-            logger.info("lt 5")
+            logger.info("flower count lt 5")
             return {
                 "statusCode": 200,
                 "body": json.dumps({"can_create_bouquet": False}),
