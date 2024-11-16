@@ -42,6 +42,8 @@ def lambda_handler(event, context):
 
         # 日記の内容に基づいて花を選択
         flower_id = select_flower(diary_content)
+        if not flower_id:
+            raise ValueError("Flower ID is Empty")
         logger.info(f"flower_id: {flower_id}")
 
         # 選択した花のIDをDynamoDBに保存
@@ -190,6 +192,10 @@ def select_flower_using_api(api_key, query):
     }
     try:
         response = requests.post(url, headers=headers, json=data)
+        response.raise_for_status()
+    except requests.exceptions.HTTPError as e:
+        logger.error(f"HTTP error occuerd: {e}")
+        raise Exception("API call failled")
     except Exception as e:
         raise Exception(f"Failed to select flower: {e}")
 
