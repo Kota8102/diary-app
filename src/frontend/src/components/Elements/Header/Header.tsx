@@ -7,6 +7,7 @@ type HeaderProps = {
 const HeaderIcon = () => {
   const navigate = useNavigate()
 
+  // ブーケページへ移動
   const handleClick = () => {
     navigate('/setting')
   }
@@ -18,7 +19,7 @@ const HeaderIcon = () => {
 
 export const Header = ({ title, showHeaderIcon }: HeaderProps) => {
   return (
-    <div className="flex items-center justify-between w-full">
+    <div className="flex items-center justify-between w-full pt-6">
       {title && <h1 className="text-2xl text-light-textPlaceholder">{title}</h1>}
       {showHeaderIcon && <HeaderIcon />}
     </div>
