@@ -1,4 +1,4 @@
-import { ContentLayout } from '@/components/layout/ContentLayout'
+import { ContentLayout } from '@/components/layout/content-layout'
 import { DiarySelect } from '@/features/diary/componets/diary-select'
 
 export const DiaryRoute = () => {

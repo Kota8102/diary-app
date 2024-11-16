@@ -4,7 +4,7 @@ import Datetime from 'react-datetime'
 import { useNavigate, useParams } from 'react-router-dom'
 
 import { DisabledButton } from '@/components/Elements/Button'
-import { ContentLayout } from '@/components/layout/ContentLayout'
+import { ContentLayout } from '@/components/layout/content-layout'
 import { useCreateDiary } from '@/features/writeDiary/api/create-diary'
 
 import '@/features/writeDiary/styles/react-datetime.css'
