@@ -19,7 +19,7 @@ const HeaderIcon = () => {
 
 export const Header = ({ title, showHeaderIcon }: HeaderProps) => {
   return (
-    <div className="flex items-center justify-between w-full pt-6">
+    <div className="flex items-center justify-between w-full pt-6 px-6">
       {title && <h1 className="text-2xl text-light-textPlaceholder">{title}</h1>}
       {showHeaderIcon && <HeaderIcon />}
     </div>
