@@ -113,6 +113,14 @@ export const createAppRouter = (_queryClient: QueryClient) =>
           },
           ErrorBoundary: AppRootErrorBoundary,
         },
+        // 花の表示
+        {
+          path: paths.app.diaryFlower.path,
+          lazy: async () => {
+            const { DiaryFlower } = await import('./routes/app/diary/diary-flower')
+            return { Component: DiaryFlower }
+          },
+        },
         // 設定
         {
           path: paths.app.setting.path,
