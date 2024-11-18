@@ -14,6 +14,7 @@ export const DiaryCreate = () => {
   const initialDate = date ? new Date(date) : new Date()
   const [startDate, setStartDate] = useState(initialDate)
 
+  // API: 日記の作成
   const createDiaryMutation = useCreateDiary({
     onSuccess: (data) => {
       if (data.flower_image) {
@@ -25,6 +26,7 @@ export const DiaryCreate = () => {
     },
   })
 
+  // 日付の変更
   const handleDateChange = (date: Date | null) => {
     setStartDate(date ?? new Date())
     if (date) {
@@ -33,6 +35,7 @@ export const DiaryCreate = () => {
     }
   }
 
+  // 日記の作成
   const handleSubmit = (values: CreateDiaryInput) => {
     const submitData = {
       data: {
