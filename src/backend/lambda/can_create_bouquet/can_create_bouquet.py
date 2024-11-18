@@ -63,7 +63,7 @@ def count_flowers_in_week(user_id, current_year, current_week):
     """
     logger.info(f"year week: {current_year} {current_week}")
     dynamodb = boto3.resource("dynamodb")
-    generative_ai_table_name = os.environ["GENERATIVE_AI_TABLE_NAME"]
+    generative_ai_table_name = os.environ.get["GENERATIVE_AI_TABLE_NAME"]
     generative_ai_table = dynamodb.Table(generative_ai_table_name)
 
     # 現在の日付を取得
@@ -117,9 +117,8 @@ def lambda_handler(event, context):
 
         try:
             flower_count = count_flowers_in_week(user_id, current_year, current_week)
-        except Exception:
-            logger.error("Error occred during counting flowers in the week")
-
+        except ValueError:
+            logger.error("Error occurred during counting flowers in the week")
         logger.info(f"flower_count: {flower_count}")
         if flower_count >= 5:
             logger.info("flower count eq or gr 5")
