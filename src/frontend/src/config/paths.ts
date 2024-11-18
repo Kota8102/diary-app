@@ -53,6 +53,14 @@ export const paths = {
       path: 'diary/:date',
       getHref: (date: string) => `/app/diary/${date}`,
     },
+    diaryFlower: {
+      path: 'diary/diary-flower/:date',
+      getHref: (date: string) => `/app/diary/diary-flower/${date}`,
+    },
+    flower: {
+      path: 'flower/:date',
+      getHref: (date: string) => `/app/flower/${date}`,
+    },
     setting: {
       path: 'setting',
       getHref: () => '/app/setting',
