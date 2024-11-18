@@ -1,0 +1,138 @@
+/* ツールバーとヘッダーのスタイル */
+.fc .fc-toolbar-title {
+  font-size: 1.5rem;
+  margin-left: 0.5rem;
+}
+
+.fc .fc-toolbar.fc-header-toolbar {
+  margin-bottom: 2rem;  /* 間隔を小さく調整 */
+}
+
+/* ナビゲーションボタンのスタイル */
+.fc .fc-toolbar .fc-button.fc-prev-button,
+.fc .fc-toolbar .fc-button.fc-next-button {
+  background-color: transparent !important;
+  color: black !important;
+  padding: 0.5rem;  /* パディングを小さく調整 */
+  border: none !important;
+  border-radius: 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 100;
+  width: 3rem;  /* ボタンサイズを小さく */
+  height: 2.5rem;
+  margin-right: 0.75rem;
+}
+
+.fc .fc-toolbar .fc-button.fc-next-button {
+  margin-right: 0;
+}
+
+.fc .fc-toolbar .fc-button.fc-prev-button:hover,
+.fc .fc-toolbar .fc-button.fc-next-button:hover {
+  background-color: #e7e0da !important;
+}
+
+/* 曜日ヘッダーのスタイル */
+.fc .fc-col-header-cell {
+  font-weight: 300;
+  font-size: 1rem;
+  padding: 8px 0;  /* パディングを小さく調整 */
+  text-align: center;
+}
+
+.fc-day-header,
+.fc-col-header-cell {
+  text-transform: uppercase;
+}
+
+/* 日付セルのスタイル */
+.fc .fc-daygrid-day-frame {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 0;
+  height: 100%;
+}
+
+.fc .fc-daygrid-day-top {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  height: 0;
+  padding-bottom: 80%;  /* パディングを小さく調整して間隔を縮める */
+  position: relative;
+}
+
+.fc .fc-daygrid-day-number {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  font-size: 1.2rem;
+  font-weight: 300;
+}
+
+/* 非表示日付（disabled）の背景を透明に */
+.fc .fc-day-disabled {
+  background-color: transparent !important;
+}
+
+.fc .fc-day-disabled .fc-daygrid-day-frame {
+  background-color: transparent !important;
+}
+
+
+/* 今日の日付のスタイル */
+.fc .fc-day-today {
+  background-color: #A16B3B !important;
+  color: white !important;
+  border-radius: 50%;
+}
+
+.fc .fc-daygrid-day-bg {
+  background-color: transparent !important;
+}
+
+/* 枠線の削除 */
+.fc .fc-col-header-cell,
+.fc .fc-daygrid-day,
+.fc .fc-scrollgrid-sync-inner,
+.fc .fc-daygrid-day-frame,
+.fc .fc-daygrid-day-top,
+.fc .fc-daygrid-day-events,
+.fc .fc-scrollgrid,
+.fc .fc-scrollgrid-section,
+.fc .fc-scrollgrid-section > td,
+.fc .fc-daygrid-body-unbalanced .fc-daygrid-day,
+.fc .fc-col-header-cell-cushion,
+.fc .fc-daygrid-day-number,
+.fc .fc-daygrid-day-bg,
+.fc .fc-scrollgrid-liquid,
+.fc .fc-scrollgrid-section-body,
+.fc .fc-daygrid,
+.fc .fc-col-header-cell,
+.fc .fc-col-header-cell.fc-day-sat .fc-scrollgrid-sync-inner,
+.fc .fc-scrollgrid-section > td {
+  border: none !important;
+}
+
+/* 土曜日（SAT）の右側の縦線を削除 */
+.fc-theme-standard td:last-child,
+.fc-theme-standard th:last-child,
+.fc .fc-scrollgrid-section-body > td:last-child,
+.fc .fc-scrollgrid-section-header > th:last-child,
+.fc-col-header-cell.fc-day-sat,
+.fc-day-sat .fc-scrollgrid-sync-inner,
+.fc .fc-col-header-cell.fc-day-sat,
+.fc .fc-col-header-cell:last-child {
+  border-right: none !important;
+}
+
+/* 他のセルの右側の縦線も念のため削除 */
+.fc td,
+.fc th {
+  border-right-width: 0 !important;
+}
