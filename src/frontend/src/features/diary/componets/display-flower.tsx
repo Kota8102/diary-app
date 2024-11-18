@@ -21,7 +21,7 @@ export const DisplayFlower = ({ image }: DisplayFlowerProps) => {
       <div className="flex flex-col items-center justify-center flex-grow">
         <img
           className=""
-          src={`data:image/jpeg;base64,${image}`}
+          src={image ? `data:image/jpeg;base64,${image}` : ''}
           alt="Flower"
           style={{ maxWidth: '100%', height: 'auto' }}
           onError={(e) => {
