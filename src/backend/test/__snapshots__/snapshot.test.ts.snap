@@ -2653,9 +2653,6 @@ exports[`Snapshot test 1`] = `
             "TABLE_NAME": {
               "Ref": "FlowerdiaryContentsTableCA7C6940",
             },
-            "GENERATIVE_AI_TABLE_NAME": {
-              "Ref": "ApigenerativeAiTableB5975AA2",
-            },
           },
         },
         "Handler": "diary_edit.lambda_handler",
@@ -2747,30 +2744,6 @@ exports[`Snapshot test 1`] = `
                 {
                   "Fn::GetAtt": [
                     "FlowerdiaryContentsTableCA7C6940",
-                    "Arn",
-                  ],
-                },
-                {
-                  "Ref": "AWS::NoValue",
-                },
-              ],
-            },
-            {
-              "Action": [
-                "dynamodb:BatchGetItem",
-                "dynamodb:GetRecords",
-                "dynamodb:GetShardIterator",
-                "dynamodb:Query",
-                "dynamodb:GetItem",
-                "dynamodb:Scan",
-                "dynamodb:ConditionCheckItem",
-                "dynamodb:DescribeTable",
-              ],
-              "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "ApigenerativeAiTableB5975AA2",
                     "Arn",
                   ],
                 },
@@ -3158,6 +3131,9 @@ exports[`Snapshot test 1`] = `
           "Variables": {
             "BUCKET_NAME": {
               "Ref": "FlowerflowerImageBucket46E60C76",
+            },
+            "GENERATIVE_AI_TABLE_NAME": {
+              "Ref": "FlowergenerativeAiTable021268D8",
             },
           },
         },
