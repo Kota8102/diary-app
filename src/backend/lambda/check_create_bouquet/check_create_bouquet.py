@@ -1,16 +1,27 @@
 import json
+import logging
 import os
 from datetime import datetime, timedelta, timezone
 
 import boto3
 
+logger = logging.getLogger(__name__)
+# ロガーの設定
+formatter = logging.Formatter(
+    "[%(asctime)s - %(levelname)s - %(filename)s(func:%(funcName)s, line:%(lineno)d)] %(message)s"
+)
+handler = logging.StreamHandler()
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+logger.setLevel(logging.INFO)
+
 
 def get_current_week():
     """
-    Get the current year and week number in ISO calendar format.
+    現在の年と週番号をISOカレンダー形式で取得します。
 
-    Returns:
-        tuple: A tuple containing the current year and week number (year, week).
+    戻り値:
+        tuple: 現在の年と週番号を含むタプル (year, week)。
     """
     current_date = datetime.now(timezone.utc)
     current_year, current_week, _ = current_date.isocalendar()
@@ -19,15 +30,15 @@ def get_current_week():
 
 def check_bouquet_created(user_id, current_year, current_week):
     """
-    Check if a bouquet has already been created for the given user in the specified week.
+    指定された週に指定されたユーザーがすでにブーケを作成しているかを確認します。
 
-    Args:
-        user_id (str): The ID of the user.
-        current_year (int): The current year.
-        current_week (int): The current week number.
+    引数:
+        user_id (str): ユーザーのID。
+        current_year (int): 現在の年。
+        current_week (int): 現在の週番号。
 
-    Returns:
-        bool: True if a bouquet has already been created, otherwise False.
+    戻り値:
+        bool: すでにブーケが作成されている場合はTrue、それ以外はFalse。
     """
     dynamodb = boto3.resource("dynamodb")
     bouquet_table_name = os.environ["BOUQUET_TABLE_NAME"]
@@ -40,17 +51,17 @@ def check_bouquet_created(user_id, current_year, current_week):
 
 def count_flowers_in_week(user_id, current_year, current_week):
     """
-    Count the number of flowers created by the user in the current week.
+    現在の週に指定されたユーザーが作成した花の数をカウントします。
 
-    Args:
-        user_id (str): The ID of the user.
-        current_year (int): The current year.
-        current_week (int): The current week number.
+    引数:
+        user_id (str): ユーザーのID。
+        current_year (int): 現在の年。
+        current_week (int): 現在の週番号。
 
-    Returns:
-        int: The number of flowers created by the user in the specified week.
+    戻り値:
+        int: 指定された週に作成された花の数。
     """
-    print(f"year week: {current_year} {current_week}")
+    logger.info(f"year week: {current_year} {current_week}")
     dynamodb = boto3.resource("dynamodb")
     generative_ai_table_name = os.environ["GENERATIVE_AI_TABLE_NAME"]
     generative_ai_table = dynamodb.Table(generative_ai_table_name)
@@ -84,39 +95,43 @@ def count_flowers_in_week(user_id, current_year, current_week):
 
 def lambda_handler(event, context):
     """
-    Main handler for the Lambda function. Determines whether the user can create a bouquet
-    for the current week based on the number of flowers they have created.
+    Lambda関数のメインハンドラー。現在の週に基づき、ユーザーがブーケを作成可能かを判定します。
 
-    Args:
-        event (dict): The event payload that triggered the Lambda function.
-        context (object): The runtime information of the Lambda function.
+    引数:
+        event (dict): Lambda関数をトリガーしたイベントペイロード。
+        context (object): Lambda関数のランタイム情報。
 
-    Returns:
-        dict: A response containing the status code and whether the user can create a bouquet (boolean).
+    戻り値:
+        dict: ステータスコードと、ユーザーがブーケを作成可能か (boolean) を含むレスポンス。
     """
     try:
         user_id = event["requestContext"]["authorizer"]["claims"]["sub"]
         current_year, current_week = get_current_week()
 
         if check_bouquet_created(user_id, current_year, current_week):
-            print("already exists bouquet")
+            logger.info("already exists bouquet")
             return {
                 "statusCode": 200,
-                "body": json.dumps({"can_create_bouquet": False}),
+                "body": json.dumps({"check_create_bouquet": False}),
             }
 
-        flower_count = count_flowers_in_week(user_id, current_year, current_week)
-
-        print(f"flower_count: {flower_count}")
+        try:
+            flower_count = count_flowers_in_week(user_id, current_year, current_week)
+        except ValueError:
+            logger.error("Error occurred during counting flowers in the week")
+        logger.info(f"flower_count: {flower_count}")
         if flower_count >= 5:
-            print("eq or gr 5")
-            return {"statusCode": 200, "body": json.dumps({"can_create_bouquet": True})}
-        else:
-            print("lt 5")
+            logger.info("flower count eq or gr 5")
             return {
                 "statusCode": 200,
-                "body": json.dumps({"can_create_bouquet": False}),
+                "body": json.dumps({"check_create_bouquet": True}),
+            }
+        else:
+            logger.info("flower count lt 5")
+            return {
+                "statusCode": 200,
+                "body": json.dumps({"check_create_bouquet": False}),
             }
     except Exception as e:
-        print(f"Error: {str(e)}")
+        logger.info(f"Error: {str(e)}")
         return {"statusCode": 400, "body": json.dumps({"error": str(e)})}
