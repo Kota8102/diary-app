@@ -6,16 +6,17 @@ type ContentLayoutProps = {
   children: React.ReactNode
   pagetitle: string
   showHeaderIcon?: boolean
+  showTab?: boolean
 }
 
-export const ContentLayout = ({ children, pagetitle, showHeaderIcon = false }: ContentLayoutProps) => {
+export const ContentLayout = ({ children, pagetitle, showHeaderIcon = false, showTab = true }: ContentLayoutProps) => {
   return (
     <div className="flex flex-col h-screen">
-      <div className="flex flex-col flex-grow overflow-auto px-4 pb-6">
+      <div className="flex flex-col flex-grow overflow-auto pb-6">
         <Header title={pagetitle} showHeaderIcon={showHeaderIcon} />
-        <div className="flex-grow pt-2 pl-1">{children}</div>
+        <div className="flex-grow pt-2 px-4">{children}</div>
       </div>
-      <Tab />
+      {showTab && <Tab />}
     </div>
   )
 }
