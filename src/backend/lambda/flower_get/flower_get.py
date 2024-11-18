@@ -45,7 +45,7 @@ def get_flower_id_from_dynamodb(user_id: str, date: str) -> str:
             logger.info(f"No flower ID found for user_id: {user_id}, date: {date}")
             return ""
     except ClientError as e:
-        logger.error(f"Error fetching from DynamoDB: {e}")
+        except ClientError as e: logger.error(f"DynamoDB ClientError: {e}")
         raise
 
 
