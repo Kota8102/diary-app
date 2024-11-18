@@ -99,6 +99,7 @@ export class Flower extends Construct {
       timeout: cdk.Duration.seconds(10),
     })
     flowerImageBucket.grantRead(flowerGetFunction)
+    generativeAiTable.grantReadData(flowerGetFunction)
     // flower API の設定
     const flowerApi = props.api.root.addResource('flower')
 
