@@ -3,8 +3,7 @@ import { paths } from '@/config/paths'
 import { getNextDate, getPreviousDate } from '@/utils/dateUtils'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useFlower, useNote, useTitle } from '../api'
-import { ImageDisplay } from './ImageDisplay'
-import { NoteDisplay } from './NoteDisplay'
+import { DateDisplay, ImageDisplay, NoteDisplay } from './'
 
 export const FlowerDiary = () => {
   // 日付を取得
@@ -34,12 +33,16 @@ export const FlowerDiary = () => {
     navigate(paths.app.flower.getHref(nextDate))
   }
   return (
-    <div>
+    <div className="w-full h-full pt-4">
+      <div className="pl-4">
+        <DateDisplay date={date} />
+      </div>
+
       {/* 画像 - 高さを固定 */}
       <div className="h-40 w-full">
         <ImageDisplay src={flower} onPrevious={handlePrevious} onNext={handleNext} />
       </div>
-      <div className="flex flex-col gap-1 text-xs">
+      <div className="flex-1 flex flex-col gap-1 text-xs">
         <div className="flex justify-end">
           <button type="button" aria-label="Make bouquet">
             <img src={makeBouquete} alt="bouquet" />
