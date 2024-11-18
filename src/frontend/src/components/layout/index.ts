@@ -1,5 +1,3 @@
 export * from './MainLayout'
-
-export * from './ContentLayout'
-
+export * from './content-layout'
 export * from './auth-layout'
