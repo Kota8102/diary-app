@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 from unittest.mock import patch
 
 import pytest
-from can_create_bouquet.can_create_bouquet import (
+from check_create_bouquet.check_create_bouquet import (
     check_bouquet_created,
     count_flowers_in_week,
     get_current_week,
@@ -21,14 +21,14 @@ def valid_event():
 @pytest.fixture
 def dynamodb_mock():
     """DynamoDBのモックを返す"""
-    with patch("can_create_bouquet.can_create_bouquet.boto3.resource") as mock:
+    with patch("check_create_bouquet.check_create_bouquet.boto3.resource") as mock:
         yield mock
 
 
 def test_get_current_week():
     """get_current_week関数のテスト"""
     # 固定された日時でテスト
-    with patch("can_create_bouquet.can_create_bouquet.datetime") as mock_datetime:
+    with patch("check_create_bouquet.check_create_bouquet.datetime") as mock_datetime:
         mock_datetime.now.return_value = datetime(2024, 11, 13, tzinfo=timezone.utc)
         mock_datetime.now.timezone = timezone.utc
         assert get_current_week() == (2024, 46)  # ISOカレンダーの年と週
