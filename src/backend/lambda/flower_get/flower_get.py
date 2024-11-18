@@ -18,13 +18,38 @@ logger.addHandler(handler)
 logger.setLevel(logging.INFO)
 
 
-def get_img_from_s3(user_id: str, date: str) -> str:
+def get_flower_id(user_id: str, date: str) -> str:
     """
-    S3から画像を取得する
+    dynamoから画像のパスを取得する
 
     Args:
         user_id (str): ユーザーID
         date (str): 日付
+
+    Returns:
+        str: 画像のパス
+    """
+
+    # dynamoから画像のパスを取得
+    try:
+        logger.info(
+            f"Fetching flower ID from DynamoDB for user_id: {user_id} and date: {date}"
+        )
+        generative_ai_table_name = os.environ["GENERATIVE_AI_TABLE_NAME"]
+        generative_ai_table = boto3.resource("dynamodb").Table(generative_ai_table_name)
+        response = generative_ai_table.get_item(Key={"user_id": user_id, "date": date})
+        return response["Item"]["flower_id"]
+    except Exception as e:
+        logger.error(f"Error fetching flower ID from DynamoDB: {e}")
+        raise
+
+
+def get_img_from_s3(flower_id: str) -> str:
+    """
+    S3から画像を取得する
+
+    Args:
+        flower_id (str): 画像のパス
 
     Returns:
         str: 画像のバイナリデータ
@@ -32,7 +57,7 @@ def get_img_from_s3(user_id: str, date: str) -> str:
 
     s3 = boto3.client("s3")
     bucket_name = os.environ["BUCKET_NAME"]
-    s3_key = f"generated_images/{user_id}-{date}.png"
+    s3_key = f"flowers/{flower_id}.png"
 
     try:
         response = s3.get_object(Bucket=bucket_name, Key=s3_key)

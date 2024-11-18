@@ -3173,6 +3173,9 @@ exports[`Snapshot test 1`] = `
             "BUCKET_NAME": {
               "Ref": "FlowerflowerImageBucket46E60C76",
             },
+            "GENERATIVE_AI_TABLE_NAME": {
+              "Ref": "FlowergenerativeAiTable021268D8",
+            },
           },
         },
         "Handler": "flower_get.lambda_handler",
@@ -3249,6 +3252,30 @@ exports[`Snapshot test 1`] = `
                       "/*",
                     ],
                   ],
+                },
+              ],
+            },
+            {
+              "Action": [
+                "dynamodb:BatchGetItem",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+                "dynamodb:Query",
+                "dynamodb:GetItem",
+                "dynamodb:Scan",
+                "dynamodb:ConditionCheckItem",
+                "dynamodb:DescribeTable",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "FlowergenerativeAiTable021268D8",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Ref": "AWS::NoValue",
                 },
               ],
             },
