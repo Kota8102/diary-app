@@ -45,7 +45,7 @@ def get_flower_id_from_dynamodb(user_id: str, date: str) -> str:
             logger.info(f"No flower ID found for user_id: {user_id}, date: {date}")
             return ""
     except ClientError as e:
-        except ClientError as e: logger.error(f"DynamoDB ClientError: {e}")
+        logger.error(f"DynamoDB ClientError: {e}")
         raise
 
 
@@ -159,7 +159,8 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             return create_response(404, {"error": "Flower not found"})
 
         # S3から画像を取得
-        if flower_id: image = get_img_from_s3(flower_id)
+        if flower_id:
+            image = get_img_from_s3(flower_id)
         if image:
             return create_response(status_code=200, body=image, is_image=True)
         else:
