@@ -152,8 +152,11 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     # 日付を検証
     date = validate_query_params(event)
 
+    # 画像のパスを取得
+    flower_id = get_flower_id(user_id, date)
+
     # 画像を取得
-    image = get_img_from_s3(user_id, date)
+    image = get_img_from_s3(flower_id)
 
     try:
         if image:
