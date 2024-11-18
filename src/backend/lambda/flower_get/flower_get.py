@@ -8,7 +8,6 @@ import boto3
 from botocore.exceptions import ClientError
 
 logger = logging.getLogger(__name__)
-# ロガーの設定
 formatter = logging.Formatter(
     "[%(asctime)s - %(levelname)s - %(filename)s(func:%(funcName)s, line:%(lineno)d)] %(message)s"
 )
@@ -17,22 +16,52 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 logger.setLevel(logging.INFO)
 
+# DynamoDBクライアント
+dynamodb = boto3.client("dynamodb")
 
-def get_img_from_s3(user_id: str, date: str) -> str:
+
+def get_flower_id_from_dynamodb(user_id: str, date: str) -> str:
     """
-    S3から画像を取得する
+    DynamoDBからflower_idを取得する
 
     Args:
         user_id (str): ユーザーID
         date (str): 日付
 
     Returns:
-        str: 画像のバイナリデータ
+        str: flower_id
     """
+    table_name = os.environ["GENERATIVE_AI_TABLE_NAME"]
 
+    try:
+        response = dynamodb.get_item(
+            TableName=table_name, Key={"user_id": {"S": user_id}, "date": {"S": date}}
+        )
+        if "Item" in response:
+            flower_id = response["Item"]["flower_id"]["S"]
+            logger.info(f"Flower ID retrieved: {flower_id}")
+            return flower_id
+        else:
+            logger.info(f"No flower ID found for user_id: {user_id}, date: {date}")
+            return ""
+    except ClientError as e:
+        logger.error(f"DynamoDB ClientError: {e}")
+        raise
+
+
+def get_img_from_s3(flower_id: str) -> str:
+    """
+    S3から画像を取得する
+
+    Args:
+        flower_id (str): Flower ID
+
+    Returns:
+        str: 画像のバイナリデータ（Base64エンコード済み）
+    """
     s3 = boto3.client("s3")
     bucket_name = os.environ["BUCKET_NAME"]
-    s3_key = f"generated_images/{user_id}-{date}.png"
+    s3_key = f"flowers/{flower_id}.png"
 
     try:
         response = s3.get_object(Bucket=bucket_name, Key=s3_key)
@@ -120,23 +149,22 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     Returns:
         Dict[str, Any]: レスポンス
     """
-
-    # ユーザーIDを取得
     user_id = event["requestContext"]["authorizer"]["claims"]["sub"]
-
-    # 日付を検証
     date = validate_query_params(event)
 
-    # 画像を取得
-    image = get_img_from_s3(user_id, date)
-
     try:
+        # DynamoDBからflower_idを取得
+        flower_id = get_flower_id_from_dynamodb(user_id, date)
+        if not flower_id:
+            return create_response(404, {"error": "Flower not found"})
+
+        # S3から画像を取得
+        if flower_id:
+            image = get_img_from_s3(flower_id)
         if image:
-            return create_response(
-                status_code=200, body={"flower": image}, is_image=True
-            )
+            return create_response(status_code=200, body=image, is_image=True)
         else:
-            return create_response(status_code=204)
+            return create_response(404, {"error": "Image not found"})
     except Exception as e:
         logger.error(f"Unexpected error: {str(e)}")
         return create_response(
