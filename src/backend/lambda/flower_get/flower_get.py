@@ -159,7 +159,7 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             return create_response(404, {"error": "Flower not found"})
 
         # S3から画像を取得
-        image = get_img_from_s3(flower_id)
+        if flower_id: image = get_img_from_s3(flower_id)
         if image:
             return create_response(status_code=200, body=image, is_image=True)
         else:
