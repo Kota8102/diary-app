@@ -1,0 +1,37 @@
+name: PR Agent
+
+on:
+  pull_request:
+    types: [opened, reopened, ready_for_review]
+  issue_comment:
+    types: [created]
+  workflow_dispatch:
+
+# デフォルトのシェルをbashに設定
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  pr-agent:
+    # ボットからのイベントは無視
+    if: ${{ github.event.sender.type != 'Bot' }}
+
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+
+    steps:
+      # PR Agent
+      - name: PR Agent
+        uses: Codium-ai/pr-agent@main
+        env:
+          OPENAI_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          github_action_config.auto_review: "true" # enable\disable auto review
+          github_action_config.auto_describe: "true" # enable\disable auto describe
+          github_action_config.auto_improve: "true" # enable\disable auto improve

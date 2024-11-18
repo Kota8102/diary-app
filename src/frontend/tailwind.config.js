@@ -4,22 +4,30 @@ export default {
   theme: {
     extend: {
       colors: {
+        base: '#F5F5F5',
         light: {
+          // 背景色
           bgDefault: '#FDFAF8',
           bgText: '#F6F3F0',
-          bgModal: '#F6F3F0',
-          bgTab: '#EDEAE6',
-          textPaleBg: '#404040',
-          textPlaceholder: '#404040',
+          bgFooter: '#EDEAE6',
+
+          // テキスト色
+          textDefault: '#404040',
+          textPaleBg: '#999999',
           textWeakBg: '#FFFFFF',
+
+          // ボタン色
           buttonPrimaryDefault: '#CFC8C1',
           buttonPrimaryHover: '#E7E0DA',
           buttonPrimaryPress: '#B1ADA8',
           buttonPrimaryDisabled: '#E6E6E6',
+          buttonPrimaryBorder: '#8D8D8D',
           buttonSecondaryDefault: '#E2A48B',
           buttonSecondaryHover: '#F4C8B7',
           buttonSecondaryPress: '#CD7450',
           line: '#000000',
+          checkboxRing: '#8D8D8D',
+          checkboxBg: '#B7B5B5',
         },
         dark: {
           bgDefault: '#111326',
