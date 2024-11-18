@@ -16,7 +16,9 @@ export const DiaryCreate = () => {
 
   const createDiaryMutation = useCreateDiary({
     onSuccess: (data) => {
-      navigate(paths.app.diaryFlower.getHref(date ?? ''), { state: { image: data.flower_image } })
+      if (data.flower_image) {
+        navigate(paths.app.diaryFlower.getHref(date ?? ''), { state: { image: data.flower_image } })
+      }
     },
     onError: (error) => {
       console.error('日記の作成に失敗しました:', error)
@@ -25,7 +27,10 @@ export const DiaryCreate = () => {
 
   const handleDateChange = (date: Date | null) => {
     setStartDate(date ?? new Date())
-    navigate(`/app/diary/${date?.toISOString().split('T')[0]}`)
+    if (date) {
+      setStartDate(date)
+      navigate(`/app/diary/${date.toISOString().split('T')[0]}`)
+    }
   }
 
   const handleSubmit = (values: CreateDiaryInput) => {
