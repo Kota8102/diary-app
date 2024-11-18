@@ -121,6 +121,14 @@ export const createAppRouter = (_queryClient: QueryClient) =>
             return { Component: DiaryFlower }
           },
         },
+        // 花
+        {
+          path: paths.app.flower.path,
+          lazy: async () => {
+            const { FlowerRoute } = await import('./routes/app/flower/flower')
+            return { Component: FlowerRoute }
+          },
+        },
         // 設定
         {
           path: paths.app.setting.path,
