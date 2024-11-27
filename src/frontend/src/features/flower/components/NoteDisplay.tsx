@@ -18,7 +18,7 @@ export const NoteDisplay = ({ note, date }: NoteProps) => {
       <p>Note</p>
       <div className="relative">
         <textarea
-          className="bg-light-bgText rounded-md px-3 py-2 tracking-widest min-h-24 w-full resize-none text-xs"
+          className="bg-light-bgText rounded-md px-3 py-2 tracking-widest min-h-24 w-full resize-none text-xs "
           value={note.toString()}
           readOnly
         />
