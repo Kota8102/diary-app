@@ -129,6 +129,14 @@ export const createAppRouter = (_queryClient: QueryClient) =>
             return { Component: SettingRoute }
           },
         },
+        // パスワード変更
+        {
+          path: paths.app.changePassword.path,
+          lazy: async () => {
+            const { ChangePasswordRoute } = await import('./routes/app/setting/change-password')
+            return { Component: ChangePasswordRoute }
+          },
+        },
       ],
     },
 

@@ -10,6 +10,7 @@ export default {
           bgDefault: '#FDFAF8',
           bgText: '#F6F3F0',
           bgFooter: '#EDEAE6',
+          bgSetting: '#e3dfdc',
 
           // テキスト色
           textDefault: '#404040',
