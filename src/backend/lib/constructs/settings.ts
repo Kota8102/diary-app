@@ -5,14 +5,14 @@ import * as lambda from 'aws-cdk-lib/aws-lambda'
 import * as s3 from 'aws-cdk-lib/aws-s3'
 import { Construct } from 'constructs'
 
-export interface BouquetProps {
+export interface SettingsProps {
   userPool: cognito.UserPool
   api: apigateway.RestApi
   cognitoAuthorizer: apigateway.CognitoUserPoolsAuthorizer
 }
 
-export class Bouquet extends Construct {
-  constructor(scope: Construct, id: string, props: BouquetProps) {
+export class Settings extends Construct {
+  constructor(scope: Construct, id: string, props: SettingsProps) {
     super(scope, id)
 
     // 花束画像保存用のS3バケットの作成
