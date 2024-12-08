@@ -24,9 +24,9 @@ export class Settings extends Construct {
     //プロフィール画像アップロード用Lambda関数の定義
     const uploadProfileImageFunction = new lambda.Function(this, 'uploadProfileImageFunction', {
       runtime: lambda.Runtime.PYTHON_3_11,
-      handler: 'upload_profile_image_function.lambda_handler',
+      handler: 'upload_profile_image.lambda_handler',
       timeout: cdk.Duration.seconds(15),
-      code: lambda.Code.fromAsset('lambda/upload_profile_image_function', {
+      code: lambda.Code.fromAsset('lambda/upload_profile_image', {
         bundling: {
           image: lambda.Runtime.PYTHON_3_11.bundlingImage,
         },
@@ -40,13 +40,6 @@ export class Settings extends Construct {
     const settingsApi = props.api.root.addResource('settings')
 
     settingsApi.addMethod('POST', new apigateway.LambdaIntegration(uploadProfileImageFunction), {
-      requestParameters: {
-        'method.request.querystring.date': true,
-      },
-      requestValidatorOptions: {
-        requestValidatorName: 'ValidateQueryString',
-        validateRequestParameters: true,
-      },
       authorizer: props.cognitoAuthorizer,
     })
   }
