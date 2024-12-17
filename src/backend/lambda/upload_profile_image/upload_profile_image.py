@@ -4,34 +4,9 @@ import os
 
 import boto3
 
-# S3 バケット名
-S3_BUCKET = os.environ["USER_SETTINGS_BUCKET"]
-
-# S3 クライアントの初期化
-s3_client = boto3.client("s3")
-
 # ログ設定
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
-
-
-def get_user_id(event):
-    """
-    Cognito Authorizer から user_id を取得
-
-    Args:
-        event (dict): API Gateway からのリクエストイベント。Cognito 認証情報を含む。
-
-    Returns:
-        string: ユーザーの user_id。
-
-    Raises:
-        ValueError: `event` に `user_id` を取得できない場合。
-    """
-    try:
-        return event["requestContext"]["authorizer"]["claims"]["sub"]
-    except KeyError as e:
-        raise ValueError("Failed to retrieve user_id from request context") from e
 
 
 def decode_image_data(encoded_body):
@@ -53,12 +28,11 @@ def decode_image_data(encoded_body):
         raise ValueError("Invalid base64-encoded image data") from e
 
 
-def upload_to_s3(bucket, key, data, content_type="image/png"):
+def upload_to_s3(key, data, content_type="image/png"):
     """
     S3 に画像データをアップロード
 
     Args:
-        bucket (string): アップロード先の S3 バケット名。
         key (string): S3 バケット内のファイルのキー（パス）。
         data (bytes): アップロードする画像データ。
         content_type (string): 画像のコンテンツタイプ（デフォルトは "image/png"）。
@@ -66,6 +40,10 @@ def upload_to_s3(bucket, key, data, content_type="image/png"):
     Raises:
         RuntimeError: S3 アップロード中にエラーが発生した場合。
     """
+    # S3 クライアントの初期化
+    s3_client = boto3.client("s3")
+    # S3 バケット名
+    bucket = os.environ["USER_SETTINGS_BUCKET"]
     try:
         s3_client.put_object(
             Bucket=bucket, Key=key, Body=data, ContentType=content_type
@@ -88,8 +66,8 @@ def lambda_handler(event, context):
     """
     logger.info("upload profile image function")
     try:
-        # ユーザーIDを取得
-        user_id = get_user_id(event)
+        # Cognito Authorizer から user_id を取得
+        user_id = event["requestContext"]["authorizer"]["claims"]["sub"]
 
         # リクエストの body から画像データを取得
         body = event.get("body", "")
@@ -99,7 +77,7 @@ def lambda_handler(event, context):
         s3_key = f"profile/image/{user_id}.png"
 
         # S3 にアップロード
-        upload_to_s3(S3_BUCKET, s3_key, image_data)
+        upload_to_s3(s3_key, image_data)
 
         # 成功レスポンスを返す
         return {
