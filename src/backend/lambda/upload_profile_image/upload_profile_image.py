@@ -24,7 +24,7 @@ def lambda_handler(event, context):
         # リクエストの body から画像データを取得
         body = event["body"]
         is_base64_encoded = event.get("isBase64Encoded", False)
-        
+
         if is_base64_encoded:
             image_data = base64.b64decode(body)
         else:
