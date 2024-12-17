@@ -45,16 +45,26 @@ def test_decode_image_data_invalid():
 # validate_image 関数のテスト
 def test_validate_image_valid_png():
     """有効な PNG 画像の MIME タイプを検証"""
-    data = b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR"
-    mime = validate_image(data)
+    file_name = "test.png"
+    data = b"dummy image data"
+    mime = validate_image(data, file_name)
     assert mime == "image/png"
 
 
+def test_validate_image_valid_jpeg():
+    """有効な JPEG 画像の MIME タイプを検証"""
+    file_name = "test.jpeg"
+    data = b"dummy image data"
+    mime = validate_image(data, file_name)
+    assert mime == "image/jpeg"
+
+
 def test_validate_image_invalid_format():
-    """無効な画像フォーマットの場合のテスト"""
+    """無効な画像フォーマット（不正な拡張子）の場合のテスト"""
+    file_name = "test.txt"  # サポートされていない拡張子
     data = b"not an image"
     with pytest.raises(ValueError, match="Unsupported image format"):
-        validate_image(data)
+        validate_image(data, file_name)
 
 
 # upload_to_s3 関数のテスト

@@ -1,9 +1,9 @@
 import base64
 import logging
+import mimetypes
 import os
 
 import boto3
-import magic  # MIME タイプを確認するためのライブラリ (python-magic)
 
 # ログ設定
 logger = logging.getLogger()
@@ -40,12 +40,13 @@ def decode_image_data(encoded_body):
     return decoded_data
 
 
-def validate_image(data):
+def validate_image(data, file_name):
     """
-    画像データの MIME タイプを確認
+    画像データの MIME タイプを確認 (拡張子ベース)
 
     Args:
         data (bytes): デコードされた画像データ。
+        file_name (string): ファイル名またはキー名。
 
     Returns:
         string: 検出された MIME タイプ。
@@ -53,8 +54,8 @@ def validate_image(data):
     Raises:
         ValueError: MIME タイプがサポートされていない場合。
     """
-    mime = magic.Magic(mime=True)
-    detected_mime_type = mime.from_buffer(data)
+    # mimetypes による MIME タイプ判定
+    detected_mime_type = mimetypes.guess_type(file_name)[0]
     if detected_mime_type not in SUPPORTED_MIME_TYPES:
         raise ValueError(f"Unsupported image format: {detected_mime_type}")
     return detected_mime_type
@@ -105,11 +106,11 @@ def lambda_handler(event, context):
         body = event.get("body", "")
         image_data = decode_image_data(body)
 
-        # 画像データの形式を検証
-        mime_type = validate_image(image_data)
-
         # S3 パスを設定
         s3_key = f"profile/image/{user_id}.png"
+
+        # 画像データの形式を検証（拡張子ベース）
+        mime_type = validate_image(image_data, s3_key)
 
         # S3 にアップロード
         upload_to_s3(s3_key, image_data, mime_type)
