@@ -19,6 +19,13 @@ export class Settings extends Construct {
     const userSettingsBucket = new s3.Bucket(this, 'userSettingsBucket', {
       enforceSSL: true,
       serverAccessLogsPrefix: 'log/',
+      cors: [
+        {
+          allowedHeaders: ['*'],
+          allowedMethods: [s3.HttpMethods.GET, s3.HttpMethods.POST],
+          allowedOrigins: ['*'],
+        },
+      ],
     })
 
     //プロフィール画像アップロード用Lambda関数の定義

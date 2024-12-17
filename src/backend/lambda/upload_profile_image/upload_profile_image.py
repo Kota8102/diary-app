@@ -3,15 +3,20 @@ import logging
 import os
 
 import boto3
+import magic  # MIME タイプを確認するためのライブラリ (python-magic)
 
 # ログ設定
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
+# サポートされる MIME タイプ
+SUPPORTED_MIME_TYPES = ["image/png", "image/jpeg", "image/gif"]
+MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024  # 5MB
+
 
 def decode_image_data(encoded_body):
     """
-    Base64 エンコードされた画像データをデコード
+    Base64 エンコードされた画像データをデコードし、サイズを確認
 
     Args:
         encoded_body (string): Base64 エンコードされた画像データ。
@@ -20,22 +25,47 @@ def decode_image_data(encoded_body):
         bytes: デコードされた画像データ。
 
     Raises:
-        ValueError: `encoded_body` が無効な Base64 データの場合。
+        ValueError: `encoded_body` が無効な Base64 データの場合、またはサイズが大きすぎる場合。
     """
     try:
-        return base64.b64decode(encoded_body)
+        decoded_data = base64.b64decode(encoded_body)
+        if len(decoded_data) > MAX_FILE_SIZE_BYTES:
+            raise ValueError(
+                f"Image data exceeds maximum size of {MAX_FILE_SIZE_BYTES / (1024 * 1024)} MB"
+            )
+        return decoded_data
     except Exception as e:
         raise ValueError("Invalid base64-encoded image data") from e
 
 
-def upload_to_s3(key, data, content_type="image/png"):
+def validate_image(data):
+    """
+    画像データの MIME タイプを確認
+
+    Args:
+        data (bytes): デコードされた画像データ。
+
+    Returns:
+        string: 検出された MIME タイプ。
+
+    Raises:
+        ValueError: MIME タイプがサポートされていない場合。
+    """
+    mime = magic.Magic(mime=True)
+    detected_mime_type = mime.from_buffer(data)
+    if detected_mime_type not in SUPPORTED_MIME_TYPES:
+        raise ValueError(f"Unsupported image format: {detected_mime_type}")
+    return detected_mime_type
+
+
+def upload_to_s3(key, data, content_type):
     """
     S3 に画像データをアップロード
 
     Args:
         key (string): S3 バケット内のファイルのキー（パス）。
         data (bytes): アップロードする画像データ。
-        content_type (string): 画像のコンテンツタイプ（デフォルトは "image/png"）。
+        content_type (string): 画像のコンテンツタイプ。
 
     Raises:
         RuntimeError: S3 アップロード中にエラーが発生した場合。
@@ -73,11 +103,14 @@ def lambda_handler(event, context):
         body = event.get("body", "")
         image_data = decode_image_data(body)
 
+        # 画像データの形式を検証
+        mime_type = validate_image(image_data)
+
         # S3 パスを設定
         s3_key = f"profile/image/{user_id}.png"
 
         # S3 にアップロード
-        upload_to_s3(s3_key, image_data)
+        upload_to_s3(s3_key, image_data, mime_type)
 
         # 成功レスポンスを返す
         return {
