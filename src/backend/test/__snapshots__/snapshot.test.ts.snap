@@ -4052,6 +4052,7 @@ exports[`Snapshot test 1`] = `
     },
     "SettingsuploadProfileImageFunction5C7EC09C": {
       "DependsOn": [
+        "SettingsuploadProfileImageFunctionServiceRoleDefaultPolicy8B4E4832",
         "SettingsuploadProfileImageFunctionServiceRoleC037996C",
       ],
       "Properties": {
@@ -4110,6 +4111,47 @@ exports[`Snapshot test 1`] = `
         ],
       },
       "Type": "AWS::IAM::Role",
+    },
+    "SettingsuploadProfileImageFunctionServiceRoleDefaultPolicy8B4E4832": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:PutObject",
+                "s3:PutObjectLegalHold",
+                "s3:PutObjectRetention",
+                "s3:PutObjectTagging",
+                "s3:PutObjectVersionTagging",
+                "s3:Abort*",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    {
+                      "Fn::GetAtt": [
+                        "SettingsuserSettingsBucket1D2B648F",
+                        "Arn",
+                      ],
+                    },
+                    "/*",
+                  ],
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "SettingsuploadProfileImageFunctionServiceRoleDefaultPolicy8B4E4832",
+        "Roles": [
+          {
+            "Ref": "SettingsuploadProfileImageFunctionServiceRoleC037996C",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
     },
     "SettingsuserSettingsBucket1D2B648F": {
       "DeletionPolicy": "Retain",

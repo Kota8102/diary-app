@@ -15,7 +15,7 @@ export class Settings extends Construct {
   constructor(scope: Construct, id: string, props: SettingsProps) {
     super(scope, id)
 
-    // 花束画像保存用のS3バケットの作成
+    // プロフィール画像保存用のS3バケットの作成
     const userSettingsBucket = new s3.Bucket(this, 'userSettingsBucket', {
       enforceSSL: true,
       serverAccessLogsPrefix: 'log/',
@@ -31,6 +31,7 @@ export class Settings extends Construct {
         USER_SETTINGS_BUCKET: userSettingsBucket.bucketName,
       },
     })
+    userSettingsBucket.grantPut(uploadProfileImageFunction)
 
     // /APIの設定
     const settingsApi = props.api.root.addResource('settings')
