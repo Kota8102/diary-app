@@ -16,19 +16,22 @@ logger.setLevel(logging.INFO)
 
 
 def lambda_handler(event, context):
+    logger.info("upload profile image function")
     try:
         # Cognito Authorizer から user_id を取得
         user_id = event["requestContext"]["authorizer"]["claims"]["sub"]
 
         # リクエストの body から画像データを取得
         body = event["body"]
+        logger.info(f"body: {body}")
         is_base64_encoded = event.get("isBase64Encoded", False)
-
+        logger.info(f"is base64: {is_base64_encoded}")
         if is_base64_encoded:
             image_data = base64.b64decode(body)
         else:
             image_data = body.encode("utf-8")
 
+        logger.info(f"image data: {image_data}")
         # S3 パスを設定
         s3_key = f"profile/image/{user_id}.png"
 
