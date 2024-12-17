@@ -33,12 +33,7 @@ export class Settings extends Construct {
       runtime: lambda.Runtime.PYTHON_3_11,
       handler: 'upload_profile_image.lambda_handler',
       timeout: cdk.Duration.seconds(15),
-      code: lambda.Code.fromAsset('lambda/upload_profile_image', {
-        bundling: {
-          image: lambda.Runtime.PYTHON_3_11.bundlingImage,
-          command: ['bash', '-c', 'pip install -r requirements.txt -t /asset-output && cp -au . /asset-output'],
-        },
-      }),
+      code: lambda.Code.fromAsset('lambda/upload_profile_image'),
       environment: {
         USER_SETTINGS_BUCKET: userSettingsBucket.bucketName,
       },
