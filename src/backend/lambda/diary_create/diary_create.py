@@ -36,40 +36,6 @@ def validate_input(body):
         raise ValueError("不正な日付形式です。YYYY-MM-DDの形式を使用してください")
 
 
-def get_img_from_s3(flower_id):
-    """
-    S3 から花の画像を取得して、Base64 エンコードした文字列を返す関数。
-
-    Args:
-        flower_id (str): 取得する画像に対応する花の ID。
-
-    Returns:
-        str: Base64 エンコードされた画像データ。
-
-    Raises:
-        Exception: S3 操作が失敗した場合に発生。
-    """
-    s3 = boto3.client("s3")
-    bucket_name = os.environ["FLOWER_IMAGE_BUCKET_NAME"]
-    s3_key = f"flowers/{flower_id}.png"
-
-    try:
-        response = s3.get_object(Bucket=bucket_name, Key=s3_key)
-        body = response["Body"].read()
-        if body != "":
-            logger.info(f"Image fetched from S3: {s3_key}")
-            return base64.b64encode(body).decode("utf-8")
-    except ClientError as e:
-        if e.response["Error"]["Code"] == "NoSuchKey":
-            logger.info(f"Image not found: {s3_key}")
-            return None
-        logger.error(f"S3 operation failed: {e}")
-        raise
-    except Exception as e:
-        logger.error(f"Error processing S3 response: {e}")
-        return None
-
-
 def save_to_dynamodb(user_id, date, content, is_deleted=False):
     """
     DynamoDB に日記のアイテムを保存し、生成した diary_id を返す関数。
