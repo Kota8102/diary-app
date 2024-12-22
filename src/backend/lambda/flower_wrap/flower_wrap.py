@@ -3,7 +3,6 @@ import json
 import os
 import random
 from io import BytesIO
-
 import boto3
 from PIL import Image
 
