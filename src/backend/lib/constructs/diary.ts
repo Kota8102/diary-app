@@ -32,7 +32,12 @@ export class Diary extends Construct {
     const diaryCreateFunction = new lambda.Function(this, 'diaryCreateLambda', {
       runtime: lambda.Runtime.PYTHON_3_11,
       handler: 'diary_create.lambda_handler',
-      code: lambda.Code.fromAsset('lambda/diary_create'),
+      code: lambda.Code.fromAsset('lambda/diary_create', {
+        bundling: {
+          image: lambda.Runtime.PYTHON_3_11.bundlingImage,
+          command: ['bash', '-c', 'pip install -r requirements.txt -t /asset-output && cp -au . /asset-output'],
+        },
+      }),
       logRetention: 14,
       environment: {
         TABLE_NAME: props.table.tableName,
