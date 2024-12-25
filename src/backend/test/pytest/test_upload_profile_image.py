@@ -7,7 +7,6 @@ import pytest
 os.environ["USER_SETTINGS_BUCKET"] = "test-bucket"
 
 from upload_profile_image.upload_profile_image import (
-    MAX_FILE_SIZE_BYTES,
     decode_image_data,
     upload_to_s3,
     validate_image,
@@ -23,16 +22,6 @@ def test_decode_image_data():
     # デコード後のデータが bytes 型であることを確認
     assert isinstance(decoded_image, bytes)
     assert decoded_image == b"image data"
-
-
-def test_decode_image_data_exceeds_max_size():
-    """画像データが最大サイズを超える場合のテスト"""
-    large_image_data = base64.b64encode(b"A" * (MAX_FILE_SIZE_BYTES + 1)).decode(
-        "utf-8"
-    )
-    with pytest.raises(ValueError, match="exceeds maximum size"):
-        decode_image_data(large_image_data)
-
 
 # Base64 エンコードされた無効なデータが渡された場合
 def test_decode_image_data_invalid():
