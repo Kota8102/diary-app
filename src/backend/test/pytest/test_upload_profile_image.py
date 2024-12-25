@@ -23,6 +23,7 @@ def test_decode_image_data():
     assert isinstance(decoded_image, bytes)
     assert decoded_image == b"image data"
 
+
 # Base64 エンコードされた無効なデータが渡された場合
 def test_decode_image_data_invalid():
     """無効な Base64 データが渡された場合のテスト"""

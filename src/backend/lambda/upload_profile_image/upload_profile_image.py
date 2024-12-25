@@ -11,7 +11,6 @@ logger.setLevel(logging.INFO)
 
 # サポートされる MIME タイプ
 SUPPORTED_MIME_TYPES = ["image/png", "image/jpeg", "image/gif"]
-MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024  # 5MB
 
 
 def decode_image_data(encoded_body):
