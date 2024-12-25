@@ -32,11 +32,6 @@ def decode_image_data(encoded_body):
     except Exception as e:
         raise ValueError("Invalid base64-encoded image data") from e
 
-    if len(decoded_data) > MAX_FILE_SIZE_BYTES:
-        raise ValueError(
-            f"Image data exceeds maximum size of {MAX_FILE_SIZE_BYTES / (1024 * 1024)} MB"
-        )
-
     return decoded_data
 
 
