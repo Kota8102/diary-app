@@ -152,7 +152,10 @@ def flower_wrap(flower_id):
 
     # 画像をBase64にエンコードして戻す
     buffer = BytesIO()
-    palette.save(buffer, format="PNG")
+    try:
+        palette.save(buffer, format="PNG")
+    except Exception as e:
+        raise RuntimeError(f"Failed to save image: {e}")
     buffer.seek(0)
     encoded_image = base64.b64encode(buffer.read()).decode("utf-8")
 
