@@ -174,5 +174,19 @@ export class Diary extends Construct {
     titleApi.addMethod('GET', new apigateway.LambdaIntegration(titleGetFunction), {
       authorizer: props.cognitoAuthorizer,
     })
+
+    const getDiaryDataFunction = new lambda.Function(this, 'getDiaryDataFunction', {
+      runtime: lambda.Runtime.PYTHON_3_11,
+      handler: 'get_diary_data.lambda_handler',
+      code: lambda.Code.fromAsset('lambda/get_diary_data'),
+      environment: {
+        GENERATIVE_TABLE_NAME: props.generativeAiTable.tableName,
+        DIARY_TABLE_NAME: props.table.tableName,
+        FLOWER_IMAGE_BUCKET_NAME: props.flowerImageBucket.bucketName,
+      },
+    })
+    props.generativeAiTable.grantReadData(getDiaryDataFunction)
+    props.flowerImageBucket.grantRead(getDiaryDataFunction)
+    props.table.grantReadData(getDiaryDataFunction)
   }
 }

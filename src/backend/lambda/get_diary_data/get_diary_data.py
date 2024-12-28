@@ -92,10 +92,10 @@ def get_image(flower_id: str) -> Optional[str]:
         Optional[str]: Base64エンコードされた画像データまたはNone
     """
     s3 = boto3.client("s3")
-    bucket_name = os.getenv("BUCKET_NAME")
+    bucket_name = os.getenv("FLOWER_IMAGE_BUCKET_NAME")
     if not bucket_name:
-        logger.error("BUCKET_NAME 環境変数が設定されていません")
-        raise ValueError("BUCKET_NAME 環境変数が設定されていません")
+        logger.error("FLOWER_IMAGE_BUCKET_NAME 環境変数が設定されていません")
+        raise ValueError("FLOWER_IMAGE_BUCKET_NAME 環境変数が設定されていません")
 
     s3_key = f"flowers/{flower_id}.png"
 
@@ -122,15 +122,15 @@ def get_title(user_id: str, date: str) -> Optional[str]:
     Returns:
         Optional[str]: タイトルまたはNone
     """
-    table_name = os.getenv("TABLE_NAME")
-    if not table_name:
-        logger.error("TABLE_NAME 環境変数が設定されていません")
-        raise ValueError("TABLE_NAME 環境変数が設定されていません")
+    generative_ai_table_name = os.getenv("GENERATIVE_AI_TABLE_NAME")
+    if not generative_ai_table_name:
+        logger.error("GENERATIVE_AI_TABLE_NAME 環境変数が設定されていません")
+        raise ValueError("GENERATIVE_AI_TABLE_NAME 環境変数が設定されていません")
 
-    table = dynamodb.Table(table_name)
+    generative_ai_table = dynamodb.Table(generative_ai_table_name)
 
     try:
-        response = table.get_item(Key={"user_id": user_id, "date": date})
+        response = generative_ai_table.get_item(Key={"user_id": user_id, "date": date})
         return response.get("Item", {}).get("title")
     except ClientError as e:
         logger.error(f"DynamoDB クライアントエラー: {e.response['Error']['Message']}")
@@ -148,15 +148,15 @@ def get_body(user_id: str, date: str) -> Optional[str]:
     Returns:
         Optional[str]: 本文またはNone
     """
-    table_name = os.getenv("TABLE_NAME")
-    if not table_name:
+    diary_table_name = os.getenv("TABLE_NAME")
+    if not diary_table_name:
         logger.error("TABLE_NAME 環境変数が設定されていません")
         raise ValueError("TABLE_NAME 環境変数が設定されていません")
 
-    table = dynamodb.Table(table_name)
+    diary_table = dynamodb.Table(diary_table_name)
 
     try:
-        response = table.get_item(Key={"user_id": user_id, "date": date})
+        response = diary_table.get_item(Key={"user_id": user_id, "date": date})
         return response.get("Item", {}).get("body")
     except ClientError as e:
         logger.error(f"DynamoDB クライアントエラー: {e.response['Error']['Message']}")
