@@ -3237,6 +3237,167 @@ exports[`Snapshot test 1`] = `
       },
       "Type": "AWS::IAM::Policy",
     },
+    "DiarygetDiaryDataFunctionAAA49ECF": {
+      "DependsOn": [
+        "DiarygetDiaryDataFunctionServiceRoleDefaultPolicy5A0D2EBD",
+        "DiarygetDiaryDataFunctionServiceRole505DDB87",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "S3Key": "HASH_REPLACED.zip",
+        },
+        "Environment": {
+          "Variables": {
+            "DIARY_TABLE_NAME": {
+              "Ref": "FlowerdiaryContentsTableCA7C6940",
+            },
+            "FLOWER_IMAGE_BUCKET_NAME": {
+              "Ref": "FlowerflowerImageBucket46E60C76",
+            },
+            "GENERATIVE_TABLE_NAME": {
+              "Ref": "FlowergenerativeAiTable021268D8",
+            },
+          },
+        },
+        "Handler": "get_diary_data.lambda_handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "DiarygetDiaryDataFunctionServiceRole505DDB87",
+            "Arn",
+          ],
+        },
+        "Runtime": "python3.11",
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "DiarygetDiaryDataFunctionServiceRole505DDB87": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "DiarygetDiaryDataFunctionServiceRoleDefaultPolicy5A0D2EBD": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "dynamodb:BatchGetItem",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+                "dynamodb:Query",
+                "dynamodb:GetItem",
+                "dynamodb:Scan",
+                "dynamodb:ConditionCheckItem",
+                "dynamodb:DescribeTable",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "FlowergenerativeAiTable021268D8",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Ref": "AWS::NoValue",
+                },
+              ],
+            },
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "FlowerflowerImageBucket46E60C76",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "FlowerflowerImageBucket46E60C76",
+                          "Arn",
+                        ],
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+            {
+              "Action": [
+                "dynamodb:BatchGetItem",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+                "dynamodb:Query",
+                "dynamodb:GetItem",
+                "dynamodb:Scan",
+                "dynamodb:ConditionCheckItem",
+                "dynamodb:DescribeTable",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "FlowerdiaryContentsTableCA7C6940",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Ref": "AWS::NoValue",
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "DiarygetDiaryDataFunctionServiceRoleDefaultPolicy5A0D2EBD",
+        "Roles": [
+          {
+            "Ref": "DiarygetDiaryDataFunctionServiceRole505DDB87",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
     "DiarytitleGetFunction90C2A326": {
       "DependsOn": [
         "DiarytitleGetFunctionServiceRoleDefaultPolicyF8576449",
