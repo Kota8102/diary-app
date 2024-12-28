@@ -40,10 +40,25 @@ export class Settings extends Construct {
     })
     userSettingsBucket.grantPut(uploadProfileImageFunction)
 
+    //プロフィール画像取得用Lambda関数の定義
+    const getProfileImageFunction = new lambda.Function(this, 'getProfileImageFunction', {
+      runtime: lambda.Runtime.PYTHON_3_11,
+      handler: 'get_profile_image.lambda_handler',
+      timeout: cdk.Duration.seconds(15),
+      code: lambda.Code.fromAsset('lambda/get_profile_image'),
+      environment: {
+        USER_SETTINGS_BUCKET: userSettingsBucket.bucketName,
+      },
+    })
+    userSettingsBucket.grantRead(getProfileImageFunction)
     // /APIの設定
     const settingsApi = props.api.root.addResource('settings')
 
     settingsApi.addMethod('POST', new apigateway.LambdaIntegration(uploadProfileImageFunction), {
+      authorizer: props.cognitoAuthorizer,
+    })
+
+    settingsApi.addMethod('GET', new apigateway.LambdaIntegration(getProfileImageFunction), {
       authorizer: props.cognitoAuthorizer,
     })
   }
