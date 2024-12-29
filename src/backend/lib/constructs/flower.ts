@@ -57,7 +57,7 @@ export class Flower extends Construct {
       serverAccessLogsPrefix: 'log/',
     })
 
-    // 花の画像生成用Lambda関数の定義
+    // 花の画像選択用Lambda関数の定義
     const flowerSelectFunction = new lambda.Function(this, 'flowerSelectFunction', {
       runtime: lambda.Runtime.PYTHON_3_11,
       handler: 'flower_select.lambda_handler',
@@ -100,6 +100,7 @@ export class Flower extends Construct {
     })
     flowerImageBucket.grantRead(flowerGetFunction)
     generativeAiTable.grantReadData(flowerGetFunction)
+
     // flower API の設定
     const flowerApi = props.api.root.addResource('flower')
 
