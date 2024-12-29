@@ -119,6 +119,9 @@ def load_random_image_from_s3(bucket_name, prefix):
 
 
 def flower_wrap(flower_id):
+    if not flower_id:
+        raise ValueError("Invalid flower ID provided.")
+    ...
     """
     ランダムに選択した包装紙(front/back)で指定flower_idの花を包み、
     base64エンコードした画像を返すPython関数。
