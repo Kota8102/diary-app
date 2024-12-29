@@ -53,6 +53,7 @@ export class BackendStack extends cdk.Stack {
     })
     // Diary機能コンストラクトのスタック化
     const diary = new Diary(this, 'Diary', {
+      flowerBucket: flower.flowerBucket,
       userPool: auth.userPool,
       api: api.api,
       cognitoAuthorizer: api.cognitoAuthorizer,

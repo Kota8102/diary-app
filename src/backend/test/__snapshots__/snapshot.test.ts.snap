@@ -1940,7 +1940,7 @@ exports[`Snapshot test 1`] = `
             "BOUQUET_TABLE_NAME": {
               "Ref": "BouquetBouquetTableE43AF35D",
             },
-            "FLOWER_BUCKET_NAME": {
+            "ORIGINAL_IMAGE_BUCKET_NAME": {
               "Ref": "FloweroriginalImageBucket46E60C76",
             },
             "GENERATIVE_AI_TABLE_NAME": {
@@ -3592,7 +3592,7 @@ exports[`Snapshot test 1`] = `
             "DIARY_TABLE_NAME": {
               "Ref": "FlowerdiaryContentsTableCA7C6940",
             },
-            "FLOWER_BUCKET_NAME": {
+            "ORIGINAL_IMAGE_BUCKET_NAME": {
               "Ref": "FloweroriginalImageBucket46E60C76",
             },
             "GENERATIVE_AI_TABLE_NAME": {

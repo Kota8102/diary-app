@@ -19,6 +19,7 @@ export class Flower extends Construct {
   public readonly table: dynamodb.Table
   public readonly generativeAiTable: dynamodb.Table
   public readonly flowerSelectFunction: lambda.Function
+  public readonly flowerBucket: s3.Bucket
   constructor(scope: Construct, id: string, props: FlowerProps) {
     super(scope, id)
 
@@ -51,8 +52,14 @@ export class Flower extends Construct {
       pointInTimeRecovery: true,
     })
 
-    // 花の画像保存用S3バケットの作成
+    // 元画像保存用S3バケットの作成
     const originalImageBucket = new s3.Bucket(this, 'originalImageBucket', {
+      enforceSSL: true,
+      serverAccessLogsPrefix: 'log/',
+    })
+
+    // ユーザーごとの花画像保存用S3バケットの作成
+    const flowerBucket = new s3.Bucket(this, 'flowerBucket', {
       enforceSSL: true,
       serverAccessLogsPrefix: 'log/',
     })
@@ -70,11 +77,13 @@ export class Flower extends Construct {
       environment: {
         DIARY_TABLE_NAME: table.tableName,
         GENERATIVE_AI_TABLE_NAME: generativeAiTable.tableName,
-        FLOWER_BUCKET_NAME: originalImageBucket.bucketName,
+        ORIGINAL_IMAGE_BUCKET_NAME: originalImageBucket.bucketName,
+        FLOWER_BUCKET_NAME: flowerBucket.bucketName,
       },
       timeout: cdk.Duration.seconds(60),
     })
     generativeAiTable.grantWriteData(flowerSelectFunction)
+    flowerBucket.grantPut(flowerSelectFunction)
     table.grantStreamRead(flowerSelectFunction)
     originalImageBucket.grantPut(flowerSelectFunction)
     const difyApiKey = ssm.StringParameter.fromStringParameterAttributes(this, 'DifyApiKey', {
@@ -93,8 +102,9 @@ export class Flower extends Construct {
       handler: 'flower_get.lambda_handler',
       code: lambda.Code.fromAsset('lambda/flower_get'),
       environment: {
-        BUCKET_NAME: originalImageBucket.bucketName,
+        ORIGINAL_BUCKET_NAME: originalImageBucket.bucketName,
         GENERATIVE_AI_TABLE_NAME: generativeAiTable.tableName,
+        FLOWER_BUCKET_NAME: flowerBucket.bucketName,
       },
       timeout: cdk.Duration.seconds(10),
     })
@@ -142,5 +152,6 @@ export class Flower extends Construct {
     this.table = table
     this.generativeAiTable = generativeAiTable
     this.flowerSelectFunction = flowerSelectFunction
+    this.flowerBucket = flowerBucket
   }
 }

@@ -15,6 +15,7 @@ export interface DiaryProps {
   generativeAiTable: dynamodb.Table
   flowerSelectFunction: lambda.Function
   originalImageBucket: s3.Bucket
+  flowerBucket: s3.Bucket
 }
 
 export class Diary extends Construct {
@@ -38,6 +39,7 @@ export class Diary extends Construct {
         TABLE_NAME: props.table.tableName,
         ORIGINAL_IMAGE_BUCKET_NAME: props.originalImageBucket.bucketName,
         FLOWER_SELECT_FUNCTION_NAME: props.flowerSelectFunction.functionName,
+        FLOWER_BUKCET_NAME: props.flowerBucket.bucketName,
       },
       timeout: cdk.Duration.seconds(30),
     })

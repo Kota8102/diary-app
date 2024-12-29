@@ -66,7 +66,7 @@ export class Bouquet extends Construct {
       environment: {
         GENERATIVE_AI_TABLE_NAME: props.generativeAiTable.tableName,
         BOUQUET_TABLE_NAME: bouquetTable.tableName,
-        FLOWER_BUCKET_NAME: props.originalImageBucket.bucketName,
+        ORIGINAL_IMAGE_BUCKET_NAME: props.originalImageBucket.bucketName,
         BOUQUET_BUCKET_NAME: bouquetBucket.bucketName,
       },
     })

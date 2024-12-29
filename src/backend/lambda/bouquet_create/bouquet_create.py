@@ -9,7 +9,7 @@ from PIL import Image
 dynamodb = boto3.resource("dynamodb")
 s3 = boto3.client("s3")
 
-FLOWER_BUCKET_NAME = os.environ["FLOWER_BUCKET_NAME"]
+ORIGINAL_IMAGE_BUCKET_NAME = os.environ["ORIGINAL_IMAGE_BUCKET_NAME"]
 BOUQUET_BUCKET_NAME = os.environ["BOUQUET_BUCKET_NAME"]
 GENERATIVE_AI_TABLE_NAME = os.environ["GENERATIVE_AI_TABLE_NAME"]
 BOUQUET_TABLE_NAME = os.environ["BOUQUET_TABLE_NAME"]
@@ -847,7 +847,7 @@ class MkBouquet(DecideFlowerPos):
         Returns:
             Image: ロードされた画像
         """
-        obj = s3.get_object(Bucket=FLOWER_BUCKET_NAME, Key=key)
+        obj = s3.get_object(Bucket=ORIGINAL_IMAGE_BUCKET_NAME, Key=key)
         img = Image.open(obj["Body"]).convert("RGBA")
         return img
 
