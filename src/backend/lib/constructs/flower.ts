@@ -15,7 +15,7 @@ export interface FlowerProps {
 }
 
 export class Flower extends Construct {
-  public readonly flowerImageBucket: s3.Bucket
+  public readonly originalImageBucket: s3.Bucket
   public readonly table: dynamodb.Table
   public readonly generativeAiTable: dynamodb.Table
   public readonly flowerSelectFunction: lambda.Function
@@ -52,7 +52,7 @@ export class Flower extends Construct {
     })
 
     // 花の画像保存用S3バケットの作成
-    const flowerImageBucket = new s3.Bucket(this, 'flowerImageBucket', {
+    const originalImageBucket = new s3.Bucket(this, 'originalImageBucket', {
       enforceSSL: true,
       serverAccessLogsPrefix: 'log/',
     })
@@ -70,13 +70,13 @@ export class Flower extends Construct {
       environment: {
         DIARY_TABLE_NAME: table.tableName,
         GENERATIVE_AI_TABLE_NAME: generativeAiTable.tableName,
-        FLOWER_BUCKET_NAME: flowerImageBucket.bucketName,
+        FLOWER_BUCKET_NAME: originalImageBucket.bucketName,
       },
       timeout: cdk.Duration.seconds(60),
     })
     generativeAiTable.grantWriteData(flowerSelectFunction)
     table.grantStreamRead(flowerSelectFunction)
-    flowerImageBucket.grantPut(flowerSelectFunction)
+    originalImageBucket.grantPut(flowerSelectFunction)
     const difyApiKey = ssm.StringParameter.fromStringParameterAttributes(this, 'DifyApiKey', {
       parameterName: 'DIFY_API_KEY',
     })
@@ -93,12 +93,12 @@ export class Flower extends Construct {
       handler: 'flower_get.lambda_handler',
       code: lambda.Code.fromAsset('lambda/flower_get'),
       environment: {
-        BUCKET_NAME: flowerImageBucket.bucketName,
+        BUCKET_NAME: originalImageBucket.bucketName,
         GENERATIVE_AI_TABLE_NAME: generativeAiTable.tableName,
       },
       timeout: cdk.Duration.seconds(10),
     })
-    flowerImageBucket.grantRead(flowerGetFunction)
+    originalImageBucket.grantRead(flowerGetFunction)
     generativeAiTable.grantReadData(flowerGetFunction)
     // flower API の設定
     const flowerApi = props.api.root.addResource('flower')
@@ -138,7 +138,7 @@ export class Flower extends Construct {
       authorizer: props.cognitoAuthorizer,
     })
 
-    this.flowerImageBucket = flowerImageBucket
+    this.originalImageBucket = originalImageBucket
     this.table = table
     this.generativeAiTable = generativeAiTable
     this.flowerSelectFunction = flowerSelectFunction

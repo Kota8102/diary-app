@@ -59,7 +59,7 @@ export class BackendStack extends cdk.Stack {
       table: flower.table,
       generativeAiTable: flower.generativeAiTable,
       flowerSelectFunction: flower.flowerSelectFunction,
-      flowerImageBucket: flower.flowerImageBucket,
+      originalImageBucket: flower.originalImageBucket,
     })
 
     const bouquet = new Bouquet(this, 'Bouquet', {
@@ -68,7 +68,7 @@ export class BackendStack extends cdk.Stack {
       api: api.api,
       generativeAiTable: flower.generativeAiTable,
       cognitoAuthorizer: api.cognitoAuthorizer,
-      flowerImageBucket: flower.flowerImageBucket,
+      originalImageBucket: flower.originalImageBucket,
     })
 
     const settings = new Settings(this, 'Settings', {

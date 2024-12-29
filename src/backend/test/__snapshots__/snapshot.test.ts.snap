@@ -1941,7 +1941,7 @@ exports[`Snapshot test 1`] = `
               "Ref": "BouquetBouquetTableE43AF35D",
             },
             "FLOWER_BUCKET_NAME": {
-              "Ref": "FlowerflowerImageBucket46E60C76",
+              "Ref": "FloweroriginalImageBucket46E60C76",
             },
             "GENERATIVE_AI_TABLE_NAME": {
               "Ref": "FlowergenerativeAiTable021268D8",
@@ -2050,7 +2050,7 @@ exports[`Snapshot test 1`] = `
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "FlowerflowerImageBucket46E60C76",
+                    "FloweroriginalImageBucket46E60C76",
                     "Arn",
                   ],
                 },
@@ -2060,7 +2060,7 @@ exports[`Snapshot test 1`] = `
                     [
                       {
                         "Fn::GetAtt": [
-                          "FlowerflowerImageBucket46E60C76",
+                          "FloweroriginalImageBucket46E60C76",
                           "Arn",
                         ],
                       },
@@ -2611,8 +2611,8 @@ exports[`Snapshot test 1`] = `
         },
         "Environment": {
           "Variables": {
-            "FLOWER_IMAGE_BUCKET_NAME": {
-              "Ref": "FlowerflowerImageBucket46E60C76",
+            "ORIGINAL_IMAGE_BUCKET_NAME": {
+              "Ref": "FloweroriginalImageBucket46E60C76",
             },
             "FLOWER_SELECT_FUNCTION_NAME": {
               "Ref": "FlowerflowerSelectFunctionD7EEBADA",
@@ -2749,7 +2749,7 @@ exports[`Snapshot test 1`] = `
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "FlowerflowerImageBucket46E60C76",
+                    "FloweroriginalImageBucket46E60C76",
                     "Arn",
                   ],
                 },
@@ -2759,7 +2759,7 @@ exports[`Snapshot test 1`] = `
                     [
                       {
                         "Fn::GetAtt": [
-                          "FlowerflowerImageBucket46E60C76",
+                          "FloweroriginalImageBucket46E60C76",
                           "Arn",
                         ],
                       },
@@ -3390,7 +3390,7 @@ exports[`Snapshot test 1`] = `
         "Environment": {
           "Variables": {
             "BUCKET_NAME": {
-              "Ref": "FlowerflowerImageBucket46E60C76",
+              "Ref": "FloweroriginalImageBucket46E60C76",
             },
             "GENERATIVE_AI_TABLE_NAME": {
               "Ref": "FlowergenerativeAiTable021268D8",
@@ -3454,7 +3454,7 @@ exports[`Snapshot test 1`] = `
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "FlowerflowerImageBucket46E60C76",
+                    "FloweroriginalImageBucket46E60C76",
                     "Arn",
                   ],
                 },
@@ -3464,7 +3464,7 @@ exports[`Snapshot test 1`] = `
                     [
                       {
                         "Fn::GetAtt": [
-                          "FlowerflowerImageBucket46E60C76",
+                          "FloweroriginalImageBucket46E60C76",
                           "Arn",
                         ],
                       },
@@ -3510,7 +3510,7 @@ exports[`Snapshot test 1`] = `
       },
       "Type": "AWS::IAM::Policy",
     },
-    "FlowerflowerImageBucket46E60C76": {
+    "FloweroriginalImageBucket46E60C76": {
       "DeletionPolicy": "Retain",
       "Properties": {
         "AccessControl": "LogDeliveryWrite",
@@ -3528,10 +3528,10 @@ exports[`Snapshot test 1`] = `
       "Type": "AWS::S3::Bucket",
       "UpdateReplacePolicy": "Retain",
     },
-    "FlowerflowerImageBucketPolicyD55EE863": {
+    "FloweroriginalImageBucketPolicyD55EE863": {
       "Properties": {
         "Bucket": {
-          "Ref": "FlowerflowerImageBucket46E60C76",
+          "Ref": "FloweroriginalImageBucket46E60C76",
         },
         "PolicyDocument": {
           "Statement": [
@@ -3549,7 +3549,7 @@ exports[`Snapshot test 1`] = `
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "FlowerflowerImageBucket46E60C76",
+                    "FloweroriginalImageBucket46E60C76",
                     "Arn",
                   ],
                 },
@@ -3559,7 +3559,7 @@ exports[`Snapshot test 1`] = `
                     [
                       {
                         "Fn::GetAtt": [
-                          "FlowerflowerImageBucket46E60C76",
+                          "FloweroriginalImageBucket46E60C76",
                           "Arn",
                         ],
                       },
@@ -3593,7 +3593,7 @@ exports[`Snapshot test 1`] = `
               "Ref": "FlowerdiaryContentsTableCA7C6940",
             },
             "FLOWER_BUCKET_NAME": {
-              "Ref": "FlowerflowerImageBucket46E60C76",
+              "Ref": "FloweroriginalImageBucket46E60C76",
             },
             "GENERATIVE_AI_TABLE_NAME": {
               "Ref": "FlowergenerativeAiTable021268D8",
@@ -3703,7 +3703,7 @@ exports[`Snapshot test 1`] = `
                   [
                     {
                       "Fn::GetAtt": [
-                        "FlowerflowerImageBucket46E60C76",
+                        "FloweroriginalImageBucket46E60C76",
                         "Arn",
                       ],
                     },

@@ -12,7 +12,7 @@ export interface BouquetProps {
   api: apigateway.RestApi
   generativeAiTable: dynamodb.Table
   cognitoAuthorizer: apigateway.CognitoUserPoolsAuthorizer
-  flowerImageBucket: s3.Bucket
+  originalImageBucket: s3.Bucket
 }
 
 export class Bouquet extends Construct {
@@ -66,13 +66,13 @@ export class Bouquet extends Construct {
       environment: {
         GENERATIVE_AI_TABLE_NAME: props.generativeAiTable.tableName,
         BOUQUET_TABLE_NAME: bouquetTable.tableName,
-        FLOWER_BUCKET_NAME: props.flowerImageBucket.bucketName,
+        FLOWER_BUCKET_NAME: props.originalImageBucket.bucketName,
         BOUQUET_BUCKET_NAME: bouquetBucket.bucketName,
       },
     })
     props.generativeAiTable.grantReadData(BouquetCreate)
     bouquetTable.grantWriteData(BouquetCreate)
-    props.flowerImageBucket.grantRead(BouquetCreate)
+    props.originalImageBucket.grantRead(BouquetCreate)
     bouquetBucket.grantPut(BouquetCreate)
 
     // /bouquet APIの設定
