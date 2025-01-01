@@ -3282,8 +3282,8 @@ exports[`Snapshot test 1`] = `
             "DIARY_TABLE_NAME": {
               "Ref": "FlowerdiaryContentsTableCA7C6940",
             },
-            "FLOWER_IMAGE_BUCKET_NAME": {
-              "Ref": "FlowerflowerImageBucket46E60C76",
+            "FLOWER_BUCKET_NAME": {
+              "Ref": "FlowerflowerBucket9981D467",
             },
             "GENERATIVE_TABLE_NAME": {
               "Ref": "FlowergenerativeAiTable021268D8",
@@ -3370,7 +3370,7 @@ exports[`Snapshot test 1`] = `
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "FlowerflowerImageBucket46E60C76",
+                    "FlowerflowerBucket9981D467",
                     "Arn",
                   ],
                 },
@@ -3380,7 +3380,7 @@ exports[`Snapshot test 1`] = `
                     [
                       {
                         "Fn::GetAtt": [
-                          "FlowerflowerImageBucket46E60C76",
+                          "FlowerflowerBucket9981D467",
                           "Arn",
                         ],
                       },
