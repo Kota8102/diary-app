@@ -107,9 +107,7 @@ def get_image(flower_id: str) -> Optional[str]:
     except ClientError as e:
         if e.response["Error"].get("Code") == "NoSuchKey":
             logger.info(f"image not found: {s3_key}")
-            return None
-        logger.error(f"S3エラー: {e.response['Error']['Message']}")
-        raise
+        return ""
 
 
 def get_title(user_id: str, date: str) -> Optional[str]:
@@ -149,10 +147,10 @@ def get_body(user_id: str, date: str) -> Optional[str]:
     Returns:
         Optional[str]: 本文またはNone。
     """
-    diary_table_name = os.getenv("TABLE_NAME")
+    diary_table_name = os.getenv("GENERATIVE_AI_TABLE_NAME")
     if not diary_table_name:
-        logger.error("TABLE_NAME環境変数が設定されていません。")
-        raise ValueError("TABLE_NAME環境変数が設定されていません。")
+        logger.error("TABLE_NAME is not defined")
+        raise ValueError("TABLE_NAME is not defined")
 
     diary_table = dynamodb.Table(diary_table_name)
 

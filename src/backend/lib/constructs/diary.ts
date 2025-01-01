@@ -192,5 +192,11 @@ export class Diary extends Construct {
     props.generativeAiTable.grantReadData(getDiaryDataFunction)
     props.flowerBucket.grantRead(getDiaryDataFunction)
     props.table.grantReadData(getDiaryDataFunction)
+
+    const diaryDataApi = props.api.root.addResource('data')
+
+    diaryDataApi.addMethod('GET', new apigateway.LambdaIntegration(getDiaryDataFunction), {
+      authorizer: props.cognitoAuthorizer,
+    })
   }
 }
