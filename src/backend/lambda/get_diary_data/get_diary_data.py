@@ -92,10 +92,10 @@ def get_image(flower_id: str) -> Optional[str]:
         Optional[str]: Base64エンコードされた画像データまたはNone
     """
     s3 = boto3.client("s3")
-    bucket_name = os.getenv("FLOWER_IMAGE_BUCKET_NAME")
+    bucket_name = os.getenv("FLOWER_BUCKET_NAME")
     if not bucket_name:
-        logger.error("FLOWER_IMAGE_BUCKET_NAME 環境変数が設定されていません")
-        raise ValueError("FLOWER_IMAGE_BUCKET_NAME 環境変数が設定されていません")
+        logger.error("FLOWER_BUCKET_NAME 環境変数が設定されていません")
+        raise ValueError("FLOWER_BUCKET_NAME 環境変数が設定されていません")
 
     s3_key = f"flowers/{flower_id}.png"
 

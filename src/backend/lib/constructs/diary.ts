@@ -185,11 +185,11 @@ export class Diary extends Construct {
       environment: {
         GENERATIVE_TABLE_NAME: props.generativeAiTable.tableName,
         DIARY_TABLE_NAME: props.table.tableName,
-        FLOWER_IMAGE_BUCKET_NAME: props.flowerImageBucket.bucketName,
+        FLOWER_BUCKET_NAME: props.flowerBucket.bucketName,
       },
     })
     props.generativeAiTable.grantReadData(getDiaryDataFunction)
-    props.flowerImageBucket.grantRead(getDiaryDataFunction)
+    props.flowerBucket.grantRead(getDiaryDataFunction)
     props.table.grantReadData(getDiaryDataFunction)
   }
 }
