@@ -262,8 +262,6 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             "image": image,
             "title": title or "",
             "body": body or "",
-            "has_title": bool(title),
-            "has_body": bool(body),
             "can_create_bouquet": can_create_bouquet,
         }
 
