@@ -132,8 +132,8 @@ def get_title(user_id: str, date: str) -> Optional[str]:
         response = generative_ai_table.get_item(Key={"user_id": user_id, "date": date})
         return response.get("Item", {}).get("title")
     except ClientError as e:
-        logger.error(f"DynamoDB client error: {e.response['Error']['Message']}")
-        raise
+        logger.info(f"DynamoDB client error: {e.response['Error']['Message']}")
+        return ""
 
 
 def get_body(user_id: str, date: str) -> Optional[str]:
