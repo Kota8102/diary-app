@@ -2,8 +2,8 @@ import base64
 import json
 import logging
 import os
+from datetime import datetime, timezone
 from typing import Any, Dict, Optional
-from datetime import datetime, timedelta, timezone
 
 import boto3
 from botocore.exceptions import ClientError
@@ -18,6 +18,7 @@ logger.addHandler(handler)
 logger.setLevel(logging.INFO)
 
 dynamodb = boto3.resource("dynamodb", region_name="ap-northeast-1")
+
 
 def create_response(status_code: int, body: dict) -> dict:
     """
@@ -39,6 +40,7 @@ def create_response(status_code: int, body: dict) -> dict:
         },
     }
 
+
 def validate_date(date: str) -> bool:
     """
     日付文字列の形式を検証します。
@@ -52,6 +54,7 @@ def validate_date(date: str) -> bool:
     import re
 
     return bool(re.match(r"^\d{4}-\d{2}-\d{2}$", date))
+
 
 def get_flower_id(user_id: str, date: str) -> Optional[str]:
     """
@@ -77,6 +80,7 @@ def get_flower_id(user_id: str, date: str) -> Optional[str]:
     except ClientError as e:
         logger.error(f"DynamoDB client error: {e.response['Error']['Message']}")
         raise
+
 
 def get_image(flower_id: str) -> Optional[str]:
     """
@@ -107,6 +111,7 @@ def get_image(flower_id: str) -> Optional[str]:
         logger.error(f"S3エラー: {e.response['Error']['Message']}")
         raise
 
+
 def get_title(user_id: str, date: str) -> Optional[str]:
     """
     DynamoDBからタイトルを取得します。
@@ -131,6 +136,7 @@ def get_title(user_id: str, date: str) -> Optional[str]:
     except ClientError as e:
         logger.error(f"DynamoDB client error: {e.response['Error']['Message']}")
         raise
+
 
 def get_body(user_id: str, date: str) -> Optional[str]:
     """
@@ -157,6 +163,7 @@ def get_body(user_id: str, date: str) -> Optional[str]:
         logger.error(f"DynamoDB client error: {e.response['Error']['Message']}")
         raise
 
+
 def get_current_week() -> (int, int):
     """
     現在の年と週番号を取得します。
@@ -167,6 +174,7 @@ def get_current_week() -> (int, int):
     current_date = datetime.now(timezone.utc)
     current_year, current_week, _ = current_date.isocalendar()
     return current_year, current_week
+
 
 def check_bouquet_created(user_id: str, current_year: int, current_week: int) -> bool:
     """
@@ -186,6 +194,7 @@ def check_bouquet_created(user_id: str, current_year: int, current_week: int) ->
         Key={"user_id": user_id, "year_week": f"{current_year}-{current_week}"}
     )
     return "Item" in bouquet_response
+
 
 def count_flowers_in_week(user_id: str, current_year: int, current_week: int) -> int:
     """
@@ -210,6 +219,7 @@ def count_flowers_in_week(user_id: str, current_year: int, current_week: int) ->
         logger.error(f"S3 error: {e.response['Error']['Message']}")
         raise
 
+
 def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     """
     Lambda関数: 画像、タイトル、本文をDynamoDBから取得し、
@@ -225,7 +235,9 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     try:
         query_params = event.get("queryStringParameters", {})
         if not query_params or "date" not in query_params:
-            return create_response(400, {"error": "Required parameter is missing: date"})
+            return create_response(
+                400, {"error": "Required parameter is missing: date"}
+            )
 
         user_id = event["requestContext"]["authorizer"]["claims"]["sub"]
         date = query_params["date"]
