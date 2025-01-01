@@ -3,10 +3,10 @@ name = "backend"
 version = "0.1.0"
 description = "Add your description here"
 dependencies = [
-  "pytest>=8.3.3",
-  "boto3>=1.35.57",
-  "moto>=5.0.20",
-  "ruff>=0.7.3",
+    "pytest>=8.3.3",
+    "boto3>=1.35.57",
+    "moto>=5.0.20",
+    "ruff>=0.8.4",
 ]
 readme = "README.md"
 requires-python = ">= 3.8"
