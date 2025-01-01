@@ -47,7 +47,7 @@ def get_img_from_s3(flower_id):
         Exception: S3 操作が失敗した場合に発生。
     """
     s3 = boto3.client("s3")
-    bucket_name = os.environ["FLOWER_IMAGE_BUCKET_NAME"]
+    bucket_name = os.environ["ORIGINAL_IMAGE_BUCKET_NAME"]
     s3_key = f"flowers/{flower_id}.png"
 
     try:

@@ -53,13 +53,14 @@ export class BackendStack extends cdk.Stack {
     })
     // Diary機能コンストラクトのスタック化
     const diary = new Diary(this, 'Diary', {
+      flowerBucket: flower.flowerBucket,
       userPool: auth.userPool,
       api: api.api,
       cognitoAuthorizer: api.cognitoAuthorizer,
       table: flower.table,
       generativeAiTable: flower.generativeAiTable,
       flowerSelectFunction: flower.flowerSelectFunction,
-      flowerImageBucket: flower.flowerImageBucket,
+      originalImageBucket: flower.originalImageBucket,
     })
 
     const bouquet = new Bouquet(this, 'Bouquet', {
@@ -68,7 +69,7 @@ export class BackendStack extends cdk.Stack {
       api: api.api,
       generativeAiTable: flower.generativeAiTable,
       cognitoAuthorizer: api.cognitoAuthorizer,
-      flowerImageBucket: flower.flowerImageBucket,
+      originalImageBucket: flower.originalImageBucket,
     })
 
     const settings = new Settings(this, 'Settings', {
