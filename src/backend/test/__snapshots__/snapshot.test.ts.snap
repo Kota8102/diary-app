@@ -2076,7 +2076,7 @@ exports[`Snapshot test 1`] = `
               "Ref": "BouquetbouquetBucket080B429F",
             },
             "BOUQUET_TABLE_NAME": {
-              "Ref": "BouquetBouquetTableE43AF35D",
+              "Ref": "DiaryBouquetTableF76EF0C5",
             },
             "GENERATIVE_AI_TABLE_NAME": {
               "Ref": "FlowergenerativeAiTable021268D8",
@@ -2169,7 +2169,7 @@ exports[`Snapshot test 1`] = `
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "BouquetBouquetTableE43AF35D",
+                    "DiaryBouquetTableF76EF0C5",
                     "Arn",
                   ],
                 },
@@ -2244,43 +2244,6 @@ exports[`Snapshot test 1`] = `
         ],
       },
       "Type": "AWS::IAM::Policy",
-    },
-    "BouquetBouquetTableE43AF35D": {
-      "DeletionPolicy": "Delete",
-      "Properties": {
-        "AttributeDefinitions": [
-          {
-            "AttributeName": "user_id",
-            "AttributeType": "S",
-          },
-          {
-            "AttributeName": "year_week",
-            "AttributeType": "S",
-          },
-        ],
-        "KeySchema": [
-          {
-            "AttributeName": "user_id",
-            "KeyType": "HASH",
-          },
-          {
-            "AttributeName": "year_week",
-            "KeyType": "RANGE",
-          },
-        ],
-        "PointInTimeRecoverySpecification": {
-          "PointInTimeRecoveryEnabled": true,
-        },
-        "ProvisionedThroughput": {
-          "ReadCapacityUnits": 5,
-          "WriteCapacityUnits": 5,
-        },
-        "StreamSpecification": {
-          "StreamViewType": "NEW_AND_OLD_IMAGES",
-        },
-      },
-      "Type": "AWS::DynamoDB::Table",
-      "UpdateReplacePolicy": "Delete",
     },
     "BouquetbouquetBucket080B429F": {
       "DeletionPolicy": "Retain",
@@ -2687,6 +2650,43 @@ exports[`Snapshot test 1`] = `
         ],
       },
       "Type": "AWS::IAM::Role",
+    },
+    "DiaryBouquetTableF76EF0C5": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "user_id",
+            "AttributeType": "S",
+          },
+          {
+            "AttributeName": "year_week",
+            "AttributeType": "S",
+          },
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "user_id",
+            "KeyType": "HASH",
+          },
+          {
+            "AttributeName": "year_week",
+            "KeyType": "RANGE",
+          },
+        ],
+        "PointInTimeRecoverySpecification": {
+          "PointInTimeRecoveryEnabled": true,
+        },
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5,
+        },
+        "StreamSpecification": {
+          "StreamViewType": "NEW_AND_OLD_IMAGES",
+        },
+      },
+      "Type": "AWS::DynamoDB::Table",
+      "UpdateReplacePolicy": "Delete",
     },
     "DiaryTitleGenerateLambda7612098A": {
       "DependsOn": [
@@ -3417,6 +3417,9 @@ exports[`Snapshot test 1`] = `
         },
         "Environment": {
           "Variables": {
+            "BOUQUET_TABLE_NAME": {
+              "Ref": "DiaryBouquetTableF76EF0C5",
+            },
             "DIARY_TABLE_NAME": {
               "Ref": "FlowerdiaryContentsTableCA7C6940",
             },

@@ -1,7 +1,7 @@
 import * as cdk from 'aws-cdk-lib'
 import * as apigateway from 'aws-cdk-lib/aws-apigateway'
 import type * as cognito from 'aws-cdk-lib/aws-cognito'
-import type * as dynamodb from 'aws-cdk-lib/aws-dynamodb'
+import * as dynamodb from 'aws-cdk-lib/aws-dynamodb'
 import * as lambda from 'aws-cdk-lib/aws-lambda'
 import { DynamoEventSource } from 'aws-cdk-lib/aws-lambda-event-sources'
 import type * as s3 from 'aws-cdk-lib/aws-s3'
@@ -20,6 +20,7 @@ export interface DiaryProps {
 
 export class Diary extends Construct {
   public readonly diaryTableEventSource: DynamoEventSource
+  public readonly bouquetTable: dynamodb.Table
 
   constructor(scope: Construct, id: string, props: DiaryProps) {
     super(scope, id)
@@ -178,6 +179,21 @@ export class Diary extends Construct {
       authorizer: props.cognitoAuthorizer,
     })
 
+    // 花束の作成情報を保存するDynamoDBテーブルの作成
+    const bouquetTable = new dynamodb.Table(this, 'BouquetTable', {
+      partitionKey: {
+        name: 'user_id',
+        type: dynamodb.AttributeType.STRING,
+      },
+      sortKey: {
+        name: 'year_week',
+        type: dynamodb.AttributeType.STRING,
+      },
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      pointInTimeRecovery: true,
+      stream: dynamodb.StreamViewType.NEW_AND_OLD_IMAGES,
+    })
+
     const getDiaryDataFunction = new lambda.Function(this, 'getDiaryDataFunction', {
       runtime: lambda.Runtime.PYTHON_3_11,
       handler: 'get_diary_data.lambda_handler',
@@ -186,6 +202,7 @@ export class Diary extends Construct {
         GENERATIVE_AI_TABLE_NAME: props.generativeAiTable.tableName,
         DIARY_TABLE_NAME: props.table.tableName,
         FLOWER_BUCKET_NAME: props.flowerBucket.bucketName,
+        BOUQUET_TABLE_NAME: bouquetTable.tableName,
       },
       timeout: cdk.Duration.seconds(30),
     })
@@ -198,5 +215,7 @@ export class Diary extends Construct {
     diaryDataApi.addMethod('GET', new apigateway.LambdaIntegration(getDiaryDataFunction), {
       authorizer: props.cognitoAuthorizer,
     })
+
+    this.bouquetTable = bouquetTable
   }
 }

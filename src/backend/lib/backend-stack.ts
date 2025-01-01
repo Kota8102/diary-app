@@ -66,6 +66,7 @@ export class BackendStack extends cdk.Stack {
     const bouquet = new Bouquet(this, 'Bouquet', {
       userPool: auth.userPool,
       table: flower.table,
+      bouquetTable: diary.bouquetTable,
       api: api.api,
       generativeAiTable: flower.generativeAiTable,
       cognitoAuthorizer: api.cognitoAuthorizer,
