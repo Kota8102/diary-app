@@ -1940,11 +1940,11 @@ exports[`Snapshot test 1`] = `
             "BOUQUET_TABLE_NAME": {
               "Ref": "BouquetBouquetTableE43AF35D",
             },
-            "FLOWER_BUCKET_NAME": {
-              "Ref": "FlowerflowerImageBucket46E60C76",
-            },
             "GENERATIVE_AI_TABLE_NAME": {
               "Ref": "FlowergenerativeAiTable021268D8",
+            },
+            "ORIGINAL_IMAGE_BUCKET_NAME": {
+              "Ref": "FloweroriginalImageBucket5E40682A",
             },
           },
         },
@@ -2050,7 +2050,7 @@ exports[`Snapshot test 1`] = `
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "FlowerflowerImageBucket46E60C76",
+                    "FloweroriginalImageBucket5E40682A",
                     "Arn",
                   ],
                 },
@@ -2060,7 +2060,7 @@ exports[`Snapshot test 1`] = `
                     [
                       {
                         "Fn::GetAtt": [
-                          "FlowerflowerImageBucket46E60C76",
+                          "FloweroriginalImageBucket5E40682A",
                           "Arn",
                         ],
                       },
@@ -2611,11 +2611,14 @@ exports[`Snapshot test 1`] = `
         },
         "Environment": {
           "Variables": {
-            "FLOWER_IMAGE_BUCKET_NAME": {
-              "Ref": "FlowerflowerImageBucket46E60C76",
+            "FLOWER_BUKCET_NAME": {
+              "Ref": "FlowerflowerBucket9981D467",
             },
             "FLOWER_SELECT_FUNCTION_NAME": {
               "Ref": "FlowerflowerSelectFunctionD7EEBADA",
+            },
+            "ORIGINAL_IMAGE_BUCKET_NAME": {
+              "Ref": "FloweroriginalImageBucket5E40682A",
             },
             "TABLE_NAME": {
               "Ref": "FlowerdiaryContentsTableCA7C6940",
@@ -2749,7 +2752,7 @@ exports[`Snapshot test 1`] = `
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "FlowerflowerImageBucket46E60C76",
+                    "FloweroriginalImageBucket5E40682A",
                     "Arn",
                   ],
                 },
@@ -2759,7 +2762,7 @@ exports[`Snapshot test 1`] = `
                     [
                       {
                         "Fn::GetAtt": [
-                          "FlowerflowerImageBucket46E60C76",
+                          "FloweroriginalImageBucket5E40682A",
                           "Arn",
                         ],
                       },
@@ -2768,6 +2771,31 @@ exports[`Snapshot test 1`] = `
                   ],
                 },
               ],
+            },
+            {
+              "Action": [
+                "s3:PutObject",
+                "s3:PutObjectLegalHold",
+                "s3:PutObjectRetention",
+                "s3:PutObjectTagging",
+                "s3:PutObjectVersionTagging",
+                "s3:Abort*",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    {
+                      "Fn::GetAtt": [
+                        "FlowerflowerBucket9981D467",
+                        "Arn",
+                      ],
+                    },
+                    "/*",
+                  ],
+                ],
+              },
             },
           ],
           "Version": "2012-10-17",
@@ -3375,6 +3403,71 @@ exports[`Snapshot test 1`] = `
       "Type": "AWS::DynamoDB::Table",
       "UpdateReplacePolicy": "Delete",
     },
+    "FlowerflowerBucket9981D467": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "AccessControl": "LogDeliveryWrite",
+        "LoggingConfiguration": {
+          "LogFilePrefix": "log/",
+        },
+        "OwnershipControls": {
+          "Rules": [
+            {
+              "ObjectOwnership": "ObjectWriter",
+            },
+          ],
+        },
+      },
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "FlowerflowerBucketPolicy784D0728": {
+      "Properties": {
+        "Bucket": {
+          "Ref": "FlowerflowerBucket9981D467",
+        },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:*",
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false",
+                },
+              },
+              "Effect": "Deny",
+              "Principal": {
+                "AWS": "*",
+              },
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "FlowerflowerBucket9981D467",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "FlowerflowerBucket9981D467",
+                          "Arn",
+                        ],
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::S3::BucketPolicy",
+    },
     "FlowerflowerGetFunctionA4C511EA": {
       "DependsOn": [
         "FlowerflowerGetFunctionServiceRoleDefaultPolicy62A02DD7",
@@ -3389,11 +3482,14 @@ exports[`Snapshot test 1`] = `
         },
         "Environment": {
           "Variables": {
-            "BUCKET_NAME": {
-              "Ref": "FlowerflowerImageBucket46E60C76",
+            "FLOWER_BUCKET_NAME": {
+              "Ref": "FlowerflowerBucket9981D467",
             },
             "GENERATIVE_AI_TABLE_NAME": {
               "Ref": "FlowergenerativeAiTable021268D8",
+            },
+            "ORIGINAL_BUCKET_NAME": {
+              "Ref": "FloweroriginalImageBucket5E40682A",
             },
           },
         },
@@ -3454,7 +3550,7 @@ exports[`Snapshot test 1`] = `
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "FlowerflowerImageBucket46E60C76",
+                    "FloweroriginalImageBucket5E40682A",
                     "Arn",
                   ],
                 },
@@ -3464,7 +3560,7 @@ exports[`Snapshot test 1`] = `
                     [
                       {
                         "Fn::GetAtt": [
-                          "FlowerflowerImageBucket46E60C76",
+                          "FloweroriginalImageBucket5E40682A",
                           "Arn",
                         ],
                       },
@@ -3510,71 +3606,6 @@ exports[`Snapshot test 1`] = `
       },
       "Type": "AWS::IAM::Policy",
     },
-    "FlowerflowerImageBucket46E60C76": {
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "AccessControl": "LogDeliveryWrite",
-        "LoggingConfiguration": {
-          "LogFilePrefix": "log/",
-        },
-        "OwnershipControls": {
-          "Rules": [
-            {
-              "ObjectOwnership": "ObjectWriter",
-            },
-          ],
-        },
-      },
-      "Type": "AWS::S3::Bucket",
-      "UpdateReplacePolicy": "Retain",
-    },
-    "FlowerflowerImageBucketPolicyD55EE863": {
-      "Properties": {
-        "Bucket": {
-          "Ref": "FlowerflowerImageBucket46E60C76",
-        },
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": "s3:*",
-              "Condition": {
-                "Bool": {
-                  "aws:SecureTransport": "false",
-                },
-              },
-              "Effect": "Deny",
-              "Principal": {
-                "AWS": "*",
-              },
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "FlowerflowerImageBucket46E60C76",
-                    "Arn",
-                  ],
-                },
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      {
-                        "Fn::GetAtt": [
-                          "FlowerflowerImageBucket46E60C76",
-                          "Arn",
-                        ],
-                      },
-                      "/*",
-                    ],
-                  ],
-                },
-              ],
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-      },
-      "Type": "AWS::S3::BucketPolicy",
-    },
     "FlowerflowerSelectFunctionD7EEBADA": {
       "DependsOn": [
         "FlowerflowerSelectFunctionServiceRoleDefaultPolicy7F8366A3",
@@ -3593,10 +3624,13 @@ exports[`Snapshot test 1`] = `
               "Ref": "FlowerdiaryContentsTableCA7C6940",
             },
             "FLOWER_BUCKET_NAME": {
-              "Ref": "FlowerflowerImageBucket46E60C76",
+              "Ref": "FlowerflowerBucket9981D467",
             },
             "GENERATIVE_AI_TABLE_NAME": {
               "Ref": "FlowergenerativeAiTable021268D8",
+            },
+            "ORIGINAL_IMAGE_BUCKET_NAME": {
+              "Ref": "FloweroriginalImageBucket5E40682A",
             },
           },
         },
@@ -3669,6 +3703,31 @@ exports[`Snapshot test 1`] = `
               ],
             },
             {
+              "Action": [
+                "s3:PutObject",
+                "s3:PutObjectLegalHold",
+                "s3:PutObjectRetention",
+                "s3:PutObjectTagging",
+                "s3:PutObjectVersionTagging",
+                "s3:Abort*",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    {
+                      "Fn::GetAtt": [
+                        "FlowerflowerBucket9981D467",
+                        "Arn",
+                      ],
+                    },
+                    "/*",
+                  ],
+                ],
+              },
+            },
+            {
               "Action": "dynamodb:ListStreams",
               "Effect": "Allow",
               "Resource": "*",
@@ -3703,7 +3762,7 @@ exports[`Snapshot test 1`] = `
                   [
                     {
                       "Fn::GetAtt": [
-                        "FlowerflowerImageBucket46E60C76",
+                        "FloweroriginalImageBucket5E40682A",
                         "Arn",
                       ],
                     },
@@ -3781,6 +3840,71 @@ exports[`Snapshot test 1`] = `
       },
       "Type": "AWS::DynamoDB::Table",
       "UpdateReplacePolicy": "Delete",
+    },
+    "FloweroriginalImageBucket5E40682A": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "AccessControl": "LogDeliveryWrite",
+        "LoggingConfiguration": {
+          "LogFilePrefix": "log/",
+        },
+        "OwnershipControls": {
+          "Rules": [
+            {
+              "ObjectOwnership": "ObjectWriter",
+            },
+          ],
+        },
+      },
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "FloweroriginalImageBucketPolicyFA65F301": {
+      "Properties": {
+        "Bucket": {
+          "Ref": "FloweroriginalImageBucket5E40682A",
+        },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:*",
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false",
+                },
+              },
+              "Effect": "Deny",
+              "Principal": {
+                "AWS": "*",
+              },
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "FloweroriginalImageBucket5E40682A",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "FloweroriginalImageBucket5E40682A",
+                          "Arn",
+                        ],
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::S3::BucketPolicy",
     },
     "IdentityIdentityPool01DA4AB2": {
       "DependsOn": [

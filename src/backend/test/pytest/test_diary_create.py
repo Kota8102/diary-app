@@ -38,14 +38,14 @@ def test_get_img_from_s3(mock_boto_client):
         "Body": MagicMock(read=lambda: b"fake_image_data")
     }
 
-    os.environ["FLOWER_IMAGE_BUCKET_NAME"] = "TEST_BUCKET"
+    os.environ["ORIGINAL_IMAGE_BUCKET_NAME"] = "TEST_BUCKET"
     # テスト実行
     flower_id = "test_flower_id"
     image_data = get_img_from_s3(flower_id)
 
     # アサーション
     s3_client_mock.get_object.assert_called_once_with(
-        Bucket=os.environ["FLOWER_IMAGE_BUCKET_NAME"], Key=f"flowers/{flower_id}.png"
+        Bucket=os.environ["ORIGINAL_IMAGE_BUCKET_NAME"], Key=f"flowers/{flower_id}.png"
     )
     assert image_data == base64.b64encode(b"fake_image_data").decode("utf-8")
 

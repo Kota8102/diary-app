@@ -14,7 +14,8 @@ export interface DiaryProps {
   table: dynamodb.Table
   generativeAiTable: dynamodb.Table
   flowerSelectFunction: lambda.Function
-  flowerImageBucket: s3.Bucket
+  originalImageBucket: s3.Bucket
+  flowerBucket: s3.Bucket
 }
 
 export class Diary extends Construct {
@@ -36,14 +37,16 @@ export class Diary extends Construct {
       logRetention: 14,
       environment: {
         TABLE_NAME: props.table.tableName,
-        FLOWER_IMAGE_BUCKET_NAME: props.flowerImageBucket.bucketName,
+        ORIGINAL_IMAGE_BUCKET_NAME: props.originalImageBucket.bucketName,
         FLOWER_SELECT_FUNCTION_NAME: props.flowerSelectFunction.functionName,
+        FLOWER_BUKCET_NAME: props.flowerBucket.bucketName,
       },
       timeout: cdk.Duration.seconds(30),
     })
     props.table.grantWriteData(diaryCreateFunction)
     props.flowerSelectFunction.grantInvoke(diaryCreateFunction)
-    props.flowerImageBucket.grantRead(diaryCreateFunction)
+    props.originalImageBucket.grantRead(diaryCreateFunction)
+    props.flowerBucket.grantPut(diaryCreateFunction)
 
     // 日記編集用Lambda関数の定義
     const diaryEditFunction = new lambda.Function(this, 'diaryEditLambda', {

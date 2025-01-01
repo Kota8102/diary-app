@@ -3,7 +3,7 @@ import os
 from unittest.mock import MagicMock, patch
 
 os.environ["AWS_DEFAULT_REGION"] = "us-east-1"
-os.environ["BUCKET_NAME"] = "bucket"
+os.environ["FLOWER_BUCKET_NAME"] = "bucket"
 
 import pytest
 from flower_get.flower_get import (
