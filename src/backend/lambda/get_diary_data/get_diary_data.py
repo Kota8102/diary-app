@@ -196,6 +196,7 @@ def check_bouquet_created(user_id: str, current_year: int, current_week: int) ->
     except ClientError:
         return False
 
+
 def count_flowers_in_week(user_id: str, current_year: int, current_week: int) -> int:
     """
     現在の週にS3にある花の数をカウントします。
