@@ -98,7 +98,7 @@ def test_get_title_no_item(mock_dynamodb_table):
     mock_dynamodb_table.return_value = mock_table
 
     result = get_title("test-user-id", "2024-03-15")
-    assert result == None
+    assert result is None
 
 
 # get_bodyのテスト
