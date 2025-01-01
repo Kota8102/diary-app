@@ -183,7 +183,7 @@ export class Diary extends Construct {
       handler: 'get_diary_data.lambda_handler',
       code: lambda.Code.fromAsset('lambda/get_diary_data'),
       environment: {
-        GENERATIVE_TABLE_NAME: props.generativeAiTable.tableName,
+        GENERATIVE_AI_TABLE_NAME: props.generativeAiTable.tableName,
         DIARY_TABLE_NAME: props.table.tableName,
         FLOWER_BUCKET_NAME: props.flowerBucket.bucketName,
       },

@@ -3285,7 +3285,7 @@ exports[`Snapshot test 1`] = `
             "FLOWER_BUCKET_NAME": {
               "Ref": "FlowerflowerBucket9981D467",
             },
-            "GENERATIVE_TABLE_NAME": {
+            "GENERATIVE_AI_TABLE_NAME": {
               "Ref": "FlowergenerativeAiTable021268D8",
             },
           },

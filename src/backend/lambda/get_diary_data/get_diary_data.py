@@ -95,8 +95,8 @@ def get_image(flower_id: str) -> Optional[str]:
     s3 = boto3.client("s3")
     bucket_name = os.getenv("FLOWER_BUCKET_NAME")
     if not bucket_name:
-        logger.error("FLOWER_BUCKET_NAME環境変数が設定されていません。")
-        raise ValueError("FLOWER_BUCKET_NAME環境変数が設定されていません。")
+        logger.error("FLOWER_BUCKET_NAME is not defined")
+        raise ValueError("FLOWER_BUCKET_NAME is not defined")
 
     s3_key = f"flowers/{flower_id}.png"
 
@@ -125,8 +125,8 @@ def get_title(user_id: str, date: str) -> Optional[str]:
     """
     generative_ai_table_name = os.getenv("GENERATIVE_AI_TABLE_NAME")
     if not generative_ai_table_name:
-        logger.error("GENERATIVE_AI_TABLE_NAME環境変数が設定されていません。")
-        raise ValueError("GENERATIVE_AI_TABLE_NAME環境変数が設定されていません。")
+        logger.error("GENERATIVE_AI_TABLE_NAME is not defined")
+        raise ValueError("GENERATIVE_AI_TABLE_NAME is not defined")
 
     generative_ai_table = dynamodb.Table(generative_ai_table_name)
 
@@ -241,7 +241,6 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
 
         user_id = event["requestContext"]["authorizer"]["claims"]["sub"]
         date = query_params["date"]
-
         if not validate_date(date):
             return create_response(400, {"error": "Invalid date format"})
 
