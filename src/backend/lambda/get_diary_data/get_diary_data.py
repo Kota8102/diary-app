@@ -256,7 +256,7 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         flower_count = count_flowers_in_week(user_id, current_year, current_week)
         logger.info(f"flower count: {flower_count}")
         can_create_bouquet = not bouquet_created and flower_count >= 5
-        logger.info(f"can : {can_create_bouquet}")
+        logger.info(f"can create bouquet: {can_create_bouquet}")
 
         response_data = {
             "image": image,
