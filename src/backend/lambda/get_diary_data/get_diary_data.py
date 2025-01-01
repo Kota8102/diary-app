@@ -188,11 +188,13 @@ def check_bouquet_created(user_id: str, current_year: int, current_week: int) ->
     """
     bouquet_table_name = os.getenv("BOUQUET_TABLE_NAME")
     bouquet_table = dynamodb.Table(bouquet_table_name)
-    bouquet_response = bouquet_table.get_item(
-        Key={"user_id": user_id, "year_week": f"{current_year}-{current_week}"}
-    )
-    return "Item" in bouquet_response
-
+    try:
+        bouquet_response = bouquet_table.get_item(
+            Key={"user_id": user_id, "year_week": f"{current_year}-{current_week}"}
+        )
+        return True
+    except ClientError as e:
+        return False
 
 def count_flowers_in_week(user_id: str, current_year: int, current_week: int) -> int:
     """
