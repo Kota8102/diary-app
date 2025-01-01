@@ -187,6 +187,7 @@ export class Diary extends Construct {
         DIARY_TABLE_NAME: props.table.tableName,
         FLOWER_BUCKET_NAME: props.flowerBucket.bucketName,
       },
+      timeout: cdk.Duration.seconds(30),
     })
     props.generativeAiTable.grantReadData(getDiaryDataFunction)
     props.flowerBucket.grantRead(getDiaryDataFunction)
