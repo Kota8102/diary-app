@@ -126,6 +126,8 @@ def flower_wrap(flower_id):
     if not flower_id:
         raise ValueError("Invalid flower ID provided.")
     ...
+    if not flower_id:
+        raise ValueError("Error: Invalid flower ID provided.")
     """
     ランダムに選択した包装紙(front/back)で指定flower_idの花を包み、
     base64エンコードした画像を返すPython関数。
@@ -160,9 +162,12 @@ def flower_wrap(flower_id):
     # 画像をBase64にエンコードして戻す
     buffer = BytesIO()
     try:
+        try:
         palette.save(buffer, format="PNG")
     except Exception as e:
         raise RuntimeError(f"Failed to save image: {e}")
+    except Exception as e:
+        raise RuntimeError(f"Error: Failed to save image: {e}")
     buffer.seek(0)
     encoded_image = base64.b64encode(buffer.read()).decode("utf-8")
 
