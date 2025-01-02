@@ -28,12 +28,14 @@ def validate_input(body):
     required_fields = ["date", "content"]
     for field in required_fields:
         if field not in body:
-            raise ValueError(f"必須フィールドがありません: {field}")
+            raise ValueError(f"Error: Required field is missing. {field}")
 
     try:
         datetime.strptime(body["date"], "%Y-%m-%d")
     except ValueError:
-        raise ValueError("不正な日付形式です。YYYY-MM-DDの形式を使用してください")
+        raise ValueError(
+            "Error: Invalid date format. Please use the YYYY-MM-DD format."
+        )
 
 
 def save_to_dynamodb(user_id, date, content, is_deleted=False):
@@ -88,7 +90,7 @@ def load_random_image_from_s3(bucket_name, prefix):
         response = s3.list_objects_v2(Bucket=bucket_name, Prefix=prefix)
         if "Contents" not in response:
             raise ValueError(
-                f"No images found under prefix {prefix} in bucket {bucket_name}"
+                f"Error: No images found under prefix {prefix} in bucket {bucket_name}"
             )
 
         # PNGファイルのみをフィルタ
@@ -97,7 +99,7 @@ def load_random_image_from_s3(bucket_name, prefix):
         ]
         if not png_keys:
             raise ValueError(
-                f"No PNG images found under prefix {prefix} in bucket {bucket_name}"
+                f"Error: No PNG images found under prefix {prefix} in bucket {bucket_name}"
             )
 
         # ランダムに1つのキーを選択
@@ -111,11 +113,13 @@ def load_random_image_from_s3(bucket_name, prefix):
 
     except ClientError as e:
         # S3操作などのAWSクライアントエラー
-        raise RuntimeError(f"Failed to get random image from S3: {e}") from e
+        raise RuntimeError(f"Error: Failed to get random image from S3: {e}") from e
 
     except Exception as e:
         # その他の一般的なエラー
-        raise RuntimeError(f"Unexpected error in load_random_image_from_s3: {e}") from e
+        raise RuntimeError(
+            f"Error: Unexpected error in load_random_image_from_s3: {e}"
+        ) from e
 
 
 def flower_wrap(flower_id):
@@ -221,11 +225,11 @@ def lambda_handler(event, context):
         # Flower Lambda を呼び出して花の ID を取得
         flower_id = invoke_flower_lambda(user_id, date, content)
         if not flower_id:
-            raise ValueError("Invalid flower ID returned from flower Lambda")
+            raise ValueError("Error: Invalid flower ID returned from flower Lambda")
 
         flower_image = flower_wrap(flower_id)
         if not flower_image:
-            raise ValueError("flower Image not found")
+            raise ValueError("Error: Flower Image not found")
 
         # 成功レスポンスの返却
         return {
