@@ -20,11 +20,12 @@ def test_validate_input():
     validate_input(body)  # 例外が発生しなければ成功
 
     # 異常系
-    with pytest.raises(ValueError, match="必須フィールドがありません: date"):
+    with pytest.raises(ValueError, match="Error: Required field is missing. date"):
         validate_input({"content": "今日は散歩をしました。"})
 
     with pytest.raises(
-        ValueError, match="不正な日付形式です。YYYY-MM-DDの形式を使用してください"
+        ValueError,
+        match="Error: Invalid date format. Please use the YYYY-MM-DD format.",
     ):
         validate_input({"date": "15-03-2024", "content": "今日は散歩をしました。"})
 
