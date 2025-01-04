@@ -38,6 +38,7 @@ def validate_input(body):
         )
 
 
+
 def save_to_dynamodb(user_id, date, content, is_deleted=False):
     """
     DynamoDB に日記のアイテムを保存し、生成した diary_id を返す関数。

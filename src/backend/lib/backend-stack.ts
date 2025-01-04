@@ -2,7 +2,7 @@ import * as cdk from 'aws-cdk-lib'
 import * as acm from 'aws-cdk-lib/aws-certificatemanager'
 import * as s3 from 'aws-cdk-lib/aws-s3'
 import type { Construct } from 'constructs'
-import { Api, Auth, Bouquet, Flower, Identity, Web } from './constructs'
+import { Api, Auth, Bouquet, Flower, Identity, Settings, Web } from './constructs'
 import { Diary } from './constructs/diary'
 
 interface BackendStackProps extends cdk.StackProps {}
@@ -53,22 +53,30 @@ export class BackendStack extends cdk.Stack {
     })
     // Diary機能コンストラクトのスタック化
     const diary = new Diary(this, 'Diary', {
+      flowerBucket: flower.flowerBucket,
       userPool: auth.userPool,
       api: api.api,
       cognitoAuthorizer: api.cognitoAuthorizer,
       table: flower.table,
       generativeAiTable: flower.generativeAiTable,
       flowerSelectFunction: flower.flowerSelectFunction,
-      flowerImageBucket: flower.flowerImageBucket,
+      originalImageBucket: flower.originalImageBucket,
     })
 
     const bouquet = new Bouquet(this, 'Bouquet', {
       userPool: auth.userPool,
       table: flower.table,
+      bouquetTable: diary.bouquetTable,
       api: api.api,
       generativeAiTable: flower.generativeAiTable,
       cognitoAuthorizer: api.cognitoAuthorizer,
-      flowerImageBucket: flower.flowerImageBucket,
+      originalImageBucket: flower.originalImageBucket,
+    })
+
+    const settings = new Settings(this, 'Settings', {
+      userPool: auth.userPool,
+      api: api.api,
+      cognitoAuthorizer: api.cognitoAuthorizer,
     })
 
     const web = new Web(this, 'Web', {

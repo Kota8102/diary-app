@@ -59,7 +59,7 @@ requests==2.32.3
     # via responses
 responses==0.25.3
     # via moto
-ruff==0.7.3
+ruff==0.8.4
     # via backend
 s3transfer==0.10.3
     # via boto3

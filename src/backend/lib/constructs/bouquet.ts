@@ -1,7 +1,7 @@
 import * as cdk from 'aws-cdk-lib'
 import * as apigateway from 'aws-cdk-lib/aws-apigateway'
 import type * as cognito from 'aws-cdk-lib/aws-cognito'
-import * as dynamodb from 'aws-cdk-lib/aws-dynamodb'
+import type * as dynamodb from 'aws-cdk-lib/aws-dynamodb'
 import * as lambda from 'aws-cdk-lib/aws-lambda'
 import * as s3 from 'aws-cdk-lib/aws-s3'
 import { Construct } from 'constructs'
@@ -9,10 +9,11 @@ import { Construct } from 'constructs'
 export interface BouquetProps {
   userPool: cognito.UserPool
   table: dynamodb.Table
+  bouquetTable: dynamodb.Table
   api: apigateway.RestApi
   generativeAiTable: dynamodb.Table
   cognitoAuthorizer: apigateway.CognitoUserPoolsAuthorizer
-  flowerImageBucket: s3.Bucket
+  originalImageBucket: s3.Bucket
 }
 
 export class Bouquet extends Construct {
@@ -37,21 +38,6 @@ export class Bouquet extends Construct {
     })
     bouquetBucket.grantRead(bouquetGetFunction)
 
-    // 花束の作成情報を保存するDynamoDBテーブルの作成
-    const bouquetTable = new dynamodb.Table(this, 'BouquetTable', {
-      partitionKey: {
-        name: 'user_id',
-        type: dynamodb.AttributeType.STRING,
-      },
-      sortKey: {
-        name: 'year_week',
-        type: dynamodb.AttributeType.STRING,
-      },
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
-      pointInTimeRecovery: true,
-      stream: dynamodb.StreamViewType.NEW_AND_OLD_IMAGES,
-    })
-
     //花束作成用Lambda関数の定義
     const BouquetCreate = new lambda.Function(this, 'BouquetCreate', {
       runtime: lambda.Runtime.PYTHON_3_11,
@@ -65,14 +51,14 @@ export class Bouquet extends Construct {
       }),
       environment: {
         GENERATIVE_AI_TABLE_NAME: props.generativeAiTable.tableName,
-        BOUQUET_TABLE_NAME: bouquetTable.tableName,
-        FLOWER_BUCKET_NAME: props.flowerImageBucket.bucketName,
+        BOUQUET_TABLE_NAME: props.bouquetTable.tableName,
+        ORIGINAL_IMAGE_BUCKET_NAME: props.originalImageBucket.bucketName,
         BOUQUET_BUCKET_NAME: bouquetBucket.bucketName,
       },
     })
     props.generativeAiTable.grantReadData(BouquetCreate)
-    bouquetTable.grantWriteData(BouquetCreate)
-    props.flowerImageBucket.grantRead(BouquetCreate)
+    props.bouquetTable.grantWriteData(BouquetCreate)
+    props.originalImageBucket.grantRead(BouquetCreate)
     bouquetBucket.grantPut(BouquetCreate)
 
     // /bouquet APIの設定
