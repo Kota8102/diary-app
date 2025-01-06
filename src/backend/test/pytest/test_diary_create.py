@@ -5,11 +5,12 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 from diary_create.diary_create import (
-    get_img_from_s3,
+    flower_wrap,
     invoke_flower_lambda,
     save_to_dynamodb,
     validate_input,
 )
+from PIL import Image
 
 
 def test_validate_input():
@@ -19,36 +20,14 @@ def test_validate_input():
     validate_input(body)  # 例外が発生しなければ成功
 
     # 異常系
-    with pytest.raises(ValueError, match="必須フィールドがありません: date"):
+    with pytest.raises(ValueError, match="Error: Required field is missing. date"):
         validate_input({"content": "今日は散歩をしました。"})
 
     with pytest.raises(
-        ValueError, match="不正な日付形式です。YYYY-MM-DDの形式を使用してください"
+        ValueError,
+        match="Error: Invalid date format. Please use the YYYY-MM-DD format.",
     ):
         validate_input({"date": "15-03-2024", "content": "今日は散歩をしました。"})
-
-
-@patch("boto3.client")
-def test_get_img_from_s3(mock_boto_client):
-    """get_img_from_s3関数のテスト"""
-    # モックの準備
-    s3_client_mock = MagicMock()
-    mock_boto_client.return_value = s3_client_mock
-    s3_client_mock.get_object.return_value = {
-        "Body": MagicMock(read=lambda: b"fake_image_data")
-    }
-
-    os.environ["ORIGINAL_IMAGE_BUCKET_NAME"] = "TEST_BUCKET"
-    # テスト実行
-    flower_id = "test_flower_id"
-    image_data = get_img_from_s3(flower_id)
-
-    # アサーション
-    s3_client_mock.get_object.assert_called_once_with(
-        Bucket=os.environ["ORIGINAL_IMAGE_BUCKET_NAME"], Key=f"flowers/{flower_id}.png"
-    )
-    assert image_data == base64.b64encode(b"fake_image_data").decode("utf-8")
-
 
 @patch("boto3.resource")
 def test_save_to_dynamodb(mock_boto_resource):
@@ -104,3 +83,37 @@ def test_invoke_flower_lambda(mock_boto_client):
         ),
     )
     assert flower_id == "test_flower_id"
+
+
+@pytest.fixture
+def mock_env():
+    original_env = dict(os.environ)
+    os.environ["FLOWER_IMAGE_BUCKET_NAME"] = "test-bucket"
+    yield
+    os.environ.clear()
+    os.environ.update(original_env)
+
+
+@patch("diary_create.diary_create.load_random_image_from_s3")
+def test_flower_wrap_success(mock_load_random_image, mock_env):
+    """
+    flower_wrap関数の正常系テスト
+    """
+
+    # ① front包装紙
+    wraper_front = Image.new("RGBA", (100, 200), (255, 0, 0, 128))
+    # ② back包装紙
+    wraper_back = Image.new("RGBA", (100, 200), (0, 255, 0, 128))
+    # ③ 花画像
+    flower = Image.new("RGBA", (50, 100), (0, 0, 255, 128))
+
+    # load_random_image_from_s3の戻り値を順番に返す
+    mock_load_random_image.side_effect = [wraper_front, wraper_back, flower]
+
+    # 実行
+    result = flower_wrap("sample_flower_id")
+
+    # 結果がBase64デコード可能であることを確認
+    decoded = base64.b64decode(result)
+    assert isinstance(decoded, bytes)
+    assert len(decoded) > 0
