@@ -5,6 +5,7 @@ import * as dynamodb from 'aws-cdk-lib/aws-dynamodb'
 import * as iam from 'aws-cdk-lib/aws-iam'
 import * as lambda from 'aws-cdk-lib/aws-lambda'
 import * as s3 from 'aws-cdk-lib/aws-s3'
+import * as sqs from 'aws-cdk-lib/aws-sqs'
 import * as ssm from 'aws-cdk-lib/aws-ssm'
 import { Construct } from 'constructs'
 
@@ -62,6 +63,23 @@ export class Flower extends Construct {
     const flowerBucket = new s3.Bucket(this, 'flowerBucket', {
       enforceSSL: true,
       serverAccessLogsPrefix: 'log/',
+    })
+
+    // デッドレターキューの作成
+    const deadLetterQueue = new sqs.Queue(this, 'ImageProcessingDLQ', {
+      retentionPeriod: cdk.Duration.days(14), // メッセージ保持期間
+      enforceSSL: true, // SSL を強制
+    })
+
+    // メインの SQS キューの作成
+    const imageProcessingQueue = new sqs.Queue(this, 'ImageProcessingQueue', {
+      visibilityTimeout: cdk.Duration.seconds(300), // メッセージ処理の最大時間
+      retentionPeriod: cdk.Duration.days(4), // メッセージの保持期間
+      deadLetterQueue: {
+        queue: deadLetterQueue,
+        maxReceiveCount: 5, // 最大試行回数
+      },
+      enforceSSL: true, // SSL を強制
     })
 
     // 花の画像選択用Lambda関数の定義
