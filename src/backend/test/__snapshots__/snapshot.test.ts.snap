@@ -2755,6 +2755,9 @@ exports[`Snapshot test 1`] = `
             "FLOWER_SELECT_FUNCTION_NAME": {
               "Ref": "FlowerflowerSelectFunctionD7EEBADA",
             },
+            "IMAGE_PROCESSING_QUEUE_URL": {
+              "Ref": "FlowerimageProcessingQueue525D6BA9",
+            },
             "ORIGINAL_IMAGE_BUCKET_NAME": {
               "Ref": "FloweroriginalImageBucket5E40682A",
             },
@@ -2932,6 +2935,20 @@ exports[`Snapshot test 1`] = `
                     },
                     "/*",
                   ],
+                ],
+              },
+            },
+            {
+              "Action": [
+                "sqs:SendMessage",
+                "sqs:GetQueueAttributes",
+                "sqs:GetQueueUrl",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "FlowerimageProcessingQueue525D6BA9",
+                  "Arn",
                 ],
               },
             },
@@ -3669,98 +3686,6 @@ exports[`Snapshot test 1`] = `
       },
       "Type": "AWS::IAM::Role",
     },
-    "FlowerImageProcessingDLQ48AD72FA": {
-      "DeletionPolicy": "Delete",
-      "Properties": {
-        "MessageRetentionPeriod": 1209600,
-      },
-      "Type": "AWS::SQS::Queue",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "FlowerImageProcessingDLQPolicyF30AA9C6": {
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sqs:*",
-              "Condition": {
-                "Bool": {
-                  "aws:SecureTransport": "false",
-                },
-              },
-              "Effect": "Deny",
-              "Principal": {
-                "AWS": "*",
-              },
-              "Resource": {
-                "Fn::GetAtt": [
-                  "FlowerImageProcessingDLQ48AD72FA",
-                  "Arn",
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "Queues": [
-          {
-            "Ref": "FlowerImageProcessingDLQ48AD72FA",
-          },
-        ],
-      },
-      "Type": "AWS::SQS::QueuePolicy",
-    },
-    "FlowerImageProcessingQueue135BC060": {
-      "DeletionPolicy": "Delete",
-      "Properties": {
-        "MessageRetentionPeriod": 345600,
-        "RedrivePolicy": {
-          "deadLetterTargetArn": {
-            "Fn::GetAtt": [
-              "FlowerImageProcessingDLQ48AD72FA",
-              "Arn",
-            ],
-          },
-          "maxReceiveCount": 5,
-        },
-        "VisibilityTimeout": 300,
-      },
-      "Type": "AWS::SQS::Queue",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "FlowerImageProcessingQueuePolicy6E4F4271": {
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sqs:*",
-              "Condition": {
-                "Bool": {
-                  "aws:SecureTransport": "false",
-                },
-              },
-              "Effect": "Deny",
-              "Principal": {
-                "AWS": "*",
-              },
-              "Resource": {
-                "Fn::GetAtt": [
-                  "FlowerImageProcessingQueue135BC060",
-                  "Arn",
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "Queues": [
-          {
-            "Ref": "FlowerImageProcessingQueue135BC060",
-          },
-        ],
-      },
-      "Type": "AWS::SQS::QueuePolicy",
-    },
     "FlowerdiaryContentsTableCA7C6940": {
       "DeletionPolicy": "Delete",
       "Properties": {
@@ -4235,6 +4160,98 @@ exports[`Snapshot test 1`] = `
       },
       "Type": "AWS::DynamoDB::Table",
       "UpdateReplacePolicy": "Delete",
+    },
+    "FlowerimageProcessingDLQ1A2E688D": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "MessageRetentionPeriod": 1209600,
+      },
+      "Type": "AWS::SQS::Queue",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "FlowerimageProcessingDLQPolicy4DD592F8": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sqs:*",
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false",
+                },
+              },
+              "Effect": "Deny",
+              "Principal": {
+                "AWS": "*",
+              },
+              "Resource": {
+                "Fn::GetAtt": [
+                  "FlowerimageProcessingDLQ1A2E688D",
+                  "Arn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Queues": [
+          {
+            "Ref": "FlowerimageProcessingDLQ1A2E688D",
+          },
+        ],
+      },
+      "Type": "AWS::SQS::QueuePolicy",
+    },
+    "FlowerimageProcessingQueue525D6BA9": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "MessageRetentionPeriod": 345600,
+        "RedrivePolicy": {
+          "deadLetterTargetArn": {
+            "Fn::GetAtt": [
+              "FlowerimageProcessingDLQ1A2E688D",
+              "Arn",
+            ],
+          },
+          "maxReceiveCount": 5,
+        },
+        "VisibilityTimeout": 300,
+      },
+      "Type": "AWS::SQS::Queue",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "FlowerimageProcessingQueuePolicy59A9ABCE": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sqs:*",
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false",
+                },
+              },
+              "Effect": "Deny",
+              "Principal": {
+                "AWS": "*",
+              },
+              "Resource": {
+                "Fn::GetAtt": [
+                  "FlowerimageProcessingQueue525D6BA9",
+                  "Arn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Queues": [
+          {
+            "Ref": "FlowerimageProcessingQueue525D6BA9",
+          },
+        ],
+      },
+      "Type": "AWS::SQS::QueuePolicy",
     },
     "FloweroriginalImageBucket5E40682A": {
       "DeletionPolicy": "Retain",

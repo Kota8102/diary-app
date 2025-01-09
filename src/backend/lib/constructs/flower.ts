@@ -21,6 +21,7 @@ export class Flower extends Construct {
   public readonly generativeAiTable: dynamodb.Table
   public readonly flowerSelectFunction: lambda.Function
   public readonly flowerBucket: s3.Bucket
+  public readonly imageProcessingQueue: sqs.Queue
   constructor(scope: Construct, id: string, props: FlowerProps) {
     super(scope, id)
 
@@ -66,13 +67,13 @@ export class Flower extends Construct {
     })
 
     // デッドレターキューの作成
-    const deadLetterQueue = new sqs.Queue(this, 'ImageProcessingDLQ', {
+    const deadLetterQueue = new sqs.Queue(this, 'imageProcessingDLQ', {
       retentionPeriod: cdk.Duration.days(14), // メッセージ保持期間
       enforceSSL: true, // SSL を強制
     })
 
     // メインの SQS キューの作成
-    const imageProcessingQueue = new sqs.Queue(this, 'ImageProcessingQueue', {
+    const imageProcessingQueue = new sqs.Queue(this, 'imageProcessingQueue', {
       visibilityTimeout: cdk.Duration.seconds(300), // メッセージ処理の最大時間
       retentionPeriod: cdk.Duration.days(4), // メッセージの保持期間
       deadLetterQueue: {
@@ -172,5 +173,6 @@ export class Flower extends Construct {
     this.generativeAiTable = generativeAiTable
     this.flowerSelectFunction = flowerSelectFunction
     this.flowerBucket = flowerBucket
+    this.imageProcessingQueue = imageProcessingQueue
   }
 }
