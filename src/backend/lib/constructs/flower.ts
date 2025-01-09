@@ -4,6 +4,7 @@ import type * as cognito from 'aws-cdk-lib/aws-cognito'
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb'
 import * as iam from 'aws-cdk-lib/aws-iam'
 import * as lambda from 'aws-cdk-lib/aws-lambda'
+import { SqsEventSource } from 'aws-cdk-lib/aws-lambda-event-sources'
 import * as s3 from 'aws-cdk-lib/aws-s3'
 import * as sqs from 'aws-cdk-lib/aws-sqs'
 import * as ssm from 'aws-cdk-lib/aws-ssm'
@@ -129,6 +130,32 @@ export class Flower extends Construct {
     })
     originalImageBucket.grantRead(flowerGetFunction)
     generativeAiTable.grantReadData(flowerGetFunction)
+
+    // flower_vase Lambda 関数の作成
+    const flowerVaseFunction = new lambda.Function(this, 'flowerVaseFunction', {
+      runtime: lambda.Runtime.PYTHON_3_11,
+      handler: 'flower_vase.lambda_handler',
+      code: lambda.Code.fromAsset('lambda/flower_vase', {
+        bundling: {
+          image: lambda.Runtime.PYTHON_3_11.bundlingImage,
+          command: ['bash', '-c', 'pip install -r requirements.txt -t /asset-output && cp -au . /asset-output'],
+        },
+      }),
+      environment: {
+        ORIGINAL_IMAGE_BUCKET_NAME: originalImageBucket.bucketName,
+        FLOWER_BUCKET_NAME: flowerBucket.bucketName,
+        QUEUE_URL: imageProcessingQueue.queueUrl,
+      },
+      timeout: cdk.Duration.seconds(60),
+    })
+
+    // flower_vase Lambda に必要な権限を付与
+    originalImageBucket.grantRead(flowerVaseFunction)
+    flowerBucket.grantPut(flowerVaseFunction)
+    imageProcessingQueue.grantConsumeMessages(flowerVaseFunction)
+
+    // SQS トリガを Lambda に設定
+    flowerVaseFunction.addEventSource(new SqsEventSource(imageProcessingQueue, { batchSize: 1 }))
 
     // flower API の設定
     const flowerApi = props.api.root.addResource('flower')
