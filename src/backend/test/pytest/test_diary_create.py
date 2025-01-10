@@ -29,6 +29,7 @@ def test_validate_input():
     ):
         validate_input({"date": "15-03-2024", "content": "今日は散歩をしました。"})
 
+
 @patch("boto3.resource")
 def test_save_to_dynamodb(mock_boto_resource):
     """save_to_dynamodb関数のテスト"""
