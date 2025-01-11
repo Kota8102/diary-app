@@ -89,7 +89,7 @@ def test_invoke_flower_lambda(mock_boto_client):
 @pytest.fixture
 def mock_env():
     original_env = dict(os.environ)
-    os.environ["FLOWER_IMAGE_BUCKET_NAME"] = "test-bucket"
+    os.environ["ORIGINAL_IMAGE_BUCKET_NAME"] = "test-bucket"
     yield
     os.environ.clear()
     os.environ.update(original_env)
