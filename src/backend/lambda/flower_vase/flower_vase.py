@@ -85,7 +85,7 @@ def lambda_handler(event, context):
             palette.paste(flower, flower_position, flower)
 
             # 花瓶をパレットに貼り付け
-            vase_position = ((palette_width - vase.width) // 2, 400)
+            vase_position = ((palette_width - vase.width) // 2, 120)
             palette.paste(vase, vase_position, vase)
 
             # 保存先のキーを構築
