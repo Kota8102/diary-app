@@ -164,7 +164,7 @@ def flower_wrap(flower_id):
     ランダムに選択した包装紙(front/back)で指定flower_idの花を包み、
     base64エンコードした画像を返すPython関数。
     """
-    bucket_name = os.environ["FLOWER_IMAGE_BUCKET_NAME"]
+    bucket_name = os.environ["ORIGINAL_IMAGE_BUCKET_NAME"]
 
     # パレット（背景）を作成
     palette_width = 700
