@@ -5,6 +5,7 @@ import * as dynamodb from 'aws-cdk-lib/aws-dynamodb'
 import * as lambda from 'aws-cdk-lib/aws-lambda'
 import { DynamoEventSource } from 'aws-cdk-lib/aws-lambda-event-sources'
 import type * as s3 from 'aws-cdk-lib/aws-s3'
+import type * as sqs from 'aws-cdk-lib/aws-sqs'
 import { Construct } from 'constructs'
 
 export interface DiaryProps {
@@ -16,6 +17,7 @@ export interface DiaryProps {
   flowerSelectFunction: lambda.Function
   originalImageBucket: s3.Bucket
   flowerBucket: s3.Bucket
+  imageProcessingQueue: sqs.Queue
 }
 
 export class Diary extends Construct {
@@ -46,6 +48,7 @@ export class Diary extends Construct {
         ORIGINAL_IMAGE_BUCKET_NAME: props.originalImageBucket.bucketName,
         FLOWER_SELECT_FUNCTION_NAME: props.flowerSelectFunction.functionName,
         FLOWER_BUKCET_NAME: props.flowerBucket.bucketName,
+        IMAGE_PROCESSING_QUEUE_URL: props.imageProcessingQueue.queueUrl,
       },
       timeout: cdk.Duration.seconds(30),
     })
@@ -53,6 +56,7 @@ export class Diary extends Construct {
     props.flowerSelectFunction.grantInvoke(diaryCreateFunction)
     props.originalImageBucket.grantRead(diaryCreateFunction)
     props.flowerBucket.grantPut(diaryCreateFunction)
+    props.imageProcessingQueue.grantSendMessages(diaryCreateFunction)
 
     // 日記編集用Lambda関数の定義
     const diaryEditFunction = new lambda.Function(this, 'diaryEditLambda', {

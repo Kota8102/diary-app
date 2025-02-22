@@ -2755,6 +2755,9 @@ exports[`Snapshot test 1`] = `
             "FLOWER_SELECT_FUNCTION_NAME": {
               "Ref": "FlowerflowerSelectFunctionD7EEBADA",
             },
+            "IMAGE_PROCESSING_QUEUE_URL": {
+              "Ref": "FlowerimageProcessingQueue525D6BA9",
+            },
             "ORIGINAL_IMAGE_BUCKET_NAME": {
               "Ref": "FloweroriginalImageBucket5E40682A",
             },
@@ -2932,6 +2935,20 @@ exports[`Snapshot test 1`] = `
                     },
                     "/*",
                   ],
+                ],
+              },
+            },
+            {
+              "Action": [
+                "sqs:SendMessage",
+                "sqs:GetQueueAttributes",
+                "sqs:GetQueueUrl",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "FlowerimageProcessingQueue525D6BA9",
+                  "Arn",
                 ],
               },
             },
@@ -4110,6 +4127,176 @@ exports[`Snapshot test 1`] = `
       },
       "Type": "AWS::IAM::Policy",
     },
+    "FlowerflowerVaseFunction1C19C631": {
+      "DependsOn": [
+        "FlowerflowerVaseFunctionServiceRoleDefaultPolicy6262F976",
+        "FlowerflowerVaseFunctionServiceRole8A20BA4C",
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "S3Key": "HASH_REPLACED.zip",
+        },
+        "Environment": {
+          "Variables": {
+            "FLOWER_BUCKET_NAME": {
+              "Ref": "FlowerflowerBucket9981D467",
+            },
+            "ORIGINAL_IMAGE_BUCKET_NAME": {
+              "Ref": "FloweroriginalImageBucket5E40682A",
+            },
+            "QUEUE_URL": {
+              "Ref": "FlowerimageProcessingQueue525D6BA9",
+            },
+          },
+        },
+        "Handler": "flower_vase.lambda_handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "FlowerflowerVaseFunctionServiceRole8A20BA4C",
+            "Arn",
+          ],
+        },
+        "Runtime": "python3.11",
+        "Timeout": 60,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "FlowerflowerVaseFunctionServiceRole8A20BA4C": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "FlowerflowerVaseFunctionServiceRoleDefaultPolicy6262F976": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "FloweroriginalImageBucket5E40682A",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "FloweroriginalImageBucket5E40682A",
+                          "Arn",
+                        ],
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+            {
+              "Action": [
+                "s3:PutObject",
+                "s3:PutObjectLegalHold",
+                "s3:PutObjectRetention",
+                "s3:PutObjectTagging",
+                "s3:PutObjectVersionTagging",
+                "s3:Abort*",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    {
+                      "Fn::GetAtt": [
+                        "FlowerflowerBucket9981D467",
+                        "Arn",
+                      ],
+                    },
+                    "/*",
+                  ],
+                ],
+              },
+            },
+            {
+              "Action": [
+                "sqs:ReceiveMessage",
+                "sqs:ChangeMessageVisibility",
+                "sqs:GetQueueUrl",
+                "sqs:DeleteMessage",
+                "sqs:GetQueueAttributes",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "FlowerimageProcessingQueue525D6BA9",
+                  "Arn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "FlowerflowerVaseFunctionServiceRoleDefaultPolicy6262F976",
+        "Roles": [
+          {
+            "Ref": "FlowerflowerVaseFunctionServiceRole8A20BA4C",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "FlowerflowerVaseFunctionSqsEventSourceCdkSampleStackFlowerimageProcessingQueue4AF977BA89A9400D": {
+      "Properties": {
+        "BatchSize": 1,
+        "EventSourceArn": {
+          "Fn::GetAtt": [
+            "FlowerimageProcessingQueue525D6BA9",
+            "Arn",
+          ],
+        },
+        "FunctionName": {
+          "Ref": "FlowerflowerVaseFunction1C19C631",
+        },
+      },
+      "Type": "AWS::Lambda::EventSourceMapping",
+    },
     "FlowergenerativeAiTable021268D8": {
       "DeletionPolicy": "Delete",
       "Properties": {
@@ -4143,6 +4330,98 @@ exports[`Snapshot test 1`] = `
       },
       "Type": "AWS::DynamoDB::Table",
       "UpdateReplacePolicy": "Delete",
+    },
+    "FlowerimageProcessingDLQ1A2E688D": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "MessageRetentionPeriod": 1209600,
+      },
+      "Type": "AWS::SQS::Queue",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "FlowerimageProcessingDLQPolicy4DD592F8": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sqs:*",
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false",
+                },
+              },
+              "Effect": "Deny",
+              "Principal": {
+                "AWS": "*",
+              },
+              "Resource": {
+                "Fn::GetAtt": [
+                  "FlowerimageProcessingDLQ1A2E688D",
+                  "Arn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Queues": [
+          {
+            "Ref": "FlowerimageProcessingDLQ1A2E688D",
+          },
+        ],
+      },
+      "Type": "AWS::SQS::QueuePolicy",
+    },
+    "FlowerimageProcessingQueue525D6BA9": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "MessageRetentionPeriod": 345600,
+        "RedrivePolicy": {
+          "deadLetterTargetArn": {
+            "Fn::GetAtt": [
+              "FlowerimageProcessingDLQ1A2E688D",
+              "Arn",
+            ],
+          },
+          "maxReceiveCount": 5,
+        },
+        "VisibilityTimeout": 300,
+      },
+      "Type": "AWS::SQS::Queue",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "FlowerimageProcessingQueuePolicy59A9ABCE": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sqs:*",
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false",
+                },
+              },
+              "Effect": "Deny",
+              "Principal": {
+                "AWS": "*",
+              },
+              "Resource": {
+                "Fn::GetAtt": [
+                  "FlowerimageProcessingQueue525D6BA9",
+                  "Arn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "Queues": [
+          {
+            "Ref": "FlowerimageProcessingQueue525D6BA9",
+          },
+        ],
+      },
+      "Type": "AWS::SQS::QueuePolicy",
     },
     "FloweroriginalImageBucket5E40682A": {
       "DeletionPolicy": "Retain",

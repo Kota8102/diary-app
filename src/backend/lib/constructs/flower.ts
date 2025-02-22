@@ -4,7 +4,9 @@ import type * as cognito from 'aws-cdk-lib/aws-cognito'
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb'
 import * as iam from 'aws-cdk-lib/aws-iam'
 import * as lambda from 'aws-cdk-lib/aws-lambda'
+import { SqsEventSource } from 'aws-cdk-lib/aws-lambda-event-sources'
 import * as s3 from 'aws-cdk-lib/aws-s3'
+import * as sqs from 'aws-cdk-lib/aws-sqs'
 import * as ssm from 'aws-cdk-lib/aws-ssm'
 import { Construct } from 'constructs'
 
@@ -20,6 +22,7 @@ export class Flower extends Construct {
   public readonly generativeAiTable: dynamodb.Table
   public readonly flowerSelectFunction: lambda.Function
   public readonly flowerBucket: s3.Bucket
+  public readonly imageProcessingQueue: sqs.Queue
   constructor(scope: Construct, id: string, props: FlowerProps) {
     super(scope, id)
 
@@ -62,6 +65,23 @@ export class Flower extends Construct {
     const flowerBucket = new s3.Bucket(this, 'flowerBucket', {
       enforceSSL: true,
       serverAccessLogsPrefix: 'log/',
+    })
+
+    // デッドレターキューの作成
+    const deadLetterQueue = new sqs.Queue(this, 'imageProcessingDLQ', {
+      retentionPeriod: cdk.Duration.days(14), // メッセージ保持期間
+      enforceSSL: true, // SSL を強制
+    })
+
+    // メインの SQS キューの作成
+    const imageProcessingQueue = new sqs.Queue(this, 'imageProcessingQueue', {
+      visibilityTimeout: cdk.Duration.seconds(300), // メッセージ処理の最大時間
+      retentionPeriod: cdk.Duration.days(4), // メッセージの保持期間
+      deadLetterQueue: {
+        queue: deadLetterQueue,
+        maxReceiveCount: 5, // 最大試行回数
+      },
+      enforceSSL: true, // SSL を強制
     })
 
     // 花の画像選択用Lambda関数の定義
@@ -111,6 +131,32 @@ export class Flower extends Construct {
     originalImageBucket.grantRead(flowerGetFunction)
     generativeAiTable.grantReadData(flowerGetFunction)
 
+    // flower_vase Lambda 関数の作成
+    const flowerVaseFunction = new lambda.Function(this, 'flowerVaseFunction', {
+      runtime: lambda.Runtime.PYTHON_3_11,
+      handler: 'flower_vase.lambda_handler',
+      code: lambda.Code.fromAsset('lambda/flower_vase', {
+        bundling: {
+          image: lambda.Runtime.PYTHON_3_11.bundlingImage,
+          command: ['bash', '-c', 'pip install -r requirements.txt -t /asset-output && cp -au . /asset-output'],
+        },
+      }),
+      environment: {
+        ORIGINAL_IMAGE_BUCKET_NAME: originalImageBucket.bucketName,
+        FLOWER_BUCKET_NAME: flowerBucket.bucketName,
+        QUEUE_URL: imageProcessingQueue.queueUrl,
+      },
+      timeout: cdk.Duration.seconds(60),
+    })
+
+    // flower_vase Lambda に必要な権限を付与
+    originalImageBucket.grantRead(flowerVaseFunction)
+    flowerBucket.grantPut(flowerVaseFunction)
+    imageProcessingQueue.grantConsumeMessages(flowerVaseFunction)
+
+    // SQS トリガを Lambda に設定
+    flowerVaseFunction.addEventSource(new SqsEventSource(imageProcessingQueue, { batchSize: 1 }))
+
     // flower API の設定
     const flowerApi = props.api.root.addResource('flower')
 
@@ -154,5 +200,6 @@ export class Flower extends Construct {
     this.generativeAiTable = generativeAiTable
     this.flowerSelectFunction = flowerSelectFunction
     this.flowerBucket = flowerBucket
+    this.imageProcessingQueue = imageProcessingQueue
   }
 }

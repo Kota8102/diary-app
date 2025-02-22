@@ -38,7 +38,6 @@ def validate_input(body):
         )
 
 
-
 def save_to_dynamodb(user_id, date, content, is_deleted=False):
     """
     DynamoDB に日記のアイテムを保存し、生成した diary_id を返す関数。
@@ -123,6 +122,38 @@ def load_random_image_from_s3(bucket_name, prefix):
         ) from e
 
 
+def send_message_to_sqs(user_id, date, flower_id):
+    """
+    SQSキューにメッセージを送信する関数。
+
+    Args:
+        user_id (str): ユーザーの一意のID。
+        date (str): 日記の日付。
+        flower_id (str): Flower ID。
+
+    Raises:
+        Exception: メッセージ送信に失敗した場合。
+    """
+    sqs = boto3.client("sqs")
+    queue_url = os.getenv("IMAGE_PROCESSING_QUEUE_URL")
+
+    message = {
+        "user_id": user_id,
+        "date": date,
+        "flower_id": flower_id,
+    }
+
+    try:
+        response = sqs.send_message(
+            QueueUrl=queue_url,
+            MessageBody=json.dumps(message),
+        )
+        logger.info(f"Message sent to SQS. Message ID: {response['MessageId']}")
+    except Exception as e:
+        logger.error(f"Failed to send message to SQS: {e}")
+        raise RuntimeError("Error: Failed to send message to SQS")
+
+
 def flower_wrap(flower_id):
     if not flower_id:
         raise ValueError("Invalid flower ID provided.")
@@ -133,7 +164,7 @@ def flower_wrap(flower_id):
     ランダムに選択した包装紙(front/back)で指定flower_idの花を包み、
     base64エンコードした画像を返すPython関数。
     """
-    bucket_name = os.environ["FLOWER_IMAGE_BUCKET_NAME"]
+    bucket_name = os.environ["ORIGINAL_IMAGE_BUCKET_NAME"]
 
     # パレット（背景）を作成
     palette_width = 700
@@ -229,6 +260,9 @@ def lambda_handler(event, context):
         flower_id = invoke_flower_lambda(user_id, date, content)
         if not flower_id:
             raise ValueError("Error: Invalid flower ID returned from flower Lambda")
+
+        # SQSキューにメッセージを送信
+        send_message_to_sqs(user_id, date, flower_id)
 
         flower_image = flower_wrap(flower_id)
         if not flower_image:
