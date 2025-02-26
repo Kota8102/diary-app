@@ -71,7 +71,6 @@ def get_image(user_id: str, date: str) -> Optional[str]:
     if not bucket_name:
         logger.error("FLOWER_BUCKET_NAME is not defined")
         raise ValueError("FLOWER_BUCKET_NAME is not defined")
-    
     year_week = datetime.now().strftime("%Y-%U")
     s3_key = f"{user_id}/{year_week}/{date}.png"
     logger.info(f"s3 key: {s3_key}")
@@ -221,7 +220,7 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         if not validate_date(date):
             return create_response(400, {"error": "Invalid date format"})
 
-        image = get_image(user_id, date) 
+        image = get_image(user_id, date)
         logger.info(f"image: {image}")
         title = get_title(user_id, date)
         logger.info(f"title: {title}")
