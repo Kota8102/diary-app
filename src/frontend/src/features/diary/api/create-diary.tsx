@@ -1,6 +1,6 @@
 import { api } from '@/lib/api'
 import type { MutationConfig } from '@/lib/react-query'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { z } from 'zod'
 
 import type { CreateDiary } from '@/types/api'
@@ -30,8 +30,20 @@ type UseCreateDiaryMutationConfig = MutationConfig<typeof createDiary>
 
 // 日記を作成するミューテーション
 export const useCreateDiary = (config?: UseCreateDiaryMutationConfig) => {
+  const queryClient = useQueryClient()
+
   return useMutation({
     mutationFn: createDiary,
+    onSuccess: (data, variables, context) => {
+      // 日記作成成功後、日記一覧と履歴のキャッシュを無効化して再取得を促す
+      queryClient.invalidateQueries({ queryKey: ['diary'] })
+      queryClient.invalidateQueries({ queryKey: ['diary-history'] })
+
+      // 元のonSuccessがあれば実行
+      if (config?.onSuccess) {
+        config.onSuccess(data, variables, context)
+      }
+    },
     ...config,
   })
 }
