@@ -117,8 +117,16 @@ export const createAppRouter = (_queryClient: QueryClient) =>
         {
           path: paths.app.diaryFlower.path,
           lazy: async () => {
-            const { DiaryFlower } = await import('./routes/app/diary/diary-flower')
-            return { Component: DiaryFlower }
+            const { FlowerRoute } = await import('./routes/app/flower')
+            return { Component: FlowerRoute }
+          },
+        },
+        // 花の表示
+        {
+          path: `${paths.app.flower.path}`,
+          lazy: async () => {
+            const { FlowerRoute } = await import('./routes/app/flower')
+            return { Component: FlowerRoute }
           },
         },
         // 設定

@@ -28,3 +28,8 @@ export type CreateDiary = Entity<{
   flower_id: string
   flower_image: string
 }>
+
+// ブーケの作成レスポンス型
+export type CreateBouquet = Entity<{
+  message: string
+}>
