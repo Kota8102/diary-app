@@ -1,3 +1,4 @@
+import { paths } from '@/config/paths'
 import { useNavigate } from 'react-router-dom'
 
 type HeaderProps = {
@@ -9,7 +10,7 @@ const HeaderIcon = () => {
 
   // ブーケページへ移動
   const handleClick = () => {
-    navigate('/setting')
+    navigate(paths.app.setting.getHref())
   }
 
   return (

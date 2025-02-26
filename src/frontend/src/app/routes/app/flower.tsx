@@ -3,7 +3,7 @@ import { Flower } from '@/features/flower/components/flower'
 
 export const FlowerRoute = () => {
   return (
-    <ContentLayout pagetitle={'Diary'} showTab={true}>
+    <ContentLayout pagetitle={'Diary'} showTab={true} showHeaderIcon={true}>
       <Flower />
     </ContentLayout>
   )
