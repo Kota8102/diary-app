@@ -56,33 +56,7 @@ def validate_date(date: str) -> bool:
     return bool(re.match(r"^\d{4}-\d{2}-\d{2}$", date))
 
 
-def get_flower_id(user_id: str, date: str) -> Optional[str]:
-    """
-    DynamoDBからflower_idを取得します。
-
-    Args:
-        user_id (str): ユーザーID。
-        date (str): 日付文字列。
-
-    Returns:
-        Optional[str]: flower_idまたはNone。
-    """
-    table_name = os.getenv("GENERATIVE_AI_TABLE_NAME")
-    if not table_name:
-        logger.error("GENERATIVE_AI_TABLE_NAME is not defined")
-        raise ValueError("GENERATIVE_AI_TABLE_NAME is not defined")
-
-    table = dynamodb.Table(table_name)
-
-    try:
-        response = table.get_item(Key={"user_id": user_id, "date": date})
-        return response.get("Item", {}).get("flower_id")
-    except ClientError as e:
-        logger.error(f"DynamoDB client error: {e.response['Error']['Message']}")
-        raise
-
-
-def get_image(flower_id: str) -> Optional[str]:
+def get_image(user_id: str, date: str) -> Optional[str]:
     """
     S3から画像を取得します。
 
@@ -97,8 +71,10 @@ def get_image(flower_id: str) -> Optional[str]:
     if not bucket_name:
         logger.error("FLOWER_BUCKET_NAME is not defined")
         raise ValueError("FLOWER_BUCKET_NAME is not defined")
-
-    s3_key = f"flowers/{flower_id}.png"
+    
+    year_week = datetime.now().strftime("%Y-%U")
+    s3_key = f"{user_id}/{year_week}/{date}.png"
+    logger.info(f"s3 key: {s3_key}")
 
     try:
         response = s3.get_object(Bucket=bucket_name, Key=s3_key)
@@ -147,7 +123,7 @@ def get_body(user_id: str, date: str) -> Optional[str]:
     Returns:
         Optional[str]: 本文またはNone。
     """
-    diary_table_name = os.getenv("GENERATIVE_AI_TABLE_NAME")
+    diary_table_name = os.getenv("DIARY_TABLE_NAME")
     if not diary_table_name:
         logger.error("TABLE_NAME is not defined")
         raise ValueError("TABLE_NAME is not defined")
@@ -245,10 +221,12 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         if not validate_date(date):
             return create_response(400, {"error": "Invalid date format"})
 
-        flower_id = get_flower_id(user_id, date)
-        image = get_image(flower_id) if flower_id else None
+        image = get_image(user_id, date) 
+        logger.info(f"image: {image}")
         title = get_title(user_id, date)
+        logger.info(f"title: {title}")
         body = get_body(user_id, date)
+        logger.info(f"body: {body}")
 
         current_year, current_week = get_current_week()
         bouquet_created = check_bouquet_created(user_id, current_year, current_week)

@@ -26,22 +26,6 @@ def test_validate_date():
     assert validate_date("invalid-date") is False
 
 
-# get_flower_idのテスト
-@patch("get_diary_data.get_diary_data.dynamodb.Table")
-def test_get_flower_id(mock_dynamodb_table):
-    """DynamoDBからflower_idを取得する関数のテスト"""
-    mock_table = MagicMock()
-    mock_table.get_item.return_value = {"Item": {"flower_id": "flower-123"}}
-    mock_dynamodb_table.return_value = mock_table
-
-    result = get_flower_id("test-user-id", "2024-03-15")
-    assert result == "flower-123"
-
-    mock_table.get_item.assert_called_once_with(
-        Key={"user_id": "test-user-id", "date": "2024-03-15"}
-    )
-
-
 @patch("get_diary_data.get_diary_data.dynamodb.Table")
 def test_get_flower_id_no_item(mock_dynamodb_table):
     """DynamoDBにアイテムが存在しない場合のテスト"""
