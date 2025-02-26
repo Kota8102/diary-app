@@ -52,6 +52,13 @@ export const Flower = () => {
     }
   }
 
+  // 日記編集ページへ移動
+  const handleEditDiary = () => {
+    if (date) {
+      navigate(`/app/diary/edit/${date}`)
+    }
+  }
+
   if (isDataLoading) {
     return <div className="flex items-center justify-center h-full">読み込み中...</div>
   }
@@ -98,7 +105,7 @@ export const Flower = () => {
 
         <div className="flex flex-col flex-grow min-h-0">
           <FlowerTitle title={data?.title} />
-          <FlowerNote body={data?.body || ''} />
+          <FlowerNote body={data?.body || ''} onEdit={handleEditDiary} />
         </div>
       </div>
     </div>
