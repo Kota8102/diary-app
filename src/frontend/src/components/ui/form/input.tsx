@@ -19,7 +19,6 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(({ className, type,
       <input
         type={type}
         className={cn(
-          // shadcn/uiのデフォルトスタイル（現在は未使用）
           'flex w-full rounded-md h-8 bg-light-bgText pl-4 py-1.5 text-light-textDefault',
           'disabled:cursor-not-allowed disabled:opacity-50',
           'placeholder:text-light-textPaleBg',

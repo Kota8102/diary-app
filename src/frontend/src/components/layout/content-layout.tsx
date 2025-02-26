@@ -16,7 +16,7 @@ export const ContentLayout = ({ children, pagetitle, showHeaderIcon = false, sho
     <div className={cn('flex flex-col h-screen')}>
       <div className={cn('flex flex-col flex-grow overflow-auto pb-6', className)}>
         <Header title={pagetitle} showHeaderIcon={showHeaderIcon} />
-        <div className={cn('flex-grow pt-2 px-4')}>{children}</div>
+        <div className={cn('flex-grow pt-2 px-4 flex flex-col')}>{children}</div>
       </div>
       {showTab && <Tab />}
     </div>
