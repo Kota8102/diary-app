@@ -55,7 +55,7 @@ export const Flower = () => {
   // 日記編集ページへ移動
   const handleEditDiary = () => {
     if (date) {
-      navigate(`/app/diary/edit/${date}`)
+      navigate(`/app/diary/${date}`)
     }
   }
 
