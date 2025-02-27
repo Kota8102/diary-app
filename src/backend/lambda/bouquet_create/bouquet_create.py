@@ -872,7 +872,7 @@ def get_week_dates(date):
     """
     date_obj = datetime.strptime(date, "%Y-%m-%d")
     start_of_week = date_obj - timedelta(days=date_obj.weekday())
-    return [
+    return start_of_week, [
         (start_of_week + timedelta(days=i)).strftime("%Y-%m-%d")
         for i in range((date_obj - start_of_week).days + 1)
     ]
@@ -901,15 +901,15 @@ def get_flowers(user_id, dates):
     return flowers
 
 
-def get_current_year_week():
+def get_year_week(date):
     """
     現在の年と週番号を取得します。
 
     Returns:
         tuple: 現在の年とISO週番号。
     """
-    year_week = datetime.now().strftime("%Y-%U")
-    return year_week
+    date_obj = datetime.strptime(date, "%Y-%m-%d")
+    return date_obj.isocalendar()[1]
 
 
 def save_bouquet_record(user_id, year_week):
@@ -939,12 +939,9 @@ def lambda_handler(event, context):
     user_id = event["requestContext"]["authorizer"]["claims"]["sub"]
 
     if not date:
-        return {
-            "statusCode": 400,
-            "body": json.dumps({"error": "date parameter is required"}),
-        }
+        return create_response(400, {"error": "date parameter is required"})
 
-    dates = get_week_dates(date)
+    start_of_week, dates = get_week_dates(date)
     flowers = get_flowers(user_id, dates)
 
     if not flowers:
@@ -954,8 +951,8 @@ def lambda_handler(event, context):
     bouquet_maker = MkBouquet(n, flowers)
     bouquet_image = bouquet_maker.mk_bouquet()
 
-    year_week = get_current_year_week()
-    output_key = f"bouquets/{user_id}_{year_week}.png"
+    year_week = get_year_week(start_of_week)
+    output_key = f"bouquets/{user_id}/{year_week}.png"
     save_bouquet_to_s3(bouquet_image, output_key)
     save_bouquet_record(user_id, year_week)
 
