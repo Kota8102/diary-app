@@ -113,12 +113,12 @@ export const createAppRouter = (_queryClient: QueryClient) =>
           },
           ErrorBoundary: AppRootErrorBoundary,
         },
-        // 花の表示
+        // 作成した花の表示
         {
           path: paths.app.diaryFlower.path,
           lazy: async () => {
-            const { FlowerRoute } = await import('./routes/app/flower')
-            return { Component: FlowerRoute }
+            const { DisplayFlowerRoute } = await import('./routes/app/diary/diary-flower')
+            return { Component: DisplayFlowerRoute }
           },
         },
         // 花の表示
