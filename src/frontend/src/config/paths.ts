@@ -61,6 +61,10 @@ export const paths = {
       path: 'flower/:date',
       getHref: (date: string) => `/app/flower/${date}`,
     },
+    bouquet: {
+      path: 'bouquet',
+      getHref: () => '/app/bouquet',
+    },
     // 設定関連
     setting: {
       path: 'setting',
