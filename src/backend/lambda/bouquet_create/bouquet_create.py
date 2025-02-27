@@ -842,7 +842,7 @@ class MkBouquet(DecideFlowerPos):
         花の画像を設定する。
         """
         for flower_id in self.original_flowers:
-            flower_image = self.load_image(f"single_flowers/{flower_id}.png")
+            flower_image = self.load_image(f"flowers/{flower_id}.png")
             self.flower_images.append(flower_image)
 
     def load_image(self, key):
