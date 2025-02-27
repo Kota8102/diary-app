@@ -1,10 +1,10 @@
 import base64
 import os
+from datetime import datetime
 from unittest.mock import MagicMock, patch
 
 from get_diary_data.get_diary_data import (
     get_body,
-    get_flower_id,
     get_image,
     get_title,
     validate_date,
@@ -13,6 +13,7 @@ from get_diary_data.get_diary_data import (
 # 環境変数を設定
 os.environ["AWS_DEFAULT_REGION"] = "ap-northeast-1"
 os.environ["GENERATIVE_AI_TABLE_NAME"] = "test_generative_ai_table"
+os.environ["DIARY_TABLE_NAME"] = "test_generative_ai_table"
 
 
 # validate_dateのテスト
@@ -24,33 +25,6 @@ def test_validate_date():
     )  # フォーマットは正しいが無効な日付は後で検証
     assert validate_date("20240315") is False
     assert validate_date("invalid-date") is False
-
-
-# get_flower_idのテスト
-@patch("get_diary_data.get_diary_data.dynamodb.Table")
-def test_get_flower_id(mock_dynamodb_table):
-    """DynamoDBからflower_idを取得する関数のテスト"""
-    mock_table = MagicMock()
-    mock_table.get_item.return_value = {"Item": {"flower_id": "flower-123"}}
-    mock_dynamodb_table.return_value = mock_table
-
-    result = get_flower_id("test-user-id", "2024-03-15")
-    assert result == "flower-123"
-
-    mock_table.get_item.assert_called_once_with(
-        Key={"user_id": "test-user-id", "date": "2024-03-15"}
-    )
-
-
-@patch("get_diary_data.get_diary_data.dynamodb.Table")
-def test_get_flower_id_no_item(mock_dynamodb_table):
-    """DynamoDBにアイテムが存在しない場合のテスト"""
-    mock_table = MagicMock()
-    mock_table.get_item.return_value = {}
-    mock_dynamodb_table.return_value = mock_table
-
-    result = get_flower_id("test-user-id", "2024-03-15")
-    assert result is None
 
 
 # get_imageのテスト
@@ -65,12 +39,12 @@ def test_get_image(mock_boto3_client):
         "Body": MagicMock(read=MagicMock(return_value=test_image_data))
     }
 
-    result = get_image("flower-123")
+    result = get_image("test-user-id", "2024-03-15")
     assert result == base64.b64encode(test_image_data).decode("utf-8")
-
+    year_week = datetime.now().strftime("%Y-%U")
     mock_s3_client.get_object.assert_called_once_with(
         Bucket="test_flower_bucket",
-        Key="flowers/flower-123.png",
+        Key=f"test-user-id/{year_week}/2024-03-15.png",
     )
 
 
@@ -106,7 +80,7 @@ def test_get_title_no_item(mock_dynamodb_table):
 def test_get_body(mock_dynamodb_table):
     """DynamoDBから本文を取得する関数のテスト"""
     mock_table = MagicMock()
-    mock_table.get_item.return_value = {"Item": {"body": "Test Body"}}
+    mock_table.get_item.return_value = {"Item": {"content": "Test Body"}}
     mock_dynamodb_table.return_value = mock_table
 
     result = get_body("test-user-id", "2024-03-15")
