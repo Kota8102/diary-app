@@ -1,11 +1,19 @@
 import json
+import logging
 import os
 from datetime import datetime, timedelta
 
 import boto3
-import logger
 from PIL import Image
 
+logger = logging.getLogger(__name__)
+formatter = logging.Formatter(
+    "[%(asctime)s - %(levelname)s - %(filename)s(func:%(funcName)s, line:%(lineno)d)] %(message)s"
+)
+handler = logging.StreamHandler()
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+logger.setLevel(logging.INFO)
 dynamodb = boto3.resource("dynamodb")
 s3 = boto3.client("s3")
 
@@ -834,7 +842,7 @@ class MkBouquet(DecideFlowerPos):
         花の画像を設定する。
         """
         for flower_id in self.original_flowers:
-            flower_image = self.load_image(f"flowers/{flower_id}.png")
+            flower_image = self.load_image(f"single_flowers/{flower_id}.png")
             self.flower_images.append(flower_image)
 
     def load_image(self, key):
@@ -867,7 +875,7 @@ def get_week_dates(date):
     return [
         (start_of_week + timedelta(days=i)).strftime("%Y-%m-%d")
         for i in range((date_obj - start_of_week).days + 1)
-    ], start_of_week
+    ]
 
 
 def get_flowers(user_id, dates):
@@ -893,7 +901,18 @@ def get_flowers(user_id, dates):
     return flowers
 
 
-def save_bouquet_record(user_id, start_of_week):
+def get_current_year_week():
+    """
+    現在の年と週番号を取得します。
+
+    Returns:
+        tuple: 現在の年とISO週番号。
+    """
+    year_week = datetime.now().strftime("%Y-%U")
+    return year_week
+
+
+def save_bouquet_record(user_id, year_week):
     """
     bouquet_tableにuser_idとyear-week形式の週を保存する。
 
@@ -901,7 +920,6 @@ def save_bouquet_record(user_id, start_of_week):
         user_id (str): ユーザーID
         start_of_week (datetime): 週の開始日
     """
-    year_week = f"{start_of_week.year}-{start_of_week.strftime('%U')}"
     bouquet_table.put_item(Item={"user_id": user_id, "year_week": year_week})
 
 
@@ -926,7 +944,7 @@ def lambda_handler(event, context):
             "body": json.dumps({"error": "date parameter is required"}),
         }
 
-    dates, start_of_week = get_week_dates(date)
+    dates = get_week_dates(date)
     flowers = get_flowers(user_id, dates)
 
     if not flowers:
@@ -936,9 +954,10 @@ def lambda_handler(event, context):
     bouquet_maker = MkBouquet(n, flowers)
     bouquet_image = bouquet_maker.mk_bouquet()
 
-    output_key = f"bouquets/{user_id}_{date}.png"
+    year_week = get_current_year_week()
+    output_key = f"bouquets/{user_id}_{year_week}.png"
     save_bouquet_to_s3(bouquet_image, output_key)
-    save_bouquet_record(user_id, start_of_week)
+    save_bouquet_record(user_id, year_week)
 
     return {
         "statusCode": 200,
