@@ -959,15 +959,15 @@ def lambda_handler(event, context):
     save_bouquet_to_s3(bouquet_image, output_key)
     save_bouquet_record(user_id, year_week)
 
-    return {
-        "statusCode": 200,
-        "body": json.dumps(
+    return create_response(
+        200,
+        {
             {
                 "message": "Bouquet created",
                 "bouquet_url": f"s3://{BOUQUET_BUCKET_NAME}/{output_key}",
             }
-        ),
-    }
+        },
+    )
 
 
 def save_bouquet_to_s3(bouquet_image, key):
@@ -981,3 +981,24 @@ def save_bouquet_to_s3(bouquet_image, key):
     temp_file_path = f"/tmp/{key.split('/')[-1]}"
     bouquet_image.save(temp_file_path, format="PNG")
     s3.upload_file(temp_file_path, BOUQUET_BUCKET_NAME, key)
+
+
+def create_response(status_code, body):
+    """
+    HTTPレスポンスを生成します。
+
+    Args:
+        status_code (int): HTTPステータスコード。
+        body (dict): レスポンスボディ。
+
+    Returns:
+        dict: フォーマット済みのHTTPレスポンス。
+    """
+    return {
+        "statusCode": status_code,
+        "body": json.dumps(body),
+        "headers": {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+        },
+    }
