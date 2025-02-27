@@ -194,9 +194,11 @@ def count_flowers_in_week(user_id: str, current_year: int, current_week: int) ->
     s3 = boto3.client("s3")
     bucket_name = os.getenv("FLOWER_BUCKET_NAME")
     prefix = f"{user_id}/{current_year}-{current_week}"
+    logger.info(f"prefix: {prefix}")
 
     try:
         response = s3.list_objects_v2(Bucket=bucket_name, Prefix=prefix)
+        logger.info(f"response: {response}")
         return len(response.get("Contents", []))
     except ClientError as e:
         logger.error(f"S3 error: {e.response['Error']['Message']}")
