@@ -908,8 +908,7 @@ def get_year_week(date):
     Returns:
         tuple: 現在の年とISO週番号。
     """
-    date_obj = datetime.strptime(date, "%Y-%m-%d")
-    return date_obj.isocalendar()[1]
+    return f"{date.year}-{date.isocalendar()[1]:02d}"
 
 
 def save_bouquet_record(user_id, year_week):
@@ -959,10 +958,8 @@ def lambda_handler(event, context):
     return create_response(
         200,
         {
-            {
-                "message": "Bouquet created",
-                "bouquet_url": f"s3://{BOUQUET_BUCKET_NAME}/{output_key}",
-            }
+            "message": "Bouquet created",
+            "bouquet_url": f"s3://{BOUQUET_BUCKET_NAME}/{output_key}",
         },
     )
 
