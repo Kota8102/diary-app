@@ -123,6 +123,7 @@ def get_body(user_id: str, date: str) -> Optional[str]:
         Optional[str]: 本文またはNone。
     """
     diary_table_name = os.getenv("DIARY_TABLE_NAME")
+    logger.info(f"diary_table_name: {diary_table_name}")
     if not diary_table_name:
         logger.error("TABLE_NAME is not defined")
         raise ValueError("TABLE_NAME is not defined")
@@ -131,7 +132,7 @@ def get_body(user_id: str, date: str) -> Optional[str]:
 
     try:
         response = diary_table.get_item(Key={"user_id": user_id, "date": date})
-        return response.get("Item", {}).get("body")
+        return response.get("Item", {}).get("content")
     except ClientError as e:
         logger.error(f"DynamoDB client error: {e.response['Error']['Message']}")
         raise

@@ -80,7 +80,7 @@ def test_get_title_no_item(mock_dynamodb_table):
 def test_get_body(mock_dynamodb_table):
     """DynamoDBから本文を取得する関数のテスト"""
     mock_table = MagicMock()
-    mock_table.get_item.return_value = {"Item": {"body": "Test Body"}}
+    mock_table.get_item.return_value = {"Item": {"content": "Test Body"}}
     mock_dynamodb_table.return_value = mock_table
 
     result = get_body("test-user-id", "2024-03-15")
