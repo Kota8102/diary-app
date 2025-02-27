@@ -80,7 +80,11 @@ def get_image(user_id: str, date: str) -> Optional[str]:
     +    s3_key = f"{user_id}/{year_week}/{date}.png"
 
     try:
-        response = s3.get_object(Bucket=bucket_name, Key=s3_key)
+        try:
+            response = s3.get_object(Bucket=bucket_name, Key=s3_key)
+        except Exception as e:
+            logger.error(f"Error fetching image from S3: {e}")
+            raise
         body = response["Body"].read()
         return base64.b64encode(body).decode("utf-8")
     except ClientError as e:
