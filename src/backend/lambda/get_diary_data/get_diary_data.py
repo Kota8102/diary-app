@@ -2,7 +2,7 @@ import base64
 import json
 import logging
 import os
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import Any, Dict, Optional
 
 import boto3
@@ -56,33 +56,7 @@ def validate_date(date: str) -> bool:
     return bool(re.match(r"^\d{4}-\d{2}-\d{2}$", date))
 
 
-def get_flower_id(user_id: str, date: str) -> Optional[str]:
-    """
-    DynamoDBからflower_idを取得します。
-
-    Args:
-        user_id (str): ユーザーID。
-        date (str): 日付文字列。
-
-    Returns:
-        Optional[str]: flower_idまたはNone。
-    """
-    table_name = os.getenv("GENERATIVE_AI_TABLE_NAME")
-    if not table_name:
-        logger.error("GENERATIVE_AI_TABLE_NAME is not defined")
-        raise ValueError("GENERATIVE_AI_TABLE_NAME is not defined")
-
-    table = dynamodb.Table(table_name)
-
-    try:
-        response = table.get_item(Key={"user_id": user_id, "date": date})
-        return response.get("Item", {}).get("flower_id")
-    except ClientError as e:
-        logger.error(f"DynamoDB client error: {e.response['Error']['Message']}")
-        raise
-
-
-def get_image(flower_id: str) -> Optional[str]:
+def get_image(user_id: str, date: str, year_week: str) -> Optional[str]:
     """
     S3から画像を取得します。
 
@@ -97,11 +71,17 @@ def get_image(flower_id: str) -> Optional[str]:
     if not bucket_name:
         logger.error("FLOWER_BUCKET_NAME is not defined")
         raise ValueError("FLOWER_BUCKET_NAME is not defined")
-
-    s3_key = f"flowers/{flower_id}.png"
+    if not user_id or not date:
+        logger.error("user_id or date is not defined")
+        raise ValueError("user_id or date is not defined")
+    s3_key = f"{user_id}/{year_week}/{date}.png"
 
     try:
-        response = s3.get_object(Bucket=bucket_name, Key=s3_key)
+        try:
+            response = s3.get_object(Bucket=bucket_name, Key=s3_key)
+        except Exception as e:
+            logger.error(f"Error fetching image from S3: {e}")
+            raise
         body = response["Body"].read()
         return base64.b64encode(body).decode("utf-8")
     except ClientError as e:
@@ -147,7 +127,8 @@ def get_body(user_id: str, date: str) -> Optional[str]:
     Returns:
         Optional[str]: 本文またはNone。
     """
-    diary_table_name = os.getenv("GENERATIVE_AI_TABLE_NAME")
+    diary_table_name = os.getenv("DIARY_TABLE_NAME")
+    logger.info(f"diary_table_name: {diary_table_name}")
     if not diary_table_name:
         logger.error("TABLE_NAME is not defined")
         raise ValueError("TABLE_NAME is not defined")
@@ -156,25 +137,24 @@ def get_body(user_id: str, date: str) -> Optional[str]:
 
     try:
         response = diary_table.get_item(Key={"user_id": user_id, "date": date})
-        return response.get("Item", {}).get("body")
+        return response.get("Item", {}).get("content")
     except ClientError as e:
         logger.error(f"DynamoDB client error: {e.response['Error']['Message']}")
         raise
 
 
-def get_current_week() -> (int, int):
+def get_current_year_week() -> int:
     """
     現在の年と週番号を取得します。
 
     Returns:
         tuple: 現在の年とISO週番号。
     """
-    current_date = datetime.now(timezone.utc)
-    current_year, current_week, _ = current_date.isocalendar()
-    return current_year, current_week
+    year_week = datetime.now().strftime("%Y-%U")
+    return year_week
 
 
-def check_bouquet_created(user_id: str, current_year: int, current_week: int) -> bool:
+def check_bouquet_created(user_id: str, current_year_week: int) -> bool:
     """
     現在の週にブーケが作成されたか確認します。
 
@@ -190,14 +170,14 @@ def check_bouquet_created(user_id: str, current_year: int, current_week: int) ->
     bouquet_table = dynamodb.Table(bouquet_table_name)
     try:
         bouquet_table.get_item(
-            Key={"user_id": user_id, "year_week": f"{current_year}-{current_week}"}
+            Key={"user_id": user_id, "year_week": f"{current_year_week}"}
         )
         return True
     except ClientError:
         return False
 
 
-def count_flowers_in_week(user_id: str, current_year: int, current_week: int) -> int:
+def count_flowers_in_week(user_id: str, current_year_week: int) -> int:
     """
     現在の週にS3にある花の数をカウントします。
 
@@ -211,10 +191,12 @@ def count_flowers_in_week(user_id: str, current_year: int, current_week: int) ->
     """
     s3 = boto3.client("s3")
     bucket_name = os.getenv("FLOWER_BUCKET_NAME")
-    prefix = f"{user_id}/{current_year}-{current_week}"
+    prefix = f"{user_id}/{current_year_week}"
+    logger.info(f"prefix: {prefix}")
 
     try:
         response = s3.list_objects_v2(Bucket=bucket_name, Prefix=prefix)
+        logger.info(f"response: {response}")
         return len(response.get("Contents", []))
     except ClientError as e:
         logger.error(f"S3 error: {e.response['Error']['Message']}")
@@ -244,16 +226,18 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         date = query_params["date"]
         if not validate_date(date):
             return create_response(400, {"error": "Invalid date format"})
-
-        flower_id = get_flower_id(user_id, date)
-        image = get_image(flower_id) if flower_id else None
+        year_week = get_current_year_week()
+        image = get_image(user_id, date, year_week)
+        logger.info(f"image: {image}")
         title = get_title(user_id, date)
+        logger.info(f"title: {title}")
         body = get_body(user_id, date)
+        logger.info(f"body: {body}")
 
-        current_year, current_week = get_current_week()
-        bouquet_created = check_bouquet_created(user_id, current_year, current_week)
+        current_year_week = get_current_year_week()
+        bouquet_created = check_bouquet_created(user_id, current_year_week)
         logger.info(f"bouquet create : {bouquet_created}")
-        flower_count = count_flowers_in_week(user_id, current_year, current_week)
+        flower_count = count_flowers_in_week(user_id, current_year_week)
         logger.info(f"flower count: {flower_count}")
         can_create_bouquet = not bouquet_created and flower_count >= 5
         logger.info(f"can create bouquet: {can_create_bouquet}")
