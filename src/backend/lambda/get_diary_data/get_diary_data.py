@@ -226,8 +226,8 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         date = query_params["date"]
         if not validate_date(date):
             return create_response(400, {"error": "Invalid date format"})
-
-        image = get_image(user_id, date)
+        year_week = get_current_year_week()
+        image = get_image(user_id, date, year_week)
         logger.info(f"image: {image}")
         title = get_title(user_id, date)
         logger.info(f"title: {title}")
