@@ -73,11 +73,9 @@ def get_image(user_id: str, date: str) -> Optional[str]:
         raise ValueError("FLOWER_BUCKET_NAME is not defined")
     year_week = datetime.now().strftime("%Y-%U")
     if not user_id or not date:
-        raise ValueError("user_id and date must be provided")
-    +    if not user_id or not date:
-    +        logger.error("user_id or date is not defined")
-    +        raise ValueError("user_id or date is not defined")
-    +    s3_key = f"{user_id}/{year_week}/{date}.png"
+        logger.error("user_id or date is not defined")
+        raise ValueError("user_id or date is not defined")
+    s3_key = f"{user_id}/{year_week}/{date}.png"
 
     try:
         try:
