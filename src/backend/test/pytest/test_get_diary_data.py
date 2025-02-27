@@ -39,9 +39,9 @@ def test_get_image(mock_boto3_client):
         "Body": MagicMock(read=MagicMock(return_value=test_image_data))
     }
 
-    result = get_image("test-user-id", "2024-03-15")
-    assert result == base64.b64encode(test_image_data).decode("utf-8")
     year_week = datetime.now().strftime("%Y-%U")
+    result = get_image("test-user-id", "2024-03-15", year_week)
+    assert result == base64.b64encode(test_image_data).decode("utf-8")
     mock_s3_client.get_object.assert_called_once_with(
         Bucket="test_flower_bucket",
         Key=f"test-user-id/{year_week}/2024-03-15.png",
