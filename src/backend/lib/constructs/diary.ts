@@ -187,7 +187,7 @@ export class Diary extends Construct {
     props.generativeAiTable.grantReadData(getDiaryDataFunction)
     props.flowerBucket.grantRead(getDiaryDataFunction)
     props.table.grantReadData(getDiaryDataFunction)
-    bouquetTable.grantWriteData(getDiaryDataFunction)
+    bouquetTable.grantReadData(getDiaryDataFunction)
 
     const diaryDataApi = props.api.root.addResource('data')
 

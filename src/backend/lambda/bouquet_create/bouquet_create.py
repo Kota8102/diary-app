@@ -917,10 +917,9 @@ def get_year_week(date: str) -> str:
     Returns:
         str: 'YYYY-WW'形式のISO年週を表す文字列。
     """
-    # 日付からISOカレンダーの情報を取得（年、週、曜日は未使用）
-    iso_year, iso_week, _ = date.isocalendar()
-    # フォーマット済みの文字列を返す（週番号は2桁にゼロパディング）
-    return f"{iso_year}-{iso_week:02d}"
+    dt = datetime.strptime(date, "%Y-%m-%d")
+    iso_year, iso_week, _ = dt.isocalendar()
+    return f"{iso_year}-{iso_week:02}"
 
 
 def save_bouquet_record(user_id, year_week):
