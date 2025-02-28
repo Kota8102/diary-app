@@ -862,19 +862,22 @@ class MkBouquet(DecideFlowerPos):
 
 def get_week_dates(date):
     """
-    指定された日付からその週の全日付を取得する。
+    指定された日付が属する週の月曜日から7日分の日付を取得する。
 
     Args:
         date (str): 基準となる日付（例: '2024-10-19'）
 
     Returns:
-        tuple: 週の全日付リストと週の開始日
+        tuple: 週の開始日と、月曜日から7日分の日付リスト
     """
     date_obj = datetime.strptime(date, "%Y-%m-%d")
-    start_of_week = date_obj - timedelta(days=date_obj.weekday())
-    return start_of_week, [
+    start_of_week = date_obj - timedelta(
+        days=date_obj.weekday()
+    )  # 週の開始日（月曜日）
+
+    return start_of_week.strftime("%Y-%m-%d"), [
         (start_of_week + timedelta(days=i)).strftime("%Y-%m-%d")
-        for i in range((date_obj - start_of_week).days + 1)
+        for i in range(7)  # 月曜から日曜まで7日分
     ]
 
 
