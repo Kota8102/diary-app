@@ -161,14 +161,13 @@ def get_year_week(date: str) -> str:
     return f"{iso_year}-{iso_week:02d}"
 
 
-def check_bouquet_created(user_id: str, year_week: int) -> bool:
+def check_bouquet_created(user_id: str, year_week: str) -> bool:
     """
     現在の週にブーケが作成されたか確認します。
 
     Args:
         user_id (str): ユーザーID。
-        current_year (int): 現在の年。
-        current_week (int): 現在のISO週番号。
+        year_week (str): 現在の年。
 
     Returns:
         bool: ブーケが作成されている場合はTrue、それ以外はFalse。
@@ -182,7 +181,7 @@ def check_bouquet_created(user_id: str, year_week: int) -> bool:
         return False
 
 
-def count_flowers_in_week(user_id: str, year_week: int) -> int:
+def count_flowers_in_week(user_id: str, year_week: str) -> int:
     """
     現在の週にS3にある花の数をカウントします。
 
