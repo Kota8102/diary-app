@@ -901,14 +901,23 @@ def get_flowers(user_id, dates):
     return flowers
 
 
-def get_year_week(date):
-    """
-    現在の年と週番号を取得します。
+def get_year_week(date: datetime) -> str:
+    """指定された日付のISO年週を返す関数。
+
+    渡された日付からISOカレンダーに基づく年と週番号を抽出し、
+    'YYYY-WW'の形式でフォーマットした文字列を返します。
+    週番号は2桁にゼロパディングされます。
+
+    Args:
+        date (datetime): ISO年週を取得するための日付。
 
     Returns:
-        tuple: 現在の年とISO週番号。
+        str: 'YYYY-WW'形式のISO年週を表す文字列。
     """
-    return f"{date.year}-{date.isocalendar()[1]:02d}"
+    # 日付からISOカレンダーの情報を取得（年、週、曜日は未使用）
+    iso_year, iso_week, _ = date.isocalendar()
+    # フォーマット済みの文字列を返す（週番号は2桁にゼロパディング）
+    return f"{iso_year}-{iso_week:02d}"
 
 
 def save_bouquet_record(user_id, year_week):
