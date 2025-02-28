@@ -143,7 +143,7 @@ def get_body(user_id: str, date: str) -> Optional[str]:
         raise
 
 
-def get_year_week(date: datetime) -> str:
+def get_year_week(date: str) -> str:
     """指定された日付のISO年週を返す関数。
 
     渡された日付からISOカレンダーに基づく年と週番号を抽出し、
@@ -151,14 +151,13 @@ def get_year_week(date: datetime) -> str:
     週番号は2桁にゼロパディングされます。
 
     Args:
-        date (datetime): ISO年週を取得するための日付。
+        date (str): ISO年週を取得するための日付。
 
     Returns:
         str: 'YYYY-WW'形式のISO年週を表す文字列。
     """
-    # 日付からISOカレンダーの情報を取得（年、週、曜日は未使用）
-    iso_year, iso_week, _ = date.isocalendar()
-    # フォーマット済みの文字列を返す（週番号は2桁にゼロパディング）
+    dt = datetime.strptime(date, "%Y-%m-%d")
+    iso_year, iso_week, _ = dt.isocalendar()
     return f"{iso_year}-{iso_week:02d}"
 
 
