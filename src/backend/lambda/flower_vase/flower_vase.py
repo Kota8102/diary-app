@@ -44,6 +44,25 @@ def load_random_image_from_s3(bucket_name, prefix):
         raise RuntimeError(f"Unexpected error: {e}") from e
 
 
+def get_year_week(date: datetime) -> str:
+    """指定された日付のISO年週を返す関数。
+
+    渡された日付からISOカレンダーに基づく年と週番号を抽出し、
+    'YYYY-WW'の形式でフォーマットした文字列を返します。
+    週番号は2桁にゼロパディングされます。
+
+    Args:
+        date (datetime): ISO年週を取得するための日付。
+
+    Returns:
+        str: 'YYYY-WW'形式のISO年週を表す文字列。
+    """
+    # 日付からISOカレンダーの情報を取得（年、週、曜日は未使用）
+    iso_year, iso_week, _ = date.isocalendar()
+    # フォーマット済みの文字列を返す（週番号は2桁にゼロパディング）
+    return f"{iso_year}-{iso_week:02d}"
+
+
 def save_image_to_s3(bucket_name, key, image):
     """
     PIL画像をS3に保存。
@@ -89,7 +108,8 @@ def lambda_handler(event, context):
             palette.paste(vase, vase_position, vase)
 
             # 保存先のキーを構築
-            year_week = datetime.now().strftime("%Y-%U")
+            today = datetime.now()
+            year_week = get_year_week(today)
             output_key = f"{user_id}/{year_week}/{date}.png"
 
             # 合成画像を保存

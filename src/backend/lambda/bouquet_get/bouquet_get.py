@@ -11,10 +11,11 @@ def lambda_handler(event, context):
     user_id = event["requestContext"]["authorizer"]["claims"]["sub"]
     # クエリパラメータから date を取得
     date_str = event["queryStringParameters"].get("date")
+    print(f"event: {event}")
     if not date_str:
         return {
-            "statusCode": 400,
-            "body": json.dumps({"error": "date query parameter is required"}),
+            "statusCode": 200,
+            "body": json.dumps({"message": "no bouquet found at {date_str}"}),
             "headers": {
                 "Content-Type": "application/json",
                 "Access-Control-Allow-Origin": "*",
@@ -23,9 +24,7 @@ def lambda_handler(event, context):
 
     # 日付を解析して年と週番号を取得
     try:
-        date_obj = datetime.strptime(date_str, "%Y-%m-%d")
-        year = date_obj.strftime("%Y")
-        week = date_obj.strftime("%U")  # %U は週番号（週の始まりは日曜日）
+        year_week = get_year_week(date_str)
     except ValueError:
         return {
             "statusCode": 400,
@@ -38,7 +37,8 @@ def lambda_handler(event, context):
 
     s3 = boto3.client("s3")
     bucket_name = os.environ["BUCKET_NAME"]
-    key = f"{user_id}/{year}-{week}.png"
+    key = f"bouquets/{user_id}/{year_week}.png"
+    print(f"bucket_name:{bucket_name}, {key}")
 
     try:
         response = s3.get_object(Bucket=bucket_name, Key=key)
@@ -54,8 +54,8 @@ def lambda_handler(event, context):
         }
     except s3.exceptions.NoSuchKey:
         return {
-            "statusCode": 404,
-            "body": json.dumps({"error": "Bouquet image not found"}),
+            "statusCode": 200,
+            "body": json.dumps({"message": "Bouquet image not found"}),
             "headers": {
                 "Content-Type": "application/json",
                 "Access-Control-Allow-Origin": "*",
@@ -70,3 +70,21 @@ def lambda_handler(event, context):
                 "Access-Control-Allow-Origin": "*",
             },
         }
+
+
+def get_year_week(date: str) -> str:
+    """指定された日付のISO年週を返す関数。
+
+    渡された日付からISOカレンダーに基づく年と週番号を抽出し、
+    'YYYY-WW'の形式でフォーマットした文字列を返します。
+    週番号は2桁にゼロパディングされます。
+
+    Args:
+        date (str): ISO年週を取得するための日付。
+
+    Returns:
+        str: 'YYYY-WW'形式のISO年週を表す文字列。
+    """
+    dt = datetime.strptime(date, "%Y-%m-%d")
+    iso_year, iso_week, _ = dt.isocalendar()
+    return f"{iso_year}-{iso_week:02d}"
