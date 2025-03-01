@@ -71,6 +71,7 @@ def lambda_handler(event, context):
             },
         }
 
+
 def get_year_week(date: str) -> str:
     """指定された日付のISO年週を返す関数。
 
