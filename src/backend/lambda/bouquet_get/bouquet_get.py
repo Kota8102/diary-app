@@ -54,8 +54,8 @@ def lambda_handler(event, context):
         }
     except s3.exceptions.NoSuchKey:
         return {
-            "statusCode": 404,
-            "body": json.dumps({"error": "Bouquet image not found"}),
+            "statusCode": 200,
+            "body": json.dumps({"message": "Bouquet image not found"}),
             "headers": {
                 "Content-Type": "application/json",
                 "Access-Control-Allow-Origin": "*",
