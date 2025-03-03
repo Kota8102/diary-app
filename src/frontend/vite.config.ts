@@ -20,4 +20,9 @@ export default defineConfig({
       '@/src': '/src',
     },
   },
+  // Docker でホスト名を指定してアクセスするための設定
+  server: {
+    host: true,
+    port: 5173,
+  },
 })
