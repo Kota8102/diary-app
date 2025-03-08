@@ -112,6 +112,9 @@ def lambda_handler(event, context):
         # 成功レスポンスを返す
         return {
             "statusCode": 200,
+            "headers": {
+                "Access-Control-Allow-Origin": "*",
+            },
             "body": f"Profile image uploaded successfully for user_id: {user_id}",
         }
 
