@@ -5440,18 +5440,14 @@ exports[`Snapshot test 1`] = `
                 ],
               },
               "Id": "CdkSampleStackWebCloudFrontDistributionOrigin15394C2AE",
+              "OriginAccessControlId": {
+                "Fn::GetAtt": [
+                  "WebCloudFrontOac9595649E",
+                  "Id",
+                ],
+              },
               "S3OriginConfig": {
-                "OriginAccessIdentity": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "origin-access-identity/cloudfront/",
-                      {
-                        "Ref": "WebCloudFrontDistributionOrigin1S3Origin3E1C3656",
-                      },
-                    ],
-                  ],
-                },
+                "OriginAccessIdentity": "",
               },
             },
           ],
@@ -5467,26 +5463,40 @@ exports[`Snapshot test 1`] = `
       },
       "Type": "AWS::CloudFront::Distribution",
     },
-    "WebCloudFrontDistributionOrigin1S3Origin3E1C3656": {
+    "WebCloudFrontOac9595649E": {
       "Properties": {
-        "CloudFrontOriginAccessIdentityConfig": {
-          "Comment": "Identity for CdkSampleStackWebCloudFrontDistributionOrigin15394C2AE",
+        "OriginAccessControlConfig": {
+          "Description": "Origin access control provisioned by aws-cloudfront-s3",
+          "Name": {
+            "Fn::Join": [
+              "",
+              [
+                "aws-cloudfront-s3-Web-",
+                {
+                  "Fn::Select": [
+                    2,
+                    {
+                      "Fn::Split": [
+                        "/",
+                        {
+                          "Ref": "AWS::StackId",
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            ],
+          },
+          "OriginAccessControlOriginType": "s3",
+          "SigningBehavior": "always",
+          "SigningProtocol": "sigv4",
         },
       },
-      "Type": "AWS::CloudFront::CloudFrontOriginAccessIdentity",
+      "Type": "AWS::CloudFront::OriginAccessControl",
     },
     "WebCloudfrontLoggingBucket08FB1412": {
       "DeletionPolicy": "Delete",
-      "Metadata": {
-        "cfn_nag": {
-          "rules_to_suppress": [
-            {
-              "id": "W35",
-              "reason": "This S3 bucket is used as the access logging bucket for CloudFront Distribution",
-            },
-          ],
-        },
-      },
       "Properties": {
         "AccessControl": "LogDeliveryWrite",
         "BucketEncryption": {
@@ -5499,6 +5509,9 @@ exports[`Snapshot test 1`] = `
           ],
         },
         "LoggingConfiguration": {
+          "DestinationBucketName": {
+            "Ref": "WebCloudfrontLoggingBucketAccessLog74761871",
+          },
           "LogFilePrefix": "logs",
         },
         "OwnershipControls": {
@@ -5526,6 +5539,124 @@ exports[`Snapshot test 1`] = `
       },
       "Type": "AWS::S3::Bucket",
       "UpdateReplacePolicy": "Delete",
+    },
+    "WebCloudfrontLoggingBucketAccessLog74761871": {
+      "DeletionPolicy": "Retain",
+      "Metadata": {
+        "cfn_nag": {
+          "rules_to_suppress": [
+            {
+              "id": "W35",
+              "reason": "This S3 bucket is used as the access logging bucket for another bucket",
+            },
+          ],
+        },
+      },
+      "Properties": {
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "AES256",
+              },
+            },
+          ],
+        },
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": true,
+          "BlockPublicPolicy": true,
+          "IgnorePublicAcls": true,
+          "RestrictPublicBuckets": true,
+        },
+        "VersioningConfiguration": {
+          "Status": "Enabled",
+        },
+      },
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "WebCloudfrontLoggingBucketAccessLogPolicy987305BE": {
+      "Properties": {
+        "Bucket": {
+          "Ref": "WebCloudfrontLoggingBucketAccessLog74761871",
+        },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:*",
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false",
+                },
+              },
+              "Effect": "Deny",
+              "Principal": {
+                "AWS": "*",
+              },
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "WebCloudfrontLoggingBucketAccessLog74761871",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "WebCloudfrontLoggingBucketAccessLog74761871",
+                          "Arn",
+                        ],
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+            {
+              "Action": "s3:PutObject",
+              "Condition": {
+                "ArnLike": {
+                  "aws:SourceArn": {
+                    "Fn::GetAtt": [
+                      "WebCloudfrontLoggingBucket08FB1412",
+                      "Arn",
+                    ],
+                  },
+                },
+                "StringEquals": {
+                  "aws:SourceAccount": {
+                    "Ref": "AWS::AccountId",
+                  },
+                },
+              },
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "logging.s3.amazonaws.com",
+              },
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    {
+                      "Fn::GetAtt": [
+                        "WebCloudfrontLoggingBucketAccessLog74761871",
+                        "Arn",
+                      ],
+                    },
+                    "/logs*",
+                  ],
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::S3::BucketPolicy",
     },
     "WebCloudfrontLoggingBucketAutoDeleteObjectsCustomResourceF2C19050": {
       "DeletionPolicy": "Delete",
@@ -5586,42 +5717,6 @@ exports[`Snapshot test 1`] = `
                   ],
                 },
               ],
-            },
-            {
-              "Action": "s3:PutObject",
-              "Condition": {
-                "ArnLike": {
-                  "aws:SourceArn": {
-                    "Fn::GetAtt": [
-                      "WebCloudfrontLoggingBucket08FB1412",
-                      "Arn",
-                    ],
-                  },
-                },
-                "StringEquals": {
-                  "aws:SourceAccount": {
-                    "Ref": "AWS::AccountId",
-                  },
-                },
-              },
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "logging.s3.amazonaws.com",
-              },
-              "Resource": {
-                "Fn::Join": [
-                  "",
-                  [
-                    {
-                      "Fn::GetAtt": [
-                        "WebCloudfrontLoggingBucket08FB1412",
-                        "Arn",
-                      ],
-                    },
-                    "/logs*",
-                  ],
-                ],
-              },
             },
             {
               "Action": [
@@ -5832,14 +5927,32 @@ exports[`Snapshot test 1`] = `
             },
             {
               "Action": "s3:GetObject",
+              "Condition": {
+                "StringEquals": {
+                  "AWS:SourceArn": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition",
+                        },
+                        ":cloudfront::",
+                        {
+                          "Ref": "AWS::AccountId",
+                        },
+                        ":distribution/",
+                        {
+                          "Ref": "WebCloudFrontDistributionAD0EA8F1",
+                        },
+                      ],
+                    ],
+                  },
+                },
+              },
               "Effect": "Allow",
               "Principal": {
-                "CanonicalUser": {
-                  "Fn::GetAtt": [
-                    "WebCloudFrontDistributionOrigin1S3Origin3E1C3656",
-                    "S3CanonicalUserId",
-                  ],
-                },
+                "Service": "cloudfront.amazonaws.com",
               },
               "Resource": {
                 "Fn::Join": [
