@@ -54,6 +54,30 @@ export class Settings extends Construct {
     // /APIの設定
     const settingsApi = props.api.root.addResource('settings')
 
+    // OPTIONS メソッドを明示的に追加
+  settingsApi.addMethod('OPTIONS', new apigateway.MockIntegration({
+    integrationResponses: [{
+      statusCode: '200',
+      responseParameters: {
+        'method.response.header.Access-Control-Allow-Origin': "'*'",
+        'method.response.header.Access-Control-Allow-Methods': "'GET, POST, OPTIONS'",
+        'method.response.header.Access-Control-Allow-Headers': "'Content-Type, Authorization'",
+      },
+    }],
+    passthroughBehavior: apigateway.PassthroughBehavior.NEVER,
+    requestTemplates: { 'application/json': '{"statusCode": 200}' },
+  }), {
+    methodResponses: [{
+      statusCode: '200',
+      responseParameters: {
+        'method.response.header.Access-Control-Allow-Origin': true,
+        'method.response.header.Access-Control-Allow-Methods': true,
+        'method.response.header.Access-Control-Allow-Headers': true,
+      },
+    }],
+  });
+
+
     settingsApi.addMethod('POST', new apigateway.LambdaIntegration(uploadProfileImageFunction), {
       authorizer: props.cognitoAuthorizer,
     })
