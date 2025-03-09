@@ -55,25 +55,16 @@ export class Settings extends Construct {
     // API Gateway の `setting` リソースを作成
     const settingsApi = props.api.root.addResource('settings')
 
-
     // `GET` メソッドの追加 (プロフィール画像取得)
-    settingsApi.addMethod(
-      'GET',
-      new apigateway.LambdaIntegration(getProfileImageFunction),
-      {
-        authorizer: props.cognitoAuthorizer,
-        authorizationType: apigateway.AuthorizationType.COGNITO,
-      }
-    )
+    settingsApi.addMethod('GET', new apigateway.LambdaIntegration(getProfileImageFunction), {
+      authorizer: props.cognitoAuthorizer,
+      authorizationType: apigateway.AuthorizationType.COGNITO,
+    })
 
     // `POST` メソッドの追加 (プロフィール画像アップロード)
-    settingsApi.addMethod(
-      'POST',
-      new apigateway.LambdaIntegration(uploadProfileImageFunction),
-      {
-        authorizer: props.cognitoAuthorizer,
-        authorizationType: apigateway.AuthorizationType.COGNITO,
-      }
-    )
+    settingsApi.addMethod('POST', new apigateway.LambdaIntegration(uploadProfileImageFunction), {
+      authorizer: props.cognitoAuthorizer,
+      authorizationType: apigateway.AuthorizationType.COGNITO,
+    })
   }
 }
