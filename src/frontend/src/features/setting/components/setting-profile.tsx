@@ -8,9 +8,14 @@ export const SettingProfile = () => {
 
   // プロフィール画像を取得するAPIリクエスト
   const fetchProfileImage = async () => {
-    const response = await api.get('/profile-image')
-    if (response.data.isBase64Encoded) {
-      return `data:image/png;base64,${response.data.body}`
+    const response = await api.get('/settings')
+  
+    if (!response.data) return null
+  
+    const isBase64Encoded = response.headers['content-encoding'] === 'base64'
+  
+    if (isBase64Encoded) {
+      return `data:${response.headers['content-type']};base64,${response.data}`
     }
     return null
   }
@@ -23,9 +28,11 @@ export const SettingProfile = () => {
 
   // プロフィール画像をアップロードするAPIリクエスト
   const uploadProfileImage = async (base64String: string) => {
-    await api.post('/profile-image', base64String, {
-      headers: { 'Content-Type': 'text/plain' },
-    })
+    await api.post(
+      '/settings',
+      { body: base64String },
+      { headers: { 'Content-Type': 'application/json' } }
+    )
   }
 
   // React Query の useMutation を使用
