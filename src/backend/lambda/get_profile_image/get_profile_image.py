@@ -73,6 +73,8 @@ def lambda_handler(event, context):
                 "Content-Type": content_type,
                 "Content-Encoding": "base64",
                 "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+                "Access-Control-Allow-Headers": "Content-Type, Authorization",
             },
             "body": encoded_image,
             "isBase64Encoded": True,
