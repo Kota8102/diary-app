@@ -114,8 +114,6 @@ def lambda_handler(event, context):
             "statusCode": 200,
             "headers": {
                 "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-                "Access-Control-Allow-Headers": "Content-Type, Authorization",
             },
             "body": f"Profile image uploaded successfully for user_id: {user_id}",
         }
