@@ -1,10 +1,9 @@
 import { api } from '@/lib/api'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useEffect, useState } from 'react'
+import React from 'react'
 
 export const SettingProfile = () => {
   const queryClient = useQueryClient()
-  const [selectedFile, setSelectedFile] = useState<File | null>(null)
 
   // プロフィール画像を取得するAPIリクエスト
   const fetchProfileImage = async () => {
@@ -27,8 +26,15 @@ export const SettingProfile = () => {
   })
 
   // プロフィール画像をアップロードするAPIリクエスト
-  const uploadProfileImage = async (base64String: string) => {
-    await api.post('/settings', { body: base64String }, { headers: { 'Content-Type': 'application/json' } })
+  const uploadProfileImage = async (file: File) => {
+    const formData = new FormData()
+    formData.append('file', file)
+
+    await api.post('/settings', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
   }
 
   // React Query の useMutation を使用
@@ -46,16 +52,8 @@ export const SettingProfile = () => {
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (!file) return
-    setSelectedFile(file)
 
-    const reader = new FileReader()
-    reader.onloadend = () => {
-      const base64String = reader.result?.toString().split(',')[1]
-      if (base64String) {
-        uploadMutation.mutate(base64String)
-      }
-    }
-    reader.readAsDataURL(file)
+    uploadMutation.mutate(file)
   }
 
   return (
