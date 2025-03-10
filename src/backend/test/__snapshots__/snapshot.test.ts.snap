@@ -5315,22 +5315,6 @@ exports[`Snapshot test 1`] = `
       "DeletionPolicy": "Retain",
       "Properties": {
         "AccessControl": "LogDeliveryWrite",
-        "CorsConfiguration": {
-          "CorsRules": [
-            {
-              "AllowedHeaders": [
-                "*",
-              ],
-              "AllowedMethods": [
-                "GET",
-                "POST",
-              ],
-              "AllowedOrigins": [
-                "*",
-              ],
-            },
-          ],
-        },
         "LoggingConfiguration": {
           "LogFilePrefix": "log/",
         },
