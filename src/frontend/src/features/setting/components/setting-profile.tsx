@@ -1,6 +1,6 @@
 import { api } from '@/lib/api'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import React from 'react'
+import type { ChangeEvent } from 'react'
 
 export const SettingProfile = () => {
   const queryClient = useQueryClient()
@@ -26,15 +26,8 @@ export const SettingProfile = () => {
   })
 
   // プロフィール画像をアップロードするAPIリクエスト
-  const uploadProfileImage = async (file: File) => {
-    const formData = new FormData()
-    formData.append('file', file)
-
-    await api.post('/settings', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    })
+  const uploadProfileImage = async (base64String: string) => {
+    await api.post('/settings', { body: base64String }, { headers: { 'Content-Type': 'application/json' } })
   }
 
   // React Query の useMutation を使用
@@ -49,11 +42,18 @@ export const SettingProfile = () => {
   })
 
   // 画像アップロード処理
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (!file) return
 
-    uploadMutation.mutate(file)
+    const reader = new FileReader()
+    reader.onloadend = () => {
+      const base64String = reader.result?.toString().split(',')[1]
+      if (base64String) {
+        uploadMutation.mutate(base64String)
+      }
+    }
+    reader.readAsDataURL(file)
   }
 
   return (
