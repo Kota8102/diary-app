@@ -143,25 +143,31 @@ def get_body(user_id: str, date: str) -> Optional[str]:
         raise
 
 
-def get_current_year_week() -> int:
-    """
-    現在の年と週番号を取得します。
+def get_year_week(date: str) -> str:
+    """指定された日付のISO年週を返す関数。
+
+    渡された日付からISOカレンダーに基づく年と週番号を抽出し、
+    'YYYY-WW'の形式でフォーマットした文字列を返します。
+    週番号は2桁にゼロパディングされます。
+
+    Args:
+        date (str): ISO年週を取得するための日付。
 
     Returns:
-        tuple: 現在の年とISO週番号。
+        str: 'YYYY-WW'形式のISO年週を表す文字列。
     """
-    year_week = datetime.now().strftime("%Y-%U")
-    return year_week
+    dt = datetime.strptime(date, "%Y-%m-%d")
+    iso_year, iso_week, _ = dt.isocalendar()
+    return f"{iso_year}-{iso_week:02d}"
 
 
-def check_bouquet_created(user_id: str, current_year_week: int) -> bool:
+def check_bouquet_created(user_id: str, year_week: str) -> bool:
     """
     現在の週にブーケが作成されたか確認します。
 
     Args:
         user_id (str): ユーザーID。
-        current_year (int): 現在の年。
-        current_week (int): 現在のISO週番号。
+        year_week (str): 現在の年。
 
     Returns:
         bool: ブーケが作成されている場合はTrue、それ以外はFalse。
@@ -169,15 +175,13 @@ def check_bouquet_created(user_id: str, current_year_week: int) -> bool:
     bouquet_table_name = os.getenv("BOUQUET_TABLE_NAME")
     bouquet_table = dynamodb.Table(bouquet_table_name)
     try:
-        bouquet_table.get_item(
-            Key={"user_id": user_id, "year_week": f"{current_year_week}"}
-        )
+        bouquet_table.get_item(Key={"user_id": user_id, "year_week": f"{year_week}"})
         return True
     except ClientError:
         return False
 
 
-def count_flowers_in_week(user_id: str, current_year_week: int) -> int:
+def count_flowers_in_week(user_id: str, year_week: str) -> int:
     """
     現在の週にS3にある花の数をカウントします。
 
@@ -191,7 +195,7 @@ def count_flowers_in_week(user_id: str, current_year_week: int) -> int:
     """
     s3 = boto3.client("s3")
     bucket_name = os.getenv("FLOWER_BUCKET_NAME")
-    prefix = f"{user_id}/{current_year_week}"
+    prefix = f"{user_id}/{year_week}"
     logger.info(f"prefix: {prefix}")
 
     try:
@@ -226,7 +230,7 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         date = query_params["date"]
         if not validate_date(date):
             return create_response(400, {"error": "Invalid date format"})
-        year_week = get_current_year_week()
+        year_week = get_year_week(date)
         image = get_image(user_id, date, year_week)
         logger.info(f"image: {image}")
         title = get_title(user_id, date)
@@ -234,10 +238,9 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         body = get_body(user_id, date)
         logger.info(f"body: {body}")
 
-        current_year_week = get_current_year_week()
-        bouquet_created = check_bouquet_created(user_id, current_year_week)
+        bouquet_created = check_bouquet_created(user_id, year_week)
         logger.info(f"bouquet create : {bouquet_created}")
-        flower_count = count_flowers_in_week(user_id, current_year_week)
+        flower_count = count_flowers_in_week(user_id, year_week)
         logger.info(f"flower count: {flower_count}")
         can_create_bouquet = not bouquet_created and flower_count >= 5
         logger.info(f"can create bouquet: {can_create_bouquet}")
