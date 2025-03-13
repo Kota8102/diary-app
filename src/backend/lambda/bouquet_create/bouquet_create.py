@@ -862,19 +862,22 @@ class MkBouquet(DecideFlowerPos):
 
 def get_week_dates(date):
     """
-    指定された日付からその週の全日付を取得する。
+    指定された日付が属する週の月曜日から7日分の日付を取得する。
 
     Args:
         date (str): 基準となる日付（例: '2024-10-19'）
 
     Returns:
-        tuple: 週の全日付リストと週の開始日
+        tuple: 週の開始日と、月曜日から7日分の日付リスト
     """
     date_obj = datetime.strptime(date, "%Y-%m-%d")
-    start_of_week = date_obj - timedelta(days=date_obj.weekday())
-    return [
+    start_of_week = date_obj - timedelta(
+        days=date_obj.weekday()
+    )  # 週の開始日（月曜日）
+
+    return start_of_week.strftime("%Y-%m-%d"), [
         (start_of_week + timedelta(days=i)).strftime("%Y-%m-%d")
-        for i in range((date_obj - start_of_week).days + 1)
+        for i in range(7)  # 月曜から日曜まで7日分
     ]
 
 
@@ -901,15 +904,22 @@ def get_flowers(user_id, dates):
     return flowers
 
 
-def get_current_year_week():
-    """
-    現在の年と週番号を取得します。
+def get_year_week(date: str) -> str:
+    """指定された日付のISO年週を返す関数。
+
+    渡された日付からISOカレンダーに基づく年と週番号を抽出し、
+    'YYYY-WW'の形式でフォーマットした文字列を返します。
+    週番号は2桁にゼロパディングされます。
+
+    Args:
+        date (datetime): ISO年週を取得するための日付。
 
     Returns:
-        tuple: 現在の年とISO週番号。
+        str: 'YYYY-WW'形式のISO年週を表す文字列。
     """
-    year_week = datetime.now().strftime("%Y-%U")
-    return year_week
+    dt = datetime.strptime(date, "%Y-%m-%d")
+    iso_year, iso_week, _ = dt.isocalendar()
+    return f"{iso_year}-{iso_week:02}"
 
 
 def save_bouquet_record(user_id, year_week):
@@ -939,12 +949,9 @@ def lambda_handler(event, context):
     user_id = event["requestContext"]["authorizer"]["claims"]["sub"]
 
     if not date:
-        return {
-            "statusCode": 400,
-            "body": json.dumps({"error": "date parameter is required"}),
-        }
+        return create_response(400, {"error": "date parameter is required"})
 
-    dates = get_week_dates(date)
+    start_of_week, dates = get_week_dates(date)
     flowers = get_flowers(user_id, dates)
 
     if not flowers:
@@ -954,20 +961,18 @@ def lambda_handler(event, context):
     bouquet_maker = MkBouquet(n, flowers)
     bouquet_image = bouquet_maker.mk_bouquet()
 
-    year_week = get_current_year_week()
-    output_key = f"bouquets/{user_id}_{year_week}.png"
+    year_week = get_year_week(start_of_week)
+    output_key = f"bouquets/{user_id}/{year_week}.png"
     save_bouquet_to_s3(bouquet_image, output_key)
     save_bouquet_record(user_id, year_week)
 
-    return {
-        "statusCode": 200,
-        "body": json.dumps(
-            {
-                "message": "Bouquet created",
-                "bouquet_url": f"s3://{BOUQUET_BUCKET_NAME}/{output_key}",
-            }
-        ),
-    }
+    return create_response(
+        200,
+        {
+            "message": "Bouquet created",
+            "bouquet_url": f"s3://{BOUQUET_BUCKET_NAME}/{output_key}",
+        },
+    )
 
 
 def save_bouquet_to_s3(bouquet_image, key):
@@ -981,3 +986,24 @@ def save_bouquet_to_s3(bouquet_image, key):
     temp_file_path = f"/tmp/{key.split('/')[-1]}"
     bouquet_image.save(temp_file_path, format="PNG")
     s3.upload_file(temp_file_path, BOUQUET_BUCKET_NAME, key)
+
+
+def create_response(status_code, body):
+    """
+    HTTPレスポンスを生成します。
+
+    Args:
+        status_code (int): HTTPステータスコード。
+        body (dict): レスポンスボディ。
+
+    Returns:
+        dict: フォーマット済みのHTTPレスポンス。
+    """
+    return {
+        "statusCode": status_code,
+        "body": json.dumps(body),
+        "headers": {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+        },
+    }
