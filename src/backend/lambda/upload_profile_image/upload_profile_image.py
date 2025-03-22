@@ -27,6 +27,9 @@ def decode_image_data(encoded_body):
         ValueError: `encoded_body` が無効な Base64 データの場合、またはサイズが大きすぎる場合。
     """
     try:
+        # プレフィックスを除去
+        if "," in encoded_body:
+            encoded_body = encoded_body.split(",")[1]
         decoded_data = base64.b64decode(encoded_body)
     except Exception as e:
         raise ValueError("Invalid base64-encoded image data") from e
@@ -98,6 +101,8 @@ def lambda_handler(event, context):
 
         # リクエストの body から画像データを取得
         body = event.get("body", "")
+        logger.info(type(body))
+        logger.info(body)
         image_data = decode_image_data(body)
 
         # S3 パスを設定
@@ -112,6 +117,9 @@ def lambda_handler(event, context):
         # 成功レスポンスを返す
         return {
             "statusCode": 200,
+            "headers": {
+                "Access-Control-Allow-Origin": "*",
+            },
             "body": f"Profile image uploaded successfully for user_id: {user_id}",
         }
 

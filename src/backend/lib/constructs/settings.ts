@@ -15,20 +15,13 @@ export class Settings extends Construct {
   constructor(scope: Construct, id: string, props: SettingsProps) {
     super(scope, id)
 
-    // プロフィール画像保存用のS3バケットの作成
+    // S3 バケットの作成
     const userSettingsBucket = new s3.Bucket(this, 'userSettingsBucket', {
       enforceSSL: true,
       serverAccessLogsPrefix: 'log/',
-      cors: [
-        {
-          allowedHeaders: ['*'],
-          allowedMethods: [s3.HttpMethods.GET, s3.HttpMethods.POST],
-          allowedOrigins: ['*'],
-        },
-      ],
     })
 
-    //プロフィール画像アップロード用Lambda関数の定義
+    // Lambda 関数の作成 (アップロード)
     const uploadProfileImageFunction = new lambda.Function(this, 'uploadProfileImageFunction', {
       runtime: lambda.Runtime.PYTHON_3_11,
       handler: 'upload_profile_image.lambda_handler',
@@ -40,7 +33,7 @@ export class Settings extends Construct {
     })
     userSettingsBucket.grantPut(uploadProfileImageFunction)
 
-    //プロフィール画像取得用Lambda関数の定義
+    // Lambda 関数の作成 (取得)
     const getProfileImageFunction = new lambda.Function(this, 'getProfileImageFunction', {
       runtime: lambda.Runtime.PYTHON_3_11,
       handler: 'get_profile_image.lambda_handler',
@@ -51,15 +44,20 @@ export class Settings extends Construct {
       },
     })
     userSettingsBucket.grantRead(getProfileImageFunction)
-    // /APIの設定
+
+    // API Gateway の `setting` リソースを作成
     const settingsApi = props.api.root.addResource('settings')
 
-    settingsApi.addMethod('POST', new apigateway.LambdaIntegration(uploadProfileImageFunction), {
-      authorizer: props.cognitoAuthorizer,
-    })
-
+    // `GET` メソッドの追加 (プロフィール画像取得)
     settingsApi.addMethod('GET', new apigateway.LambdaIntegration(getProfileImageFunction), {
       authorizer: props.cognitoAuthorizer,
+      authorizationType: apigateway.AuthorizationType.COGNITO,
+    })
+
+    // `POST` メソッドの追加 (プロフィール画像アップロード)
+    settingsApi.addMethod('POST', new apigateway.LambdaIntegration(uploadProfileImageFunction), {
+      authorizer: props.cognitoAuthorizer,
+      authorizationType: apigateway.AuthorizationType.COGNITO,
     })
   }
 }

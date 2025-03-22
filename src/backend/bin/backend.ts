@@ -64,4 +64,8 @@ NagSuppressions.addStackSuppressions(backendStack, [
     id: 'AwsSolutions-CB4',
     reason: 'CodeBuildプロジェクトのKMSキーの使用を一時的にオフにします。(本番はON)',
   },
+  {
+    id: 'AwsSolutions-CFR7',
+    reason: 'synthデバック作業のため、コメントアウト。別issueで対応',
+  },
 ])

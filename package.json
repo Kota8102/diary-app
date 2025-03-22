@@ -15,5 +15,10 @@
     "@biomejs/biome": "1.8.3",
     "lefthook": "^1.7.13",
     "vitest": "^2.0.5"
+  },
+  "dependencies": {
+    "aws-cdk": "^2.1003.0",
+    "deep-diff": "^1.0.2",
+    "deepmerge": "^4.3.1"
   }
 }
