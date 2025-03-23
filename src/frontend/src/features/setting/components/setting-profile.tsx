@@ -1,4 +1,4 @@
-import { api } from '@/lib/api'
+import { fetchProfileImage, uploadProfileImage } from '@/lib/setting/setting-profile'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { type ChangeEvent, useState } from 'react'
 import { FiCamera } from 'react-icons/fi'
@@ -7,23 +7,11 @@ export const SettingProfile = () => {
   const queryClient = useQueryClient()
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
-  // プロフィール画像を取得するAPIリクエスト
-  const fetchProfileImage = async () => {
-    const response = await api.get('/settings')
-    if (!response.data) return null
-    return `data:image/jpeg;base64,${response.data}`
-  }
-
   // React Query を使用したプロフィール画像の取得
   const { data: profileImage, isLoading } = useQuery({
     queryKey: ['profile-image'],
     queryFn: fetchProfileImage,
   })
-
-  // プロフィール画像をアップロードするAPIリクエスト
-  const uploadProfileImage = async (base64String: string) => {
-    await api.post('/settings', base64String, { headers: { 'Content-Type': 'application/json' } })
-  }
 
   // React Query の useMutation を使用
   const uploadMutation = useMutation({
@@ -50,7 +38,7 @@ export const SettingProfile = () => {
       return
     }
 
-    const maxSizeInBytes = 1 * 1024 * 1024 // 5MB
+    const maxSizeInBytes = 1 * 1024 * 1024 // 1MB
     if (file.size > maxSizeInBytes) {
       setErrorMessage('画像サイズが大きすぎます。1MB以下の画像をアップロードしてください。')
       return
