@@ -1,6 +1,7 @@
 import { paths } from '@/config/paths'
 import { api } from '@/lib/api'
 import { useQuery } from '@tanstack/react-query'
+import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 type HeaderProps = {
@@ -19,15 +20,21 @@ const HeaderIcon = () => {
   }
 
   // React Query を使用してプロフィール画像を取得
-  const { data: profileImage, isLoading, error } = useQuery({
+  const {
+    data: profileImage,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ['profile-image'],
     queryFn: fetchProfileImage,
   })
-  if (error) {
-    console.error('Error fetching profile image:', error)
-    return <div className="w-full h-full bg-red-200 flex items-center justify-center">Error loading image</div>
-  }
-  })
+
+  // エラーハンドリング
+  useEffect(() => {
+    if (error) {
+      console.error('Error fetching profile image:', error)
+    }
+  }, [error])
 
   // プロフィール画像クリック時の処理
   const handleClick = () => {
