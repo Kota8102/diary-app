@@ -19,9 +19,14 @@ const HeaderIcon = () => {
   }
 
   // React Query を使用してプロフィール画像を取得
-  const { data: profileImage, isLoading } = useQuery({
+  const { data: profileImage, isLoading, error } = useQuery({
     queryKey: ['profile-image'],
     queryFn: fetchProfileImage,
+  })
+  if (error) {
+    console.error('Error fetching profile image:', error)
+    return <div className="w-full h-full bg-red-200 flex items-center justify-center">Error loading image</div>
+  }
   })
 
   // プロフィール画像クリック時の処理
