@@ -1,5 +1,5 @@
 import { paths } from '@/config/paths'
-import { api } from '@/lib/api'
+import { fetchProfileImage } from '@/lib/setting/setting-profile'
 import { useQuery } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -11,13 +11,6 @@ type HeaderProps = {
 
 const HeaderIcon = () => {
   const navigate = useNavigate()
-
-  // プロフィール画像を取得する関数
-  const fetchProfileImage = async () => {
-    const response = await api.get('/settings')
-    if (!response.data) return null
-    return `data:image/jpeg;base64,${response.data}`
-  }
 
   // React Query を使用してプロフィール画像を取得
   const {
