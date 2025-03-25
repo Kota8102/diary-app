@@ -44,12 +44,13 @@ export const LoginForm = () => {
           registration={{}}
           className={errorMessage ? 'border border-red-500 focus:border-red-700' : ''}
         />{' '}
-        <Input 
-          type="password" 
-          value={password} 
-          onChange={(e) => setPassword(e.target.value)} 
-          placeholder="パスワード" 
-          required registration={{}} 
+        <Input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="パスワード"
+          required
+          registration={{}}
           className={errorMessage ? 'border border-red-500 focus:border-red-700' : ''}
         />
       </div>
