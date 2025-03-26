@@ -1,5 +1,6 @@
 import { paths } from '@/config/paths'
-import { fetchProfileImage } from '@/lib/setting/setting-profile'
+import { fetchProfileImage } from '@/lib/setting/get-profileImage'
+
 import { useQuery } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
