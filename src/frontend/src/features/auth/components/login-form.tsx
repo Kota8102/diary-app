@@ -35,8 +35,24 @@ export const LoginForm = () => {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-6 pt-20">
       <div className="flex flex-col gap-2">
-        <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="メールアドレス" required registration={{}} />
-        <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="パスワード" required registration={{}} />
+        <Input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="メールアドレス"
+          required
+          registration={{}}
+          className={errorMessage ? 'border border-red-500 focus:border-red-700' : ''}
+        />{' '}
+        <Input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="パスワード"
+          required
+          registration={{}}
+          className={errorMessage ? 'border border-red-500 focus:border-red-700' : ''}
+        />
       </div>
       {errorMessage && <p className="text-red-500 text-sm">{errorMessage}</p>}
       <div className="flex justify-center py-7">
