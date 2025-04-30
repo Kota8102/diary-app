@@ -175,9 +175,11 @@ def check_bouquet_created(user_id: str, year_week: str) -> bool:
     bouquet_table_name = os.getenv("BOUQUET_TABLE_NAME")
     bouquet_table = dynamodb.Table(bouquet_table_name)
     try:
-        response = bouquet_table.get_item(Key={"user_id": user_id, "year_week": year_week})
+        response = bouquet_table.get_item(
+            Key={"user_id": user_id, "year_week": year_week}
+        )
         print(f"response: {response}")
-        return 'Item' in response
+        return "Item" in response
     except ClientError:
         return False
 
