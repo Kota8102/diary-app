@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button/button'
 import { paths } from '@/config/paths'
-import { useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 export type DisplayBouquetProps = {
   image: string
