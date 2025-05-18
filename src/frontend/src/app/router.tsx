@@ -137,6 +137,14 @@ export const createAppRouter = (_queryClient: QueryClient) =>
             return { Component: BouquetRoute }
           },
         },
+        // 花束表示
+        {
+          path: paths.app.bouquetDisplay.path,
+          lazy: async () => {
+            const { DisplayBouquetRoute } = await import('./routes/app/diary/diary-bouquet')
+            return { Component: DisplayBouquetRoute }
+          },
+        },
         // 設定
         {
           path: paths.app.setting.path,

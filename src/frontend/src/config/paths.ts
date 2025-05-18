@@ -65,6 +65,10 @@ export const paths = {
       path: 'bouquet',
       getHref: () => '/app/bouquet',
     },
+    bouquetDisplay: {
+      path: 'bouquet/display',
+      getHref: () => '/app/bouquet/display',
+    },
     // 設定関連
     setting: {
       path: 'setting',
