@@ -178,7 +178,7 @@ def check_bouquet_created(user_id: str, year_week: str) -> bool:
         response = bouquet_table.get_item(
             Key={"user_id": user_id, "year_week": year_week}
         )
-        print(f"response: {response}")
+        # logging.debug(f"response: {response}")
         return "Item" in response
     except ClientError:
         return False
