@@ -108,8 +108,8 @@ def lambda_handler(event, context):
             palette.paste(vase, vase_position, vase)
 
             # 保存先のキーを構築
-            today = datetime.now()
-            year_week = get_year_week(today)
+            format_date = datetime.strptime(date, "%Y-%m-%d")
+            year_week = get_year_week(format_date)
             output_key = f"{user_id}/{year_week}/{date}.png"
 
             # 合成画像を保存
