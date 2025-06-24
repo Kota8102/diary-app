@@ -1,7 +1,7 @@
+import type { Result, UseAuth } from '@/types/auth'
 import { Auth } from 'aws-amplify'
 import type React from 'react'
 import { createContext, useContext, useEffect, useState } from 'react'
-import type { Result, UseAuth } from '@/types/auth'
 import { configureAuth } from './authConfig'
 
 const authContext = createContext({} as UseAuth)
@@ -76,7 +76,7 @@ const useProvideAuth = (): UseAuth => {
   const signIn = async (username: string, password: string): Promise<Result> => {
     try {
       const result = await Auth.signIn(username, password)
-      const hasChallenge = Object.hasOwn(result, 'challengeName')
+      const hasChallenge = Object.prototype.hasOwnProperty.call(result, 'challengeName')
       setUsername(result.username)
       setIsAuthenticated(true)
       if (hasChallenge) {
