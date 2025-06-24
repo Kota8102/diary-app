@@ -1,9 +1,8 @@
 import * as cdk from 'aws-cdk-lib'
 import { Template } from 'aws-cdk-lib/assertions'
 import { expect, test } from 'vitest'
-import { serializer } from './snapshot-plugin'
-
 import * as Backendstack from '../lib/backend-stack'
+import { serializer } from './snapshot-plugin'
 
 test('Snapshot test', () => {
   const app = new cdk.App({

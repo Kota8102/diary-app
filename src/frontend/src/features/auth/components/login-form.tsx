@@ -1,8 +1,8 @@
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/form/input'
 import { useAuth } from '@/lib/auth/cognito-auth'
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 
 export const LoginForm = () => {
   const navigate = useNavigate()
@@ -25,7 +25,7 @@ export const LoginForm = () => {
       } else {
         setErrorMessage(result.message || 'ログインに失敗しました')
       }
-    } catch (error) {
+    } catch {
       setErrorMessage('予期せぬエラーが発生しました')
     } finally {
       setIsLoading(false)

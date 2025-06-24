@@ -1,6 +1,6 @@
+import { useNavigate } from 'react-router-dom'
 import { paths } from '@/config/paths'
 import { useAuth } from '@/lib/auth/cognito-auth'
-import { useNavigate } from 'react-router-dom'
 
 export const SettingMenu = () => {
   const { signOut } = useAuth()

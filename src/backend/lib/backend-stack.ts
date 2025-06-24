@@ -64,7 +64,7 @@ export class BackendStack extends cdk.Stack {
       imageProcessingQueue: flower.imageProcessingQueue,
     })
 
-    const bouquet = new Bouquet(this, 'Bouquet', {
+    new Bouquet(this, 'Bouquet', {
       userPool: auth.userPool,
       table: flower.table,
       bouquetTable: diary.bouquetTable,
@@ -74,7 +74,7 @@ export class BackendStack extends cdk.Stack {
       originalImageBucket: flower.originalImageBucket,
     })
 
-    const settings = new Settings(this, 'Settings', {
+    new Settings(this, 'Settings', {
       userPool: auth.userPool,
       api: api.api,
       cognitoAuthorizer: api.cognitoAuthorizer,

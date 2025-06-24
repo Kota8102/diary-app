@@ -1,7 +1,7 @@
-import type { Result, UseAuth } from '@/types/auth'
 import { Auth } from 'aws-amplify'
 import type React from 'react'
 import { createContext, useContext, useEffect, useState } from 'react'
+import type { Result, UseAuth } from '@/types/auth'
 import { configureAuth } from './authConfig'
 
 const authContext = createContext({} as UseAuth)
@@ -65,7 +65,7 @@ const useProvideAuth = (): UseAuth => {
       // setPassword('')
 
       return result
-    } catch (error) {
+    } catch {
       return {
         success: false,
         message: '認証に失敗しました。',
@@ -76,7 +76,7 @@ const useProvideAuth = (): UseAuth => {
   const signIn = async (username: string, password: string): Promise<Result> => {
     try {
       const result = await Auth.signIn(username, password)
-      const hasChallenge = Object.prototype.hasOwnProperty.call(result, 'challengeName')
+      const hasChallenge = Object.hasOwn(result, 'challengeName')
       setUsername(result.username)
       setIsAuthenticated(true)
       if (hasChallenge) {
@@ -91,7 +91,7 @@ const useProvideAuth = (): UseAuth => {
       }
 
       return { success: true, message: '', hasChallenge: false }
-    } catch (error) {
+    } catch {
       return {
         success: false,
         message: 'メールアドレスまたはパスワードが違います',
@@ -115,26 +115,26 @@ const useProvideAuth = (): UseAuth => {
             success: false,
             message: 'パスワードは英字/数字組み合わせの8桁以上で入力してください。',
           }
-          // biome-ignore lint/style/noUselessElse: <explanation>
-        } else if (error.name === 'NotAuthorizedException') {
+        }
+        if (error.name === 'NotAuthorizedException') {
           return {
             success: false,
             message: 'パスワードが間違っています。',
           }
-          // biome-ignore lint/style/noUselessElse: <explanation>
-        } else if (error.name === 'ExpiredCodeException') {
+        }
+        if (error.name === 'ExpiredCodeException') {
           return {
             success: false,
             message: '仮パスワードの有効期限が切れています。カスタマーサポートへご連絡ください。',
           }
-          // biome-ignore lint/style/noUselessElse: <explanation>
-        } else if (error.name === 'AuthError') {
+        }
+        if (error.name === 'AuthError') {
           return {
             success: false,
             message: 'メールアドレスとパスワードを入力してください。',
           }
-          // biome-ignore lint/style/noUselessElse: <explanation>
-        } else if (error.name === 'UserNotFoundException') {
+        }
+        if (error.name === 'UserNotFoundException') {
           return {
             success: false,
             message: 'メールアドレスまたはパスワードが正しくありません。',
@@ -156,7 +156,7 @@ const useProvideAuth = (): UseAuth => {
       setIsAuthenticated(false)
 
       return { success: true, message: '' }
-    } catch (error) {
+    } catch {
       return {
         success: false,
         message: 'ログアウトに失敗しました。',
@@ -173,12 +173,10 @@ const useProvideAuth = (): UseAuth => {
           success: true,
           message: '',
         }
-        // biome-ignore lint/style/noUselessElse: <explanation>
-      } else {
-        return {
-          success: false,
-          message: '入力した新規パスワードが一致しません。もう一度入力してください。',
-        }
+      }
+      return {
+        success: false,
+        message: '入力した新規パスワードが一致しません。もう一度入力してください。',
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -187,20 +185,20 @@ const useProvideAuth = (): UseAuth => {
             success: false,
             message: '現在のパスワードが間違っています。',
           }
-          // biome-ignore lint/style/noUselessElse: <explanation>
-        } else if (error.name === 'LimitExceededException') {
+        }
+        if (error.name === 'LimitExceededException') {
           return {
             success: false,
             message: 'しばらく時間を置いて再度試してください。',
           }
-          // biome-ignore lint/style/noUselessElse: <explanation>
-        } else if (error.name === 'InvalidPasswordException') {
+        }
+        if (error.name === 'InvalidPasswordException') {
           return {
             success: false,
             message: 'パスワードは英字（小文字必須）/数字組み合わせの8桁以上で入力してください。',
           }
-          // biome-ignore lint/style/noUselessElse: <explanation>
-        } else if (error.name === 'InvalidParameterException') {
+        }
+        if (error.name === 'InvalidParameterException') {
           return {
             success: false,
             message: 'パスワードを入力してください。',
@@ -226,7 +224,7 @@ const useProvideAuth = (): UseAuth => {
           success: true,
           message: '',
         }
-      } catch (error) {
+      } catch {
         return {
           success: false,
           message: '予期せぬエラーが発生しました',
@@ -261,22 +259,20 @@ const useProvideAuth = (): UseAuth => {
             success: false,
             message: 'パスワードは英字（小文字必須）/数字組み合わせの8桁以上で入力してください。',
           }
-          // biome-ignore lint/style/noUselessElse: <explanation>
-        } else if (error.name === 'AuthError' || error.name === 'ExpiredCodeException' || error.name === 'LimitExceededException') {
+        }
+        if (error.name === 'AuthError' || error.name === 'ExpiredCodeException' || error.name === 'LimitExceededException') {
           if (error.message === 'Confirmation code cannot be empty') {
             return {
               success: false,
               message: 'コードを入力してください。',
             }
-            // biome-ignore lint/style/noUselessElse: <explanation>
-          } else {
-            return {
-              success: false,
-              message: 'コードの有効期限が切れています。再度プロフィール画面から「編集」をクリックしてください。',
-            }
           }
-          // biome-ignore lint/style/noUselessElse: <explanation>
-        } else if (error.name === 'CodeMismatchException') {
+          return {
+            success: false,
+            message: 'コードの有効期限が切れています。再度プロフィール画面から「編集」をクリックしてください。',
+          }
+        }
+        if (error.name === 'CodeMismatchException') {
           return {
             success: false,
             message: 'コードが間違っています。',

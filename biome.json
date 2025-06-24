@@ -1,25 +1,42 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.8.3/schema.json",
-  "organizeImports": {
-    "enabled": true
-  },
+  "$schema": "https://biomejs.dev/schemas/2.0.5/schema.json",
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true
+      "recommended": false,
+      "style": {
+        "noParameterAssign": "error",
+        "useAsConstAssertion": "error",
+        "useDefaultParameterLast": "error",
+        "useEnumInitializers": "error",
+        "useSelfClosingElements": "error",
+        "useSingleVarDeclarator": "error",
+        "noUnusedTemplateLiteral": "error",
+        "useNumberNamespace": "error",
+        "noInferrableTypes": "error",
+        "noUselessElse": "error"
+      }
+    }
+  },
+  "assist": {
+    "actions": {
+      "source" : {
+        "organizeImports": "off"
+      }
     }
   },
   "files": {
-    "ignore": [
-      "**/node_modules/**",
-      "**/dist/**",
-      "**/cdk.out/**",
-      "**/package.json/**",
-      "**/package-lock.json/**",
-      "**/*.snap/**",
-      "docs/",
-      ".venv/",
-      "**/*.css"
+    "includes": [
+      "**",
+      "!**/node_modules/**",
+      "!**/dist/**",
+      "!**/cdk.out/**",
+      "!**/package.json/**",
+      "!**/package-lock.json/**",
+      "!**/*.snap/**",
+      "!**/docs/",
+      "!**/.venv/",
+      "!**/*.css"
     ]
   },
   "formatter": {

@@ -1,11 +1,11 @@
-import { vase1, vase2, vase3 } from '@/assets/icons'
 import jaLocale from '@fullcalendar/core/locales/ja'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin, { type DateClickArg } from '@fullcalendar/interaction'
 import FullCalendar from '@fullcalendar/react'
+import { vase1, vase2, vase3 } from '@/assets/icons'
 import '../styles/calendar.css'
-import { paths } from '@/config/paths'
 import { useNavigate } from 'react-router-dom'
+import { paths } from '@/config/paths'
 
 export const Calendar = () => {
   const navigate = useNavigate()

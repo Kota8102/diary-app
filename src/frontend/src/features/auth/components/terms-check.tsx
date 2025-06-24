@@ -1,9 +1,9 @@
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { termsOfService } from '@/assets/termsOfService'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { MDPreview } from '@/components/ui/md-preview'
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 
 export const TermsCheck = () => {
   // ページ遷移のためのフック

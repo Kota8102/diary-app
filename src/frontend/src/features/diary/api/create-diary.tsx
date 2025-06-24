@@ -1,7 +1,7 @@
-import { api } from '@/lib/api'
-import type { MutationConfig } from '@/lib/react-query'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { z } from 'zod'
+import { api } from '@/lib/api'
+import type { MutationConfig } from '@/lib/react-query'
 
 import type { CreateDiary } from '@/types/api'
 
@@ -15,11 +15,7 @@ export const createDiaryInputSchema = z.object({
 export type CreateDiaryInput = z.infer<typeof createDiaryInputSchema>
 
 // 日記を作成するAPI
-export const createDiary = async ({
-  data,
-}: {
-  data: CreateDiaryInput
-}): Promise<CreateDiary> => {
+export const createDiary = async ({ data }: { data: CreateDiaryInput }): Promise<CreateDiary> => {
   const response = await api.post('/diary', data)
   console.log(response.data)
   return response.data

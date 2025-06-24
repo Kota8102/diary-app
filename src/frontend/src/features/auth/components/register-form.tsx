@@ -35,7 +35,7 @@ export const RegisterForm = () => {
       } else {
         setResultMessage(result.message || 'エラーが発生しました')
       }
-    } catch (error) {
+    } catch {
       setResultMessage('予期せぬエラーが発生しました')
     } finally {
       setIsLoading(false)

@@ -26,7 +26,7 @@ export const ForgotPasswordForm = () => {
       } else {
         setErrorMessage(result.message || 'パスワード再設定メールの送信に失敗しました')
       }
-    } catch (error) {
+    } catch {
       setErrorMessage('予期せぬエラーが発生しました')
     } finally {
       setIsLoading(false)
