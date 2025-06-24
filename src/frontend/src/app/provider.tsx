@@ -1,7 +1,6 @@
-import type { ReactNode } from 'react'
-
-import { ProvideAuth } from '@/lib/auth/cognito-auth'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import type { ReactNode } from 'react'
+import { ProvideAuth } from '@/lib/auth/cognito-auth'
 
 const queryClient = new QueryClient()
 

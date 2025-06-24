@@ -27,7 +27,7 @@ export const VerifyEmailForm = () => {
       } else {
         setErrorMessage(result.message || '検証に失敗しました')
       }
-    } catch (error) {
+    } catch {
       setErrorMessage('予期せぬエラーが発生しました')
     } finally {
       setIsLoading(false)

@@ -4,10 +4,10 @@ import { Textarea } from '@/components/ui/form/textarea'
 import { paths } from '@/config/paths'
 import { useEffect, useState } from 'react'
 import DatePicker from 'react-datepicker'
+import 'react-datepicker/dist/react-datepicker.css'
 import { useNavigate, useParams } from 'react-router-dom'
 import { type CreateDiaryInput, createDiaryInputSchema, useCreateDiary } from '../api/create-diary'
 import { useGetDiary } from '../api/get-diary'
-import 'react-datepicker/dist/react-datepicker.css'
 
 export const DiaryCreate = () => {
   const navigate = useNavigate()
@@ -60,7 +60,6 @@ export const DiaryCreate = () => {
     }
     createDiaryMutation.mutate(submitData)
   }
-
   return (
     <Form<typeof createDiaryInputSchema>
       id="diary-create"

@@ -1,6 +1,6 @@
+import { useNavigate, useParams } from 'react-router-dom'
 import { Button } from '@/components/ui/button/button'
 import { paths } from '@/config/paths'
-import { useNavigate, useParams } from 'react-router-dom'
 
 export type DisplayFlowerProps = {
   image: string

@@ -1,6 +1,6 @@
-import { cn } from '@/utils/cn'
-import { type VariantProps, cva } from 'class-variance-authority'
+import { cva, type VariantProps } from 'class-variance-authority'
 import * as React from 'react'
+import { cn } from '@/utils/cn'
 
 // チェックボックスのラッパーのスタイル
 const wrapperVariants = cva(
@@ -81,7 +81,8 @@ export type CheckboxProps = React.InputHTMLAttributes<HTMLInputElement> &
 // チェックボックスコンポーネント
 const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(({ className, size, label, asChild = false, id, disabled, ...props }, ref) => {
   // ユニークなIDの生成
-  const checkboxId = id || React.useId()
+  const generatedId = React.useId()
+  const checkboxId = id ?? generatedId
 
   return (
     <div className={cn(wrapperVariants({ size }), className)}>

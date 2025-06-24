@@ -1,7 +1,7 @@
-import { api } from '@/lib/api'
-import type { QueryConfig } from '@/lib/react-query'
 import { useQuery } from '@tanstack/react-query'
 import { z } from 'zod'
+import { api } from '@/lib/api'
+import type { QueryConfig } from '@/lib/react-query'
 
 import type { Note } from '@/types/api'
 
@@ -15,11 +15,7 @@ export const getDiaryParamsSchema = z.object({
 export type GetDiaryParams = z.infer<typeof getDiaryParamsSchema>
 
 // 日記を取得するAPI
-export const getDiary = async ({
-  params,
-}: {
-  params?: GetDiaryParams
-}): Promise<Note> => {
+export const getDiary = async ({ params }: { params?: GetDiaryParams }): Promise<Note> => {
   const response = await api.get('/diary', { params })
   return response.data
 }
@@ -34,11 +30,7 @@ export const getDiaryHistoryParamsSchema = z.object({
 export type GetDiaryHistoryParams = z.infer<typeof getDiaryHistoryParamsSchema>
 
 // 日記の履歴を取得するAPI
-export const getDiaryHistory = async ({
-  params,
-}: {
-  params?: GetDiaryHistoryParams
-}): Promise<Note[]> => {
+export const getDiaryHistory = async ({ params }: { params?: GetDiaryHistoryParams }): Promise<Note[]> => {
   const response = await api.get('/diary/history', { params })
   return response.data
 }

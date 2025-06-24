@@ -15,7 +15,7 @@ export class Api extends Construct {
     super(scope, id)
 
     // API Gateway用のCloudWatch Logsアクセス権限を持つロールの作成
-    const cloudwatchLogsRole = new cdk.aws_iam.Role(this, 'APIGatewayCloudWatchLogsRole', {
+    new cdk.aws_iam.Role(this, 'APIGatewayCloudWatchLogsRole', {
       assumedBy: new cdk.aws_iam.ServicePrincipal('apigateway.amazonaws.com'),
       managedPolicies: [cdk.aws_iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonAPIGatewayPushToCloudWatchLogs')],
     })

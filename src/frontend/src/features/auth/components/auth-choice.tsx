@@ -1,6 +1,6 @@
+import { useNavigate } from 'react-router-dom'
 import { logoFlower, logoName } from '@/assets/icons'
 import { Button } from '@/components/ui/button'
-import { useNavigate } from 'react-router-dom'
 
 export const AuthChoice = () => {
   // ページ遷移のためのフック

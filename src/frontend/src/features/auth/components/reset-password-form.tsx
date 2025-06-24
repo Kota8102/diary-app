@@ -32,7 +32,7 @@ export const ResetPasswordForm = () => {
       } else {
         setErrorMessage(result.message)
       }
-    } catch (error) {
+    } catch {
       setErrorMessage('予期せぬエラーが発生しました')
     } finally {
       setIsLoading(false)

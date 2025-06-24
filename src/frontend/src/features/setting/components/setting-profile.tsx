@@ -1,9 +1,8 @@
-import { fetchProfileImage } from '@/lib/setting/get-profileImage'
-import { uploadProfileImage } from '@/lib/setting/post-profileImage'
-
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { type ChangeEvent, useState } from 'react'
 import { FiCamera } from 'react-icons/fi'
+import { fetchProfileImage } from '@/lib/setting/get-profileImage'
+import { uploadProfileImage } from '@/lib/setting/post-profileImage'
 
 export const SettingProfile = () => {
   const queryClient = useQueryClient()

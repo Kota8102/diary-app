@@ -1,6 +1,6 @@
+import { useQuery } from '@tanstack/react-query'
 import { api } from '@/lib/api'
 import type { QueryConfig } from '@/lib/react-query'
-import { useQuery } from '@tanstack/react-query'
 
 import type { FlowerData } from '../components/flower'
 

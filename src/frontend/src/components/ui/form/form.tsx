@@ -153,7 +153,6 @@ type FormProps<TFormValues extends FieldValues, Schema> = {
 }
 
 // フォームコンポーネントを定義
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 const Form = <Schema extends ZodType<any, any, any>, TFormValues extends FieldValues = z.infer<Schema>>({
   onSubmit,
   children,
@@ -173,4 +172,4 @@ const Form = <Schema extends ZodType<any, any, any>, TFormValues extends FieldVa
 }
 
 // 各コンポーネントとフックをエクスポート
-export { useFormField, Form, FormProvider, FormItem, FormLabel, FormControl, FormDescription, FormMessage, FormField }
+export { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage, FormProvider, useFormField }
